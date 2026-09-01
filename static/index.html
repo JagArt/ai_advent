@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>DeepSeek</h1>
+        <p class="subtitle">Введите запрос и получите ответ модели</p>
+    </header>
+
+    <form class="form" id="form">
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="8"
+            placeholder="Введите запрос&#10;&#10;Ctrl + Enter — отправить"
+            autofocus
+        ></textarea>
+
+        <div class="actions">
+            <span class="hint" id="status"></span>
+            <button type="submit" class="button" id="submit">Отправить</button>
+        </div>
+    </form>
+
+    <section class="result-wrap">
+        <div class="result-head">
+            <span class="result-title">Ответ</span>
+            <button type="button" class="copy" id="copy" hidden>Копировать</button>
+        </div>
+        <pre class="result" id="result"><span class="placeholder">Здесь появится ответ</span></pre>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

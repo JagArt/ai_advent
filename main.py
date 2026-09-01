@@ -1,57 +1,49 @@
-import os
-import asyncio
+import json
+from collections.abc import AsyncIterator
+from pathlib import Path
 
-from dotenv import load_dotenv
-from openai import AsyncOpenAI
-from openai.types.chat import (
-    ChatCompletionMessageParam,
-    ChatCompletionSystemMessageParam,
-    ChatCompletionUserMessageParam,
-)
+from fastapi import FastAPI
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 
-load_dotenv()
+from llm import stream_answer
 
-client = AsyncOpenAI(
-    api_key=os.environ["DEEPSEEK_API_KEY"],
-    base_url="https://api.deepseek.com",
-)
+BASE_DIR = Path(__file__).parent
+STATIC_DIR = BASE_DIR / "static"
+
+app = FastAPI(title="DeepSeek Web")
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
-async def ask_deepseek(prompt: str) -> None:
-    messages: list[ChatCompletionMessageParam] = [
-        ChatCompletionSystemMessageParam(
-            role="system",
-            content="You are a helpful assistant.",
-        ),
-        ChatCompletionUserMessageParam(
-            role="user",
-            content=prompt,
-        ),
-    ]
+class AskRequest(BaseModel):
+    prompt: str = Field(min_length=1)
 
-    stream = await client.chat.completions.create(
-        model="deepseek-v4-flash",
-        messages=messages,
-        stream=True,
+
+@app.get("/")
+async def index() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+def sse_frame(data: str, event: str | None = None) -> str:
+    prefix = f"event: {event}\n" if event else ""
+    return f"{prefix}data: {data}\n\n"
+
+
+async def event_stream(prompt: str) -> AsyncIterator[str]:
+    try:
+        async for text in stream_answer(prompt):
+            yield sse_frame(json.dumps(text, ensure_ascii=False))
+    except Exception as exc:
+        yield sse_frame(json.dumps(str(exc), ensure_ascii=False), event="error")
+    else:
+        yield sse_frame("{}", event="done")
+
+
+@app.post("/api/ask")
+async def ask(request: AskRequest) -> StreamingResponse:
+    return StreamingResponse(
+        event_stream(request.prompt.strip()),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
-
-    async for chunk in stream:
-        if not chunk.choices:
-            continue
-
-        text = chunk.choices[0].delta.content
-
-        if text:
-            print(text, end="", flush=True)
-
-
-async def main():
-    prompt = input("Введите запрос: ").strip()
-    if not prompt:
-        print("Пустой запрос, выход.")
-        return
-
-    await ask_deepseek(prompt)
-
-
-asyncio.run(main())
