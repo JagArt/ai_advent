@@ -2,7 +2,6 @@ const form = document.getElementById("form");
 const promptInput = document.getElementById("prompt");
 const submitButton = document.getElementById("submit");
 const statusEl = document.getElementById("status");
-const constraintsEl = document.getElementById("constraints");
 
 const columns = {
     free: {
@@ -96,60 +95,6 @@ function applyDone(column, payload) {
     setColumnMeta(column, parts.join(" · "));
 }
 
-async function renderConstraints() {
-    const response = await fetch("/api/constraints");
-    if (!response.ok) {
-        constraintsEl.textContent = "Не удалось загрузить ограничения";
-        return;
-    }
-
-    const { sections, params } = await response.json();
-    constraintsEl.replaceChildren();
-
-    for (const section of sections) {
-        const block = document.createElement("div");
-        block.className = "constraint";
-
-        const title = document.createElement("span");
-        title.className = "constraint-title";
-        title.textContent = section.title;
-        block.append(title);
-
-        const list = document.createElement("ul");
-        list.className = "constraint-rules";
-        for (const rule of section.rules) {
-            const item = document.createElement("li");
-            item.textContent = rule;
-            list.append(item);
-        }
-        block.append(list);
-
-        constraintsEl.append(block);
-    }
-
-    const paramsEntries = Object.entries(params);
-    if (paramsEntries.length) {
-        const block = document.createElement("div");
-        block.className = "constraint";
-
-        const title = document.createElement("span");
-        title.className = "constraint-title";
-        title.textContent = "Параметры API";
-        block.append(title);
-
-        const list = document.createElement("ul");
-        list.className = "constraint-rules";
-        for (const [key, value] of paramsEntries) {
-            const item = document.createElement("li");
-            item.textContent = `${key}: ${JSON.stringify(value)}`;
-            list.append(item);
-        }
-        block.append(list);
-
-        constraintsEl.append(block);
-    }
-}
-
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -198,4 +143,3 @@ function bindCopy(column) {
 
 bindCopy(columns.free);
 bindCopy(columns.controlled);
-renderConstraints();

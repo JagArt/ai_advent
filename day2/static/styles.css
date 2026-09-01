@@ -76,53 +76,6 @@ body {
     color: var(--text-dim);
 }
 
-.constraints {
-    padding: 14px 16px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    background: var(--surface);
-}
-
-.constraints-head {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 10px;
-}
-
-.constraints-legend {
-    color: var(--text-dim);
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-
-.constraints-source {
-    color: var(--text-dim);
-    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-    font-size: 12px;
-}
-
-.constraints-body {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px 24px;
-}
-
-.constraint-title {
-    display: block;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.constraint-rules {
-    margin: 4px 0 0;
-    padding-left: 18px;
-    color: var(--text-dim);
-    font-size: 13px;
-}
-
 .actions {
     display: flex;
     align-items: center;

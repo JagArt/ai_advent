@@ -48,6 +48,7 @@ async def stream_answer(prompt: str, *, constrained: bool = False) -> AsyncItera
         model=MODEL,
         messages=messages,
         stream=True,
+        extra_body={"thinking": {"type": "disabled"}},
         **params,
     )
 

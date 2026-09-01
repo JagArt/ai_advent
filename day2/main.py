@@ -4,17 +4,26 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import FileResponse, StreamingResponse
-from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+from starlette.staticfiles import StaticFiles
 
-from constraints import Constraints, constraints
 from llm import stream_answer
 
 BASE_DIR = Path(__file__).parent
 STATIC_DIR = BASE_DIR / "static"
+NO_CACHE = {"Cache-Control": "no-cache"}
+
+
+class NoCacheStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        response = await super().get_response(path, scope)
+        if response.status_code == 200:
+            response.headers["Cache-Control"] = "no-cache"
+        return response
+
 
 app = FastAPI(title="DeepSeek Web")
-app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+app.mount("/static", NoCacheStaticFiles(directory=STATIC_DIR), name="static")
 
 
 class AskRequest(BaseModel):
@@ -24,12 +33,7 @@ class AskRequest(BaseModel):
 
 @app.get("/")
 async def index() -> FileResponse:
-    return FileResponse(STATIC_DIR / "index.html")
-
-
-@app.get("/api/constraints")
-async def get_constraints() -> Constraints:
-    return constraints
+    return FileResponse(STATIC_DIR / "index.html", headers=NO_CACHE)
 
 
 def sse_frame(data: str, event: str | None = None) -> str:

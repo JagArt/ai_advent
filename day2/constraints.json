@@ -24,11 +24,6 @@
   ],
   "params": {
     "max_tokens": 200,
-    "stop": ["4."],
-    "extra_body": {
-      "thinking": {
-        "type": "disabled"
-      }
-    }
+    "stop": ["4."]
   }
 }
