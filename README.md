@@ -5,7 +5,7 @@
 | Папка | Итерация |
 | --- | --- |
 | `day1/` | CLI: запрос из терминала, потоковый вывод в stdout |
-| `day2/` | Веб-интерфейс: страница с полем промпта и потоковым ответом |
+| `day2/` | Веб-интерфейс: сравнение свободного ответа и ответа по ограничениям из JSON |
 
 ## Установка
 
@@ -36,7 +36,7 @@ python day1/main.py
 
 Скрипт спрашивает запрос в терминале и печатает ответ модели по мере поступления чанков.
 
-## day2 — веб-интерфейс
+## day2 — ограничения формата ответа
 
 ```bash
 uvicorn main:app --reload --app-dir day2
@@ -44,12 +44,39 @@ uvicorn main:app --reload --app-dir day2
 
 Интерфейс доступен на http://127.0.0.1:8000
 
+Один промпт уходит в модель дважды: без ограничений и с ограничениями из `day2/constraints.json`. Обе колонки показывают количество слов и `finish_reason`, чтобы разницу было видно.
+
+Ограничения правятся только в файле, без изменений кода:
+
+```json
+{
+  "system_prompt": "You are a helpful assistant.",
+  "sections": [
+    {
+      "title": "Формат ответа",
+      "rules": [
+        "Используй ровно 3 пункта.",
+        "Каждый пункт должен содержать одно предложение.",
+        "Используй формат нумерованного списка: 1., 2., 3."
+      ]
+    }
+  ],
+  "params": { "max_tokens": 200, "stop": ["4."] }
+}
+```
+
+`system_prompt` и `sections` собираются в system prompt, `params` уходят в `chat.completions.create` как есть. `stop: ["4."]` обрывает генерацию, если модель всё же начнёт четвёртый пункт.
+
 | Файл | Назначение |
 | --- | --- |
-| `day2/main.py` | FastAPI-приложение, роуты `/` и `POST /api/ask` |
-| `day2/llm.py` | Клиент DeepSeek, async-генератор чанков ответа |
+| `day2/main.py` | FastAPI-приложение, роуты `/`, `GET /api/constraints`, `POST /api/ask` |
+| `day2/llm.py` | Клиент DeepSeek, стрим чанков |
+| `day2/constraints.json` | Ограничения: формат, длина, условие завершения, параметры API |
+| `day2/constraints.py` | Pydantic-модели ограничений и сборка system prompt |
 | `day2/static/` | Страница интерфейса: HTML, CSS, JS |
 
 ### API
 
-`POST /api/ask` принимает `{"prompt": "..."}` и отдаёт `text/event-stream`: кадры `data: <json-строка>` с частями ответа, затем `event: done` либо `event: error` с текстом ошибки.
+`POST /api/ask` принимает `{"prompt": "...", "constrained": false}` и отдаёт `text/event-stream`: кадры `data: <json-строка>` с частями ответа, затем `event: done` с `{finish_reason, word_count}` либо `event: error` с текстом ошибки. При `constrained: true` применяются ограничения из файла.
+
+`GET /api/constraints` возвращает содержимое `constraints.json` — интерфейс рисует из него блок ограничений.

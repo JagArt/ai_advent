@@ -3,37 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DeepSeek</title>
+    <title>DeepSeek — формат ответа</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
 <main class="container">
     <header class="header">
-        <h1>DeepSeek</h1>
-        <p class="subtitle">Введите запрос и получите ответ модели</p>
+        <h1>Формат ответа</h1>
+        <p class="subtitle">Один запрос — свободный ответ и ответ по ограничениям из constraints.json</p>
     </header>
 
     <form class="form" id="form">
         <textarea
             id="prompt"
             class="prompt"
-            rows="8"
+            rows="6"
             placeholder="Введите запрос&#10;&#10;Ctrl + Enter — отправить"
             autofocus
-        ></textarea>
+        >Чем полезна утренняя зарядка?</textarea>
+
+        <section class="constraints">
+            <div class="constraints-head">
+                <span class="constraints-legend">Ограничения</span>
+                <span class="constraints-source">constraints.json</span>
+            </div>
+            <div class="constraints-body" id="constraints"></div>
+        </section>
 
         <div class="actions">
             <span class="hint" id="status"></span>
-            <button type="submit" class="button" id="submit">Отправить</button>
+            <button type="submit" class="button" id="submit">Сравнить</button>
         </div>
     </form>
 
-    <section class="result-wrap">
-        <div class="result-head">
-            <span class="result-title">Ответ</span>
-            <button type="button" class="copy" id="copy" hidden>Копировать</button>
-        </div>
-        <pre class="result" id="result"><span class="placeholder">Здесь появится ответ</span></pre>
+    <section class="compare">
+        <article class="result-wrap">
+            <div class="result-head">
+                <div>
+                    <span class="result-title">Без ограничений</span>
+                    <span class="meta" id="metaFree"></span>
+                </div>
+                <button type="button" class="copy" id="copyFree" hidden>Копировать</button>
+            </div>
+            <pre class="result" id="resultFree"><span class="placeholder">Здесь появится свободный ответ</span></pre>
+        </article>
+        <article class="result-wrap">
+            <div class="result-head">
+                <div>
+                    <span class="result-title">С ограничениями</span>
+                    <span class="meta" id="metaControlled"></span>
+                </div>
+                <button type="button" class="copy" id="copyControlled" hidden>Копировать</button>
+            </div>
+            <pre class="result" id="resultControlled"><span class="placeholder">Здесь появится ответ по ограничениям</span></pre>
+        </article>
     </section>
 </main>
 

@@ -2,20 +2,37 @@ const form = document.getElementById("form");
 const promptInput = document.getElementById("prompt");
 const submitButton = document.getElementById("submit");
 const statusEl = document.getElementById("status");
-const resultEl = document.getElementById("result");
-const copyButton = document.getElementById("copy");
+const constraintsEl = document.getElementById("constraints");
 
-let answer = "";
+const columns = {
+    free: {
+        result: document.getElementById("resultFree"),
+        copy: document.getElementById("copyFree"),
+        meta: document.getElementById("metaFree"),
+        text: "",
+    },
+    controlled: {
+        result: document.getElementById("resultControlled"),
+        copy: document.getElementById("copyControlled"),
+        meta: document.getElementById("metaControlled"),
+        text: "",
+    },
+};
 
 function setStatus(text, isError = false) {
     statusEl.textContent = text;
     statusEl.classList.toggle("error", isError);
 }
 
-function setAnswer(text) {
-    answer = text;
-    resultEl.textContent = text;
-    copyButton.hidden = !text;
+function setColumnText(column, text) {
+    column.text = text;
+    column.result.textContent = text;
+    column.copy.hidden = !text;
+}
+
+function setColumnMeta(column, text, isError = false) {
+    column.meta.textContent = text;
+    column.meta.classList.toggle("error", isError);
 }
 
 function parseFrame(frame) {
@@ -33,11 +50,11 @@ function parseFrame(frame) {
     return { event, data: dataLines.join("\n") };
 }
 
-async function ask(prompt) {
+async function ask(prompt, constrained, column) {
     const response = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt, constrained }),
     });
 
     if (!response.ok) {
@@ -63,10 +80,73 @@ async function ask(prompt) {
                 throw new Error(JSON.parse(data));
             }
             if (event === "done") {
+                applyDone(column, JSON.parse(data));
                 return;
             }
-            setAnswer(answer + JSON.parse(data));
+            setColumnText(column, column.text + JSON.parse(data));
         }
+    }
+}
+
+function applyDone(column, payload) {
+    const parts = [`слов: ${payload.word_count}`];
+    if (payload.finish_reason) {
+        parts.push(`finish_reason: ${payload.finish_reason}`);
+    }
+    setColumnMeta(column, parts.join(" · "));
+}
+
+async function renderConstraints() {
+    const response = await fetch("/api/constraints");
+    if (!response.ok) {
+        constraintsEl.textContent = "Не удалось загрузить ограничения";
+        return;
+    }
+
+    const { sections, params } = await response.json();
+    constraintsEl.replaceChildren();
+
+    for (const section of sections) {
+        const block = document.createElement("div");
+        block.className = "constraint";
+
+        const title = document.createElement("span");
+        title.className = "constraint-title";
+        title.textContent = section.title;
+        block.append(title);
+
+        const list = document.createElement("ul");
+        list.className = "constraint-rules";
+        for (const rule of section.rules) {
+            const item = document.createElement("li");
+            item.textContent = rule;
+            list.append(item);
+        }
+        block.append(list);
+
+        constraintsEl.append(block);
+    }
+
+    const paramsEntries = Object.entries(params);
+    if (paramsEntries.length) {
+        const block = document.createElement("div");
+        block.className = "constraint";
+
+        const title = document.createElement("span");
+        title.className = "constraint-title";
+        title.textContent = "Параметры API";
+        block.append(title);
+
+        const list = document.createElement("ul");
+        list.className = "constraint-rules";
+        for (const [key, value] of paramsEntries) {
+            const item = document.createElement("li");
+            item.textContent = `${key}: ${JSON.stringify(value)}`;
+            list.append(item);
+        }
+        block.append(list);
+
+        constraintsEl.append(block);
     }
 }
 
@@ -80,11 +160,17 @@ form.addEventListener("submit", async (event) => {
     }
 
     submitButton.disabled = true;
-    setStatus("Генерация ответа...");
-    setAnswer("");
+    setStatus("Генерация ответов...");
+    setColumnText(columns.free, "");
+    setColumnText(columns.controlled, "");
+    setColumnMeta(columns.free, "");
+    setColumnMeta(columns.controlled, "");
 
     try {
-        await ask(prompt);
+        await Promise.all([
+            ask(prompt, false, columns.free),
+            ask(prompt, true, columns.controlled),
+        ]);
         setStatus("Готово");
     } catch (error) {
         setStatus(error.message, true);
@@ -100,10 +186,16 @@ promptInput.addEventListener("keydown", (event) => {
     }
 });
 
-copyButton.addEventListener("click", async () => {
-    await navigator.clipboard.writeText(answer);
-    copyButton.textContent = "Скопировано";
-    setTimeout(() => {
-        copyButton.textContent = "Копировать";
-    }, 1500);
-});
+function bindCopy(column) {
+    column.copy.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(column.text);
+        column.copy.textContent = "Скопировано";
+        setTimeout(() => {
+            column.copy.textContent = "Копировать";
+        }, 1500);
+    });
+}
+
+bindCopy(columns.free);
+bindCopy(columns.controlled);
+renderConstraints();
