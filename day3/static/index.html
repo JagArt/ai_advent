@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek — способы рассуждения</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Способы рассуждения</h1>
+        <p class="subtitle">Один запрос — опции из чекбоксов складываются в промпт</p>
+    </header>
+
+    <form class="form" id="form">
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="12"
+            placeholder="Введите задачу&#10;&#10;Ctrl + Enter — отправить"
+            autofocus
+        ></textarea>
+
+        <div class="options">
+            <label class="option">
+                <input type="checkbox" id="modeStep" checked>
+                Решай пошагово
+            </label>
+            <label class="option">
+                <input type="checkbox" id="modeMeta" checked>
+                Сначала промпт
+            </label>
+            <label class="option">
+                <input type="checkbox" id="modeExperts" checked>
+                Группа экспертов
+            </label>
+        </div>
+
+        <div class="experts-panel" id="expertsPanel">
+            <div class="chips" id="expertChips"></div>
+            <div class="expert-add">
+                <input
+                    type="text"
+                    id="expertName"
+                    class="expert-input"
+                    placeholder="Имя эксперта"
+                    autocomplete="off"
+                >
+                <button type="button" class="copy" id="addExpert">Добавить</button>
+            </div>
+        </div>
+
+        <div class="actions">
+            <span class="hint" id="status"></span>
+            <button type="submit" class="button" id="submit">Отправить</button>
+        </div>
+    </form>
+
+    <article class="result-wrap">
+        <div class="result-head">
+            <div>
+                <span class="result-title">Ответ</span>
+                <span class="meta" id="meta"></span>
+            </div>
+            <button type="button" class="copy" id="copy" hidden>Копировать</button>
+        </div>
+        <div class="prompt-box" id="generatedBox" hidden>
+            <div class="prompt-box-label">Сгенерированный промпт</div>
+            <pre class="prompt-box-text" id="generatedPrompt"></pre>
+        </div>
+        <pre class="result" id="result"><span class="placeholder">Здесь появится ответ</span></pre>
+    </article>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
