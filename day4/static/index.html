@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek — температура</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Температура</h1>
+    </header>
+
+    <form class="form" id="form">
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="8"
+            placeholder="Введите запрос&#10;&#10;Ctrl + Enter — отправить"
+            autofocus
+        ></textarea>
+
+        <div class="temp-control">
+            <span class="temp-label">temperature</span>
+            <input type="range" class="temp-range" id="tempRange" aria-label="Температура" disabled>
+            <input type="number" class="temp-number" id="tempNumber" aria-label="Значение температуры" disabled>
+        </div>
+        <p class="temp-band" id="tempBand"></p>
+
+        <div class="actions">
+            <span class="hint" id="status"></span>
+            <button type="submit" class="button" id="submit" disabled>Отправить</button>
+        </div>
+    </form>
+
+    <article class="result-wrap">
+        <div class="result-head">
+            <div>
+                <span class="result-title">Ответ</span>
+                <span class="meta" id="meta"></span>
+            </div>
+            <button type="button" class="copy" id="copy" hidden>Копировать</button>
+        </div>
+        <pre class="result" id="result"><span class="placeholder">Здесь появится ответ</span></pre>
+    </article>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
