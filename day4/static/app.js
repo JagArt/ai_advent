@@ -9,14 +9,23 @@ const resultEl = document.getElementById("result");
 const copyButton = document.getElementById("copy");
 const metaEl = document.getElementById("meta");
 
+const submitLabel = submitButton.textContent;
+
 // Шкала температуры целиком приходит из GET /api/defaults, своих значений страница не держит.
 let config = null;
 let temperature = null;
 let answerText = "";
+let controller = null;
 
 function setStatus(text, isError = false) {
     statusEl.textContent = text;
     statusEl.classList.toggle("error", isError);
+}
+
+// Пока идёт стрим, та же кнопка работает на остановку.
+function setBusy(busy) {
+    submitButton.textContent = busy ? "Остановить" : submitLabel;
+    submitButton.classList.toggle("stop", busy);
 }
 
 function setMeta(text, isError = false) {
@@ -104,6 +113,7 @@ async function ask(prompt) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt, temperature }),
+        signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -155,13 +165,19 @@ numberEl.addEventListener("change", () => {
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    if (controller) {
+        controller.abort();
+        return;
+    }
+
     const prompt = promptInput.value.trim();
     if (!prompt) {
         setStatus("Введите запрос", true);
         return;
     }
 
-    submitButton.disabled = true;
+    controller = new AbortController();
+    setBusy(true);
     setStatus("Генерация ответа...");
     setMeta("");
     setPlaceholder();
@@ -170,9 +186,14 @@ form.addEventListener("submit", async (event) => {
         await ask(prompt);
         setStatus("Готово");
     } catch (error) {
-        setStatus(error.message, true);
+        if (error.name === "AbortError") {
+            setStatus("Остановлено");
+        } else {
+            setStatus(error.message, true);
+        }
     } finally {
-        submitButton.disabled = false;
+        controller = null;
+        setBusy(false);
     }
 });
 

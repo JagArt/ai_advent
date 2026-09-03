@@ -15,13 +15,22 @@ const resultEl = document.getElementById("result");
 const copyButton = document.getElementById("copy");
 const metaEl = document.getElementById("meta");
 
+const submitLabel = submitButton.textContent;
+
 let experts = [];
 let answerText = "";
 let generatedText = "";
+let controller = null;
 
 function setStatus(text, isError = false) {
     statusEl.textContent = text;
     statusEl.classList.toggle("error", isError);
+}
+
+// Пока идёт стрим, та же кнопка работает на остановку.
+function setBusy(busy) {
+    submitButton.textContent = busy ? "Остановить" : submitLabel;
+    submitButton.classList.toggle("stop", busy);
 }
 
 function isNearBottom(el, threshold = 48) {
@@ -100,6 +109,7 @@ async function ask(prompt, expertNames) {
             meta_prompt: modeMeta.checked,
             experts: modeExperts.checked ? expertNames : [],
         }),
+        signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -199,6 +209,11 @@ expertName.addEventListener("keydown", (event) => {
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    if (controller) {
+        controller.abort();
+        return;
+    }
+
     const prompt = promptInput.value.trim();
     if (!prompt) {
         setStatus("Введите задачу", true);
@@ -210,7 +225,8 @@ form.addEventListener("submit", async (event) => {
         return;
     }
 
-    submitButton.disabled = true;
+    controller = new AbortController();
+    setBusy(true);
     setStatus("Генерация ответа...");
     setMeta("");
     setPlaceholder();
@@ -220,9 +236,14 @@ form.addEventListener("submit", async (event) => {
         await ask(prompt, experts);
         setStatus("Готово");
     } catch (error) {
-        setStatus(error.message, true);
+        if (error.name === "AbortError") {
+            setStatus("Остановлено");
+        } else {
+            setStatus(error.message, true);
+        }
     } finally {
-        submitButton.disabled = false;
+        controller = null;
+        setBusy(false);
     }
 });
 

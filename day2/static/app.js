@@ -18,9 +18,19 @@ const columns = {
     },
 };
 
+const submitLabel = submitButton.textContent;
+
+let controller = null;
+
 function setStatus(text, isError = false) {
     statusEl.textContent = text;
     statusEl.classList.toggle("error", isError);
+}
+
+// Пока идёт стрим, та же кнопка работает на остановку.
+function setBusy(busy) {
+    submitButton.textContent = busy ? "Остановить" : submitLabel;
+    submitButton.classList.toggle("stop", busy);
 }
 
 function setColumnText(column, text) {
@@ -54,6 +64,7 @@ async function ask(prompt, constrained, column) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt, constrained }),
+        signal: controller.signal,
     });
 
     if (!response.ok) {
@@ -98,29 +109,41 @@ function applyDone(column, payload) {
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
+    if (controller) {
+        controller.abort();
+        return;
+    }
+
     const prompt = promptInput.value.trim();
     if (!prompt) {
         setStatus("Введите запрос", true);
         return;
     }
 
-    submitButton.disabled = true;
+    controller = new AbortController();
+    setBusy(true);
     setStatus("Генерация ответов...");
     setColumnText(columns.free, "");
     setColumnText(columns.controlled, "");
     setColumnMeta(columns.free, "");
     setColumnMeta(columns.controlled, "");
 
-    try {
-        await Promise.all([
-            ask(prompt, false, columns.free),
-            ask(prompt, true, columns.controlled),
-        ]);
+    // Ждём обе колонки целиком: иначе после ошибки в одной вторая продолжила бы писать в уже сброшенное состояние.
+    const results = await Promise.allSettled([
+        ask(prompt, false, columns.free),
+        ask(prompt, true, columns.controlled),
+    ]);
+
+    controller = null;
+    setBusy(false);
+
+    const failure = results.find((item) => item.status === "rejected");
+    if (!failure) {
         setStatus("Готово");
-    } catch (error) {
-        setStatus(error.message, true);
-    } finally {
-        submitButton.disabled = false;
+    } else if (failure.reason.name === "AbortError") {
+        setStatus("Остановлено");
+    } else {
+        setStatus(failure.reason.message, true);
     }
 });
 
