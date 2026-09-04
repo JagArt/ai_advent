@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Версии моделей — слабая, средняя, сильная</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Версии моделей</h1>
+        <p class="subtitle">Один запрос уходит параллельно в слабую, среднюю и сильную модель</p>
+    </header>
+
+    <form class="form" id="form">
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="7"
+            placeholder="Введите запрос&#10;&#10;Ctrl + Enter — отправить"
+            autofocus
+        ></textarea>
+
+        <div class="actions">
+            <span class="hint" id="status"></span>
+            <button type="submit" class="button" id="submit" disabled>Сравнить</button>
+        </div>
+    </form>
+
+    <section class="compare" id="compare"></section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
