@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek — агент с постоянной памятью</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<div class="layout">
+    <aside class="sidebar">
+        <button type="button" class="button new-dialog" id="new-dialog" disabled>Новый диалог</button>
+        <ul class="dialogs" id="dialogs"></ul>
+    </aside>
+
+    <main class="container">
+        <header class="header">
+            <div>
+                <h1>Агент</h1>
+                <div class="params" id="params"></div>
+            </div>
+        </header>
+
+        <section class="chat" id="chat" aria-live="polite">
+            <p class="placeholder" id="placeholder">Здесь появится диалог</p>
+        </section>
+
+        <form class="form" id="form">
+            <textarea
+                id="prompt"
+                class="prompt"
+                rows="4"
+                placeholder="Введите сообщение&#10;&#10;Enter — отправить, Shift + Enter — новая строка"
+                autofocus
+            ></textarea>
+
+            <div class="actions">
+                <span class="hint" id="status"></span>
+                <button type="submit" class="button" id="submit" disabled>Отправить</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

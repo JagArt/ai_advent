@@ -218,3 +218,6 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Память агента day7: база создаётся при первом старте
+day7/history.db*
