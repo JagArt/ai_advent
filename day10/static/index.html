@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek — стратегии управления контекстом</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<div class="layout">
+    <aside class="sidebar">
+        <button type="button" class="button new-dialog" id="new-dialog" disabled>Новый диалог</button>
+        <ul class="dialogs" id="dialogs"></ul>
+    </aside>
+
+    <main class="container">
+        <header class="header">
+        <div>
+            <h1>Агент</h1>
+            <div class="params" id="params"></div>
+        </div>
+        <a class="link" href="/scenarios">Сценарии →</a>
+    </header>
+
+        <section class="tokens" id="tokens">
+            <div class="tokens-head">
+                <h2>Токены и стоимость</h2>
+                <span class="tokens-note" id="tokens-note"></span>
+            </div>
+
+            <table class="tokens-table">
+                <thead>
+                <tr>
+                    <th>Ход</th>
+                    <th>Запрос</th>
+                    <th>из них кэш</th>
+                    <th>Ответ</th>
+                    <th>Всего</th>
+                    <th>Оценка</th>
+                    <th>Стоимость</th>
+                    <th>Накоплено</th>
+                </tr>
+                </thead>
+                <tbody id="turns"></tbody>
+                <tfoot id="totals" hidden>
+                <tr>
+                    <th>Итого</th>
+                    <td id="total-prompt"></td>
+                    <td id="total-cached"></td>
+                    <td id="total-completion"></td>
+                    <td id="total-tokens"></td>
+                    <td></td>
+                    <td></td>
+                    <td id="total-cost"></td>
+                </tr>
+                </tfoot>
+            </table>
+
+            <p class="tokens-empty" id="tokens-empty">Ходов пока не было — считать нечего</p>
+
+            <details class="facts" id="facts" hidden>
+                <summary class="facts-head">
+                    Факты вместо истории
+                    <span class="facts-meta" id="facts-meta"></span>
+                </summary>
+                <table class="facts-table">
+                    <tbody id="facts-rows"></tbody>
+                </table>
+            </details>
+        </section>
+
+        <nav class="branches" id="branches" hidden aria-label="Ветки диалога">
+            <ul class="branch-list" id="branch-list"></ul>
+        </nav>
+
+        <section class="chat" id="chat" aria-live="polite">
+            <p class="placeholder" id="placeholder">Здесь появится диалог</p>
+        </section>
+
+        <form class="form" id="form">
+            <textarea
+                id="prompt"
+                class="prompt"
+                rows="3"
+                placeholder="Введите сообщение&#10;&#10;Enter — отправить, Shift + Enter — новая строка"
+                autofocus
+            ></textarea>
+
+            <div class="actions">
+                <span class="hint" id="status"></span>
+                <button type="submit" class="button" id="submit" disabled>Отправить</button>
+            </div>
+        </form>
+    </main>
+</div>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek — сценарии замеров</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<main class="container container-wide">
+    <header class="header">
+        <div>
+            <h1>Сценарии</h1>
+            <div class="params" id="params"></div>
+        </div>
+        <a class="link" href="/">← Чат</a>
+    </header>
+
+    <section class="scenarios" id="scenarios"></section>
+
+    <div class="actions">
+        <span class="hint" id="status">Выберите сценарий</span>
+        <div class="report-controls" id="report-controls" hidden>
+            <label class="param param-control param-toggle">
+                <input type="checkbox" id="raw-toggle">
+                исходный markdown
+            </label>
+            <button type="button" class="button button-quiet" id="copy">Скопировать</button>
+        </div>
+    </div>
+
+    <section class="report" id="report">
+        <p class="placeholder" id="placeholder">Отчёт появится здесь</p>
+        <div class="transcript" id="transcript" hidden></div>
+        <div class="report-rendered" id="report-rendered"></div>
+        <pre class="report-raw" id="report-raw" hidden></pre>
+    </section>
+</main>
+
+<script src="/static/scenarios.js"></script>
+</body>
+</html>
