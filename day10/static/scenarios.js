@@ -1,6 +1,7 @@
 const paramsEl = document.getElementById("params");
 const scenariosEl = document.getElementById("scenarios");
 const statusEl = document.getElementById("status");
+const compareButton = document.getElementById("compare");
 const controlsEl = document.getElementById("report-controls");
 const rawToggle = document.getElementById("raw-toggle");
 const copyButton = document.getElementById("copy");
@@ -12,6 +13,16 @@ const rawEl = document.getElementById("report-raw");
 
 const RAW_KEY = "day10.report.raw";
 
+// Прогоны сессии: на каждый сценарий не больше одного, новый затирает старый.
+// Чистый прогон — точка отсчёта для всех остальных, он дороже прочих и переживает
+// сессию, поэтому лежит отдельно и в localStorage.
+const RUNS_KEY = "day10.runs";
+const CLEAN_KEY = "day10.run.clean";
+const CLEAN = "clean";
+
+// Максимум судьи за контрольный вопрос: тот же, что в scenarios.py.
+const MAX_SCORE = 2;
+
 // Реплики приходят из stderr с пометкой, кто говорит: `say()` в scenarios.py.
 const SPEAKERS = { "вы: ": "user", "агент: ": "agent" };
 
@@ -21,6 +32,15 @@ let lines = [];
 let running = null;
 let controller = null;
 let pending = null;
+let result = null;
+
+// Отпечаток замера с сервера: по нему видно, что перенесённый прогон посчитан по
+// другой версии диалога и сравнивать его напрямую нельзя.
+let fingerprint = "";
+let runs = {};
+// Что прогнали в этой вкладке: остальное — принесённое из прошлой сессии.
+let ownRuns = new Set();
+let cards = new Map();
 
 function setStatus(text, isError = false) {
     statusEl.textContent = text;
@@ -45,24 +65,148 @@ function plural(count, one, few, many) {
     return count % 10 >= 2 && count % 10 <= 4 ? few : many;
 }
 
+// Прогоны читаются из двух хранилищ, потому что живут разное время: стратегии — до
+// закрытия вкладки, чистый прогон — до следующей правки диалога.
+function loadRuns() {
+    runs = { ...parse(sessionStorage.getItem(RUNS_KEY)) };
+    const clean = parse(localStorage.getItem(CLEAN_KEY));
+    if (clean && clean.payload) {
+        runs[CLEAN] = clean;
+    }
+}
+
+function parse(raw) {
+    if (!raw) {
+        return null;
+    }
+    try {
+        return JSON.parse(raw);
+    } catch {
+        // Запись оставил другой формат страницы: чинить её нечем, а прогон
+        // повторяется кнопкой.
+        return null;
+    }
+}
+
+function persist() {
+    const session = {};
+    for (const [name, record] of Object.entries(runs)) {
+        if (name !== CLEAN) {
+            session[name] = record;
+        }
+    }
+    sessionStorage.setItem(RUNS_KEY, JSON.stringify(session));
+
+    if (runs[CLEAN]) {
+        localStorage.setItem(CLEAN_KEY, JSON.stringify(runs[CLEAN]));
+    } else {
+        localStorage.removeItem(CLEAN_KEY);
+    }
+}
+
+function storeRun(name, payload, reportLines) {
+    runs[name] = {
+        payload,
+        lines: reportLines,
+        saved_at: new Date().toISOString(),
+    };
+    ownRuns.add(name);
+    persist();
+    paintCards();
+}
+
+function dropRun(name) {
+    delete runs[name];
+    ownRuns.delete(name);
+    persist();
+    paintCards();
+}
+
+function saved() {
+    // Порядок как на странице: чистый прогон первый, дальше стратегии.
+    return [...cards.keys()].filter((name) => runs[name]).map((name) => runs[name]);
+}
+
+function score(payload) {
+    const checks = payload.checks || [];
+    const total = checks.reduce((sum, check) => sum + Math.max(check.score, 0), 0);
+    return { total, max: MAX_SCORE * checks.length };
+}
+
+function when(record) {
+    const moment = new Date(record.saved_at);
+    const today = new Date().toDateString() === moment.toDateString();
+    const time = moment.toLocaleTimeString("ru-RU", { hour: "2-digit", minute: "2-digit" });
+    return today ? time : `${moment.toLocaleDateString("ru-RU")} ${time}`;
+}
+
+function describeRun(name, record) {
+    const { total, max } = score(record.payload);
+    const parts = [
+        `прогон ${when(record)}`,
+        `судья ${total} из ${max}`,
+        `вход ${record.payload.input_tokens} ток.`,
+        `$${record.payload.total_cost.toFixed(6)}`,
+    ];
+    if (name === CLEAN && !ownRuns.has(name)) {
+        // Через сессии переносится только чистый прогон, и это надо сказать прямо:
+        // иначе непонятно, откуда в свежей вкладке взялись числа.
+        parts.push("перенесён из прошлой сессии");
+    }
+    return parts.join(", ");
+}
+
+function stale(record) {
+    return Boolean(fingerprint) && record.payload.fingerprint !== fingerprint;
+}
+
 // Пока идёт прогон, кнопка своего сценария работает на остановку, остальные гаснут:
 // два прогона разом упрутся в рейт-лимиты и испортят замер друг другу.
 function setBusy(name) {
     running = name;
-    for (const card of scenariosEl.querySelectorAll(".scenario")) {
-        const own = card.dataset.name === name;
-        const button = card.querySelector(".scenario-run");
-        card.classList.toggle("active", Boolean(name) && own);
-        button.disabled = Boolean(name) && !own;
-        button.textContent = Boolean(name) && own ? "Остановить" : "Прогнать";
-        button.classList.toggle("stop", Boolean(name) && own);
+    for (const card of cards.values()) {
+        const own = card.name === name;
+        card.root.classList.toggle("active", Boolean(name) && own);
+        card.run.disabled = Boolean(name) && !own;
+        card.run.textContent = Boolean(name) && own ? "Остановить" : "Прогнать";
+        card.run.classList.toggle("stop", Boolean(name) && own);
     }
+    paintCards();
+}
+
+function paintCards() {
+    for (const card of cards.values()) {
+        const record = runs[card.name];
+        const busy = Boolean(running);
+
+        if (record) {
+            card.state.textContent = describeRun(card.name, record);
+            card.state.classList.toggle("scenario-state-stale", stale(record));
+            if (stale(record)) {
+                card.state.textContent += " — другая версия диалога";
+            }
+        } else {
+            card.state.textContent = "прогона в сессии нет";
+            card.state.classList.remove("scenario-state-stale");
+        }
+
+        card.show.hidden = !record;
+        card.drop.hidden = !record;
+        card.show.disabled = busy;
+        card.drop.disabled = busy;
+    }
+
+    const count = saved().length;
+    // Сравнивать нечего, пока в сессии меньше двух прогонов: одна колонка — это
+    // отчёт самого прогона, он уже есть.
+    compareButton.disabled = count < 2 || Boolean(running);
+    compareButton.textContent = count ? `Сравнить прогоны (${count})` : "Сравнить прогоны";
 }
 
 function scenarioCard(scenario) {
-    const card = document.createElement("article");
-    card.className = "scenario";
-    card.dataset.name = scenario.name;
+    const root = document.createElement("article");
+    root.className = "scenario";
+    root.dataset.name = scenario.name;
 
     const title = document.createElement("h2");
     title.className = "scenario-title";
@@ -82,20 +226,45 @@ function scenarioCard(scenario) {
     command.className = "scenario-command";
     command.textContent = `python day10/scenarios.py ${scenario.name}`;
 
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "button scenario-run";
-    button.textContent = "Прогнать";
-    button.addEventListener("click", () => {
+    const run = document.createElement("button");
+    run.type = "button";
+    run.className = "button scenario-run";
+    run.textContent = "Прогнать";
+    run.addEventListener("click", () => {
         if (running === scenario.name) {
             controller?.abort();
             return;
         }
-        run(scenario).catch((error) => setStatus(error.message, true));
+        start(scenario).catch((error) => setStatus(error.message, true));
     });
 
-    card.append(title, about, cost, command, button);
-    return card;
+    const state = document.createElement("span");
+    state.className = "scenario-state";
+
+    const show = document.createElement("button");
+    show.type = "button";
+    show.className = "button button-quiet scenario-saved";
+    show.textContent = "Отчёт";
+    show.hidden = true;
+    show.addEventListener("click", () => showStored(scenario));
+
+    const drop = document.createElement("button");
+    drop.type = "button";
+    drop.className = "button button-quiet scenario-saved";
+    drop.textContent = "Убрать";
+    drop.hidden = true;
+    drop.addEventListener("click", () => {
+        dropRun(scenario.name);
+        setStatus(`${scenario.title}: прогон убран из сессии`);
+    });
+
+    const footer = document.createElement("div");
+    footer.className = "scenario-footer";
+    footer.append(state, show, drop);
+
+    root.append(title, about, cost, command, run, footer);
+    cards.set(scenario.name, { name: scenario.name, root, run, state, show, drop });
+    return root;
 }
 
 function parseFrame(frame) {
@@ -113,8 +282,9 @@ function parseFrame(frame) {
     return { event, data: dataLines.join("\n") };
 }
 
-async function run(scenario) {
+async function start(scenario) {
     lines = [];
+    result = null;
     rawEl.textContent = "";
     renderedEl.replaceChildren();
     transcriptEl.replaceChildren();
@@ -152,8 +322,9 @@ async function run(scenario) {
             setStatus(error.message, true);
         }
         // Оборванный прогон оставляет на экране то, что успел напечатать: полтора
-        // сценария — это тоже данные, и их незачем стирать.
-        showReport();
+        // сценария — это тоже данные, и их незачем стирать. В сессию он не попадает:
+        // сравнивать половину прогона не с чем.
+        showReport(lines);
     } finally {
         // Прогон кончился — текущего хода больше нет, даже если стенограмма осталась.
         transcriptEl.querySelector(".progress-line.current")?.classList.remove("current");
@@ -201,9 +372,19 @@ async function read(response, scenario) {
                 reportEl.scrollTop = reportEl.scrollHeight;
                 continue;
             }
+            if (event === "result") {
+                // Машинный результат прогона: сам отчёт для сравнения не годится,
+                // а этот payload сервер разберёт обратно и сведёт с другими.
+                result = JSON.parse(data);
+                continue;
+            }
             if (event === "done") {
-                showReport();
-                setStatus(doneStatus(scenario, JSON.parse(data)));
+                const payload = JSON.parse(data);
+                if (result) {
+                    storeRun(scenario.name, result, lines);
+                }
+                showReport(lines);
+                setStatus(doneStatus(scenario, payload));
                 return;
             }
 
@@ -281,7 +462,10 @@ function thinking() {
     return dots;
 }
 
-function showReport() {
+// Отчёт прогона, сохранённый прогон и сравнение — это один и тот же markdown,
+// поэтому и показываются они одинаково.
+function showReport(source) {
+    lines = source;
     if (!lines.length) {
         // Отчёта нет — прогон оборвали в самом начале. Список ходов остаётся: это
         // всё, что от него осталось.
@@ -296,6 +480,16 @@ function showReport() {
     setView();
 }
 
+function showStored(scenario) {
+    const record = runs[scenario.name];
+    if (!record) {
+        return;
+    }
+    transcriptEl.replaceChildren();
+    showReport(record.lines);
+    setStatus(`${scenario.title}: отчёт прогона от ${when(record)} из сессии`);
+}
+
 function doneStatus(scenario, payload) {
     if (payload.exit_code !== 0) {
         return `${scenario.title}: сценарий вышел с кодом ${payload.exit_code}`
@@ -305,7 +499,8 @@ function doneStatus(scenario, payload) {
         ? `${Math.floor(payload.seconds / 60)} мин ${Math.round(payload.seconds % 60)} с`
         : `${payload.seconds} с`;
     return `${scenario.title}: готово за ${minutes}, ${payload.lines}`
-        + ` ${plural(payload.lines, "строка", "строки", "строк")} отчёта`;
+        + ` ${plural(payload.lines, "строка", "строки", "строк")} отчёта`
+        + (result ? ", прогон сохранён в сессии" : "");
 }
 
 // Мини-рендерер markdown: сценарии печатают только заголовки, таблицы и абзацы,
@@ -329,7 +524,9 @@ function render(source) {
         }
         flush();
 
-        if (line.startsWith("### ")) {
+        if (line.startsWith("#### ")) {
+            nodes.push(heading("h4", line.slice(5)));
+        } else if (line.startsWith("### ")) {
             nodes.push(heading("h3", line.slice(4)));
         } else if (line.startsWith("## ")) {
             nodes.push(heading("h2", line.slice(3)));
@@ -388,6 +585,42 @@ function cells(row) {
         .map((value) => value.replace(/\u0000/g, "|").trim());
 }
 
+// Сравнение считается по сохранённым прогонам, а не прогоном заново: судья уже
+// поставил оценки внутри каждого, и сводить их — работа на сотые доли секунды.
+async function compare() {
+    const records = saved();
+    if (records.length < 2) {
+        setStatus("Сравнивать пока нечего: нужно два прогона в сессии", true);
+        return;
+    }
+
+    compareButton.disabled = true;
+    setStatus(`Сравнение ${records.length} ${plural(records.length, "прогона", "прогонов", "прогонов")}…`);
+
+    try {
+        const response = await fetch("/api/compare", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ runs: records.map((record) => record.payload) }),
+        });
+        if (!response.ok) {
+            throw new Error(`Сервер вернул ${response.status}`);
+        }
+        const payload = await response.json();
+        transcriptEl.replaceChildren();
+        showReport(payload.lines);
+        setStatus(`Сравнение готово: ${records.map((record) => record.payload.label).join(", ")}`);
+    } catch (error) {
+        setStatus(`Сравнить не удалось: ${error.message}`, true);
+    } finally {
+        paintCards();
+    }
+}
+
+compareButton.addEventListener("click", () => {
+    compare().catch((error) => setStatus(error.message, true));
+});
+
 rawToggle.addEventListener("change", () => {
     localStorage.setItem(RAW_KEY, String(rawToggle.checked));
     setView();
@@ -418,14 +651,23 @@ async function init() {
     addParam(`картотека до ${defaults.facts_limit} фактов`);
     addParam(defaults.peak ? "пиковый тариф ×2" : "непиковый тариф");
 
+    fingerprint = scenarios.fingerprint || "";
     scenariosEl.replaceChildren(...scenarios.scenarios.map(scenarioCard));
+    loadRuns();
+    paintCards();
     rawToggle.checked = localStorage.getItem(RAW_KEY) === "true";
     setView();
 
+    const count = saved().length;
     if (scenarios.busy) {
         // Прогон идёт в другой вкладке: свой запустить всё равно не выйдет, и
         // честнее сказать это сразу, а не после отказа сервера.
         setStatus("Прогон уже идёт — вероятно, в другой вкладке", true);
+    } else if (count) {
+        setStatus(`В сессии ${count} ${plural(count, "прогон", "прогона", "прогонов")}`
+            + (count > 1 ? " — их можно сравнить" : ": для сравнения нужен второй"));
+    } else {
+        setStatus("Выберите сценарий");
     }
 }
 

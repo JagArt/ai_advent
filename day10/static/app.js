@@ -29,11 +29,13 @@ const WINDOW_KEY = "day10.window";
 const TURN_LABELS = { title: "заголовок", facts: "факты" };
 
 const STRATEGY_LABELS = {
+    clean: "Без стратегии",
     window: "Sliding Window",
     facts: "Sticky Facts",
     branching: "Branching",
 };
 const STRATEGY_TITLES = {
+    clean: "Без управления контекстом — вся история в каждом запросе",
     facts: "Sticky Facts / Key-Value Memory",
     branching: "Branching — ветки диалога",
 };
@@ -217,6 +219,9 @@ function setContext(payload) {
 }
 
 function describeFacts(payload) {
+    if (payload.strategy === "clean") {
+        return `вся история дословно: ${payload.history_size} ${messageWord(payload.history_size)}`;
+    }
     if (payload.strategy !== "facts") {
         return `окно ${payload.window_messages} ${messageWord(payload.window_messages)} дословно`;
     }
@@ -957,6 +962,11 @@ async function changeStrategy(value) {
 
 function strategyStatus(state) {
     const dropped = state.history_size - state.context_size;
+    if (strategy === "clean") {
+        return `Без стратегии: в запрос идёт вся история — ${state.context_size}`
+            + ` ${plural(state.context_size, "сообщение", "сообщения", "сообщений")}`
+            + (dropped > 0 ? `, ${dropped} не влезли в бюджет` : "");
+    }
     if (strategy === "window") {
         return `Sliding Window: в запрос идут последние ${state.window_messages} сообщ.`
             + (dropped > 0 ? `, остальные ${dropped} отброшены` : "");

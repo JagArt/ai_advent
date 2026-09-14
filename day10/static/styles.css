@@ -699,7 +699,7 @@ body {
 
 .scenarios {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 12px;
     flex-shrink: 0;
 }
@@ -751,6 +751,37 @@ body {
 .scenario-run {
     padding: 8px 16px;
     font-size: 14px;
+}
+
+/* Что от сценария лежит в сессии: без этой строки непонятно, есть ли что
+   сравнивать и не устарел ли прогон, перенесённый из прошлой сессии. */
+.scenario-footer {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+}
+
+.scenario-state {
+    flex: 1 1 100%;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.scenario-state-stale {
+    color: var(--error);
+}
+
+.scenario-saved {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.scenario-saved[hidden] {
+    display: none;
 }
 
 .report-controls {
@@ -889,6 +920,14 @@ body {
     }
 }
 
+@media (max-width: 1200px) {
+    /* Четыре карточки в ряд перестают читаться раньше, чем ломается чат: в них
+       и команда запуска, и строка с состоянием прогона. */
+    .scenarios {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 800px) {
     body {
         padding: 12px;
@@ -901,5 +940,9 @@ body {
     .actions {
         flex-direction: column;
         align-items: stretch;
+    }
+
+    .scenarios {
+        grid-template-columns: minmax(0, 1fr);
     }
 }

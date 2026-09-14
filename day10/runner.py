@@ -3,16 +3,25 @@
 Отчёт печатается десятками `print` в stdout, ход работы — в stderr. Перехватить
 их внутри сервера можно было бы только подменой `sys.stdout`, а она глобальная на
 все запросы, поэтому сценарий запускается тем же способом, что и из терминала:
-`python -u day10/scenarios.py compare`. Заодно прогон не делит состояние с чатом,
+`python -u day10/scenarios.py facts`. Заодно прогон не делит состояние с чатом,
 а остановка сводится к kill.
+
+Кроме отчёта у прогона есть машинный результат — по нему потом считается сравнение.
+Третьего потока у процесса нет, а в stderr он не влезет: строка с ответами агента
+перешагнула бы лимит `StreamReader`. Поэтому результат кладётся в файл, путь к
+нему процесс получает ключом `--result`.
 """
 
 import asyncio
+import json
+import os
 import sys
+import tempfile
 import time
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 SCRIPT = Path(__file__).parent / "scenarios.py"
 
@@ -36,6 +45,13 @@ class Progress:
 
 
 @dataclass(frozen=True)
+class Result:
+    """Машинный результат прогона: страница хранит его в сессии и сравнивает."""
+
+    payload: dict[str, Any]
+
+
+@dataclass(frozen=True)
 class Finished:
     """Конец прогона: код возврата и сколько всё это заняло."""
 
@@ -43,7 +59,7 @@ class Finished:
     seconds: float
 
 
-Output = Line | Progress | Finished
+Output = Line | Progress | Result | Finished
 
 
 class ScenarioBusy(RuntimeError):
@@ -56,6 +72,7 @@ class ScenarioRunner:
     def __init__(self) -> None:
         self._process: asyncio.subprocess.Process | None = None
         self._started = 0.0
+        self._result: Path | None = None
 
     @property
     def busy(self) -> bool:
@@ -69,12 +86,19 @@ class ScenarioRunner:
             raise ScenarioBusy(BUSY_MESSAGE)
 
         self._started = time.monotonic()
+        # Путь под результат выбирает сервер, а не сценарий: так его знают заранее,
+        # и убрать файл есть кому, даже если прогон убили посреди диалога.
+        descriptor, path = tempfile.mkstemp(prefix=f"day10-{name}-", suffix=".json")
+        os.close(descriptor)
+        self._result = Path(path)
         self._process = await asyncio.create_subprocess_exec(
             sys.executable,
             # -u: без буфера строки приходят по мере печати, а не пачкой в конце.
             "-u",
             str(SCRIPT),
             name,
+            "--result",
+            str(self._result),
             # Команда та же, что в README, — из корня проекта. Ключи API процесс
             # наследует из окружения: load_dotenv в сервере их уже положил.
             cwd=SCRIPT.parent.parent,
@@ -105,8 +129,15 @@ class ScenarioRunner:
                     continue
                 yield item
 
+            exit_code = await process.wait()
+            # Результат пишется последним действием сценария, поэтому читать его
+            # можно только после выхода процесса — и только если он дошёл до конца.
+            payload = self._payload()
+            if payload is not None:
+                yield Result(payload=payload)
+
             yield Finished(
-                exit_code=await process.wait(),
+                exit_code=exit_code,
                 seconds=time.monotonic() - self._started,
             )
         finally:
@@ -117,6 +148,28 @@ class ScenarioRunner:
             if process.returncode is None:
                 process.kill()
             self._process = None
+            self._discard()
+
+    def _payload(self) -> dict[str, Any] | None:
+        """Результат прогона из файла: у оборванного прогона его просто нет."""
+        if self._result is None or not self._result.exists():
+            return None
+
+        text = self._result.read_text(encoding="utf-8")
+        if not text.strip():
+            return None
+
+        try:
+            return json.loads(text)
+        except ValueError:
+            # Файл писали и не дописали: отчёт от этого не страдает, а сравнивать
+            # обрывок всё равно нечем.
+            return None
+
+    def _discard(self) -> None:
+        if self._result is not None:
+            self._result.unlink(missing_ok=True)
+            self._result = None
 
     @staticmethod
     async def _pump(

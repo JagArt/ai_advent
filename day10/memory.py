@@ -20,11 +20,14 @@ import tokens
 from facts import Facts
 
 # Стратегии управления контекстом — значения переключателя в шапке страницы.
+# CLEAN — не стратегия, а её отсутствие: точка отсчёта, от которой видно, что
+# именно дают остальные три.
+CLEAN = "clean"
 WINDOW = "window"
 FACTS = "facts"
 BRANCHING = "branching"
 
-STRATEGIES = (WINDOW, FACTS, BRANCHING)
+STRATEGIES = (CLEAN, WINDOW, FACTS, BRANCHING)
 DEFAULT_STRATEGY = WINDOW
 
 # Сколько последних реплик уходит в модель дословно. Шесть — три последних хода,
@@ -111,9 +114,16 @@ class Memory:
         facts = self.facts if strategy == FACTS else None
         used = base + (facts.cost if facts else 0)
 
+        # Без стратегии история не обрезается вовсе: границу поставит только бюджет,
+        # и по этому прогону видно, во сколько обходится полная память.
+        if strategy == CLEAN:
+            source = self.messages
+        else:
+            source = self.messages[-window:] if window > 0 else []
+
         chosen: list[Counted] = []
         # Окно набирается с конца: свежие реплики важнее, старые уходят первыми.
-        for message in reversed(self.messages[-window:] if window > 0 else []):
+        for message in reversed(source):
             if used + message.cost > budget:
                 break
             used += message.cost

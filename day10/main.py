@@ -34,8 +34,10 @@ from memory import (
     WINDOW_MESSAGES,
     WINDOW_OPTIONS,
 )
-from runner import Finished, Line, Progress, ScenarioBusy, ScenarioRunner
-from scenarios import SCENARIOS
+from compare import CompareRequest
+from compare import report as compare_report
+from runner import Finished, Line, Progress, Result, ScenarioBusy, ScenarioRunner
+from scenarios import SCENARIOS, fingerprint
 from storage import Storage
 
 BASE_DIR = Path(__file__).parent
@@ -406,6 +408,9 @@ async def scenarios() -> dict[str, Any]:
     """Что можно прогнать со страницы и во сколько запросов это встанет."""
     return {
         "busy": runner.busy,
+        # Отпечаток замера: чистый прогон живёт дольше сессии, и по отпечатку
+        # страница видит, что он посчитан по другой версии диалога.
+        "fingerprint": fingerprint(),
         "scenarios": [
             {
                 "name": name,
@@ -430,6 +435,10 @@ async def scenario_stream(name: str) -> AsyncIterator[str]:
                 yield sse_frame(output.text)
             elif isinstance(output, Progress):
                 yield sse_frame({"text": output.text}, event="progress")
+            elif isinstance(output, Result):
+                # Машинный результат прогона: страница кладёт его в сессию, и из
+                # таких результатов потом собирается сравнение.
+                yield sse_frame(output.payload, event="result")
             elif isinstance(output, Finished):
                 yield sse_frame(
                     {
@@ -461,3 +470,13 @@ async def run_scenario(name: str) -> StreamingResponse:
         media_type="text/event-stream",
         headers=SSE_HEADERS,
     )
+
+
+@app.post("/api/compare")
+async def compare(request: CompareRequest) -> dict[str, list[str]]:
+    """Сводный отчёт по прогонам из сессии: только счёт, без запросов к модели.
+
+    Прогоны хранит страница, поэтому она же их и присылает. Разбор через pydantic
+    здесь не формальность: по этим числам сервер рисует markdown-таблицы.
+    """
+    return {"lines": compare_report(request.runs)}
