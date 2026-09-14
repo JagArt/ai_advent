@@ -28,7 +28,15 @@ const WINDOW_KEY = "day10.window";
 // диалога они не попадают.
 const TURN_LABELS = { title: "заголовок", facts: "факты" };
 
-const STRATEGY_LABELS = { window: "окно", facts: "факты", branching: "ветки" };
+const STRATEGY_LABELS = {
+    window: "Sliding Window",
+    facts: "Sticky Facts",
+    branching: "Branching",
+};
+const STRATEGY_TITLES = {
+    facts: "Sticky Facts / Key-Value Memory",
+    branching: "Branching — ветки диалога",
+};
 
 // Параметры агента, прайс и шкалы приходят из GET /api/defaults.
 let config = null;
@@ -107,6 +115,9 @@ function addStrategyParam() {
         input.value = value;
         input.checked = value === strategy;
 
+        if (STRATEGY_TITLES[value]) {
+            label.title = STRATEGY_TITLES[value];
+        }
         label.append(input, document.createTextNode(STRATEGY_LABELS[value] || value));
         group.append(label);
         return { value, label, input };
@@ -947,15 +958,15 @@ async function changeStrategy(value) {
 function strategyStatus(state) {
     const dropped = state.history_size - state.context_size;
     if (strategy === "window") {
-        return `Скользящее окно: в запрос идут последние ${state.window_messages} сообщ.`
+        return `Sliding Window: в запрос идут последние ${state.window_messages} сообщ.`
             + (dropped > 0 ? `, остальные ${dropped} отброшены` : "");
     }
     if (strategy === "facts") {
-        return `Факты и окно: картотека ${state.facts_size}`
+        return `Sticky Facts / Key-Value Memory: картотека ${state.facts_size}`
             + ` ${plural(state.facts_size, "факт", "факта", "фактов")}`
             + ` плюс последние ${state.window_messages} сообщ.`;
     }
-    return `Ветки: ${branches.length} ${plural(branches.length, "ветка", "ветки", "веток")},`
+    return `Branching: ${branches.length} ${plural(branches.length, "ветка", "ветки", "веток")},`
         + ` checkpoint ставится кнопкой на реплике`;
 }
 

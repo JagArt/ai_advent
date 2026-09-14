@@ -144,9 +144,9 @@ JUDGE_PROMPT = """\
 JUDGE_MAX_TOKENS = 200
 
 MODES = {
-    memory.WINDOW: "скользящее окно",
-    memory.FACTS: "факты и окно",
-    memory.BRANCHING: "ветки",
+    memory.WINDOW: "Sliding Window",
+    memory.FACTS: "Sticky Facts",
+    memory.BRANCHING: "Branching",
 }
 
 
@@ -448,13 +448,13 @@ def report_tokens(window: Run, facts: Run) -> None:
     table(
         (
             "Ход",
-            "Контекст окна",
-            "Контекст фактов",
-            "Вход окна",
-            "Вход фактов",
+            "Контекст Sliding Window",
+            "Контекст Sticky Facts",
+            "Вход Sliding Window",
+            "Вход Sticky Facts",
             "Разница",
-            "Стоимость окна",
-            "Стоимость фактов",
+            "Стоимость Sliding Window",
+            "Стоимость Sticky Facts",
         ),
         rows,
     )
@@ -513,7 +513,7 @@ def report_totals(window: Run, facts: Run) -> None:
             percent(window.total_cost, facts.total_cost),
         ),
     ]
-    table(("Показатель", "Окно", "Факты", "Разница"), rows)
+    table(("Показатель", "Sliding Window", "Sticky Facts", "Разница"), rows)
 
     updates = [row.update for row in facts.dialog if row.update is not None]
     written = sum(update.added for update in updates)
@@ -594,8 +594,8 @@ def report_facts(run: Run) -> None:
 
 
 async def report_branches(run: Run) -> float:
-    """Ветки: одно начало, два продолжения, и они друг о друге не знают."""
-    print("### Ветки от одного checkpoint\n")
+    """Branching: одно начало, два продолжения, и они друг о друге не знают."""
+    print("### Branching от одного checkpoint\n")
 
     prefix = [row for row in run.rows if row.branch == "общее начало"]
     print(
@@ -650,11 +650,11 @@ async def report_branches(run: Run) -> float:
 
 
 async def compare() -> None:
-    print("## Окно против фактов\n")
+    print("## Sliding Window против Sticky Facts\n")
     print(
         f"Диалог из {len(DIALOG)} ходов плюс {len(CHECKS)} контрольных вопросов проигран дважды: "
-        f"на скользящем окне из {SCENARIO_WINDOW} сообщений и на нём же с картотекой фактов, "
-        f"которую агент обновляет после каждого хода.\n",
+        f"на Sliding Window из {SCENARIO_WINDOW} сообщений и на Sticky Facts / Key-Value Memory — "
+        f"том же окне с картотекой, которую агент обновляет после каждого хода.\n",
     )
 
     window = await play(memory.WINDOW)
@@ -667,8 +667,8 @@ async def compare() -> None:
 
 
 async def facts() -> None:
-    """Только прогон с фактами: промпт картотеки можно править, не платя за второй."""
-    print("## Картотека фактов\n")
+    """Только прогон Sticky Facts: промпт картотеки можно править, не платя за второй."""
+    print("## Sticky Facts / Key-Value Memory\n")
     run = await play(memory.FACTS)
     report_facts(run)
     updates = len([row for row in run.dialog if row.update is not None])
@@ -679,7 +679,7 @@ async def facts() -> None:
 
 
 async def branches() -> None:
-    print("## Ветвление диалога\n")
+    print("## Branching\n")
     run = await play_branches()
     await report_branches(run)
 
@@ -704,20 +704,20 @@ BRANCH_QUESTIONS = len(BRANCH_DIALOGS) * len(BRANCH_CHECKS)
 SCENARIOS = {
     "compare": Scenario(
         compare,
-        "Окно против фактов",
+        "Sliding Window vs Sticky Facts",
         "один диалог в двух стратегиях, таблицы токенов и оценки судьи",
         # Два прогона, картотека во втором, две оценки судьи на вопрос, два заголовка.
         requests=2 * TURNS + TURNS + 2 * len(CHECKS) + 2,
     ),
     "facts": Scenario(
         facts,
-        "Картотека фактов",
+        "Sticky Facts / Key-Value Memory",
         "только прогон с фактами: промпт извлечения можно править дешевле",
         requests=2 * TURNS + 1,
     ),
     "branches": Scenario(
         branches,
-        "Ветвление диалога",
+        "Branching",
         "общее начало и две ветки от одного места с контрольными вопросами",
         # Контрольный вопрос в ветке — это ход агента и следом оценка судьи.
         requests=BRANCH_TURNS + 2 * BRANCH_QUESTIONS + 1,
