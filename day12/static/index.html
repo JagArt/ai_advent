@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek — персонализация ассистента</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<div class="layout">
+    <aside class="sidebar">
+        <button type="button" class="button new-dialog" id="new-dialog" disabled>Новый диалог</button>
+        <button type="button" class="button button-quiet new-dialog" id="reset-db" disabled title="Вернуть долговременную память к seed и удалить все диалоги">Сбросить базу</button>
+        <ul class="dialogs" id="dialogs"></ul>
+    </aside>
+
+    <main class="container">
+        <header class="header">
+            <div>
+                <h1>Агент</h1>
+                <div class="params" id="params"></div>
+            </div>
+        </header>
+
+        <!-- Профиль и два уровня памяти, которые живут дольше реплики. Третий уровень,
+             краткосрочный, отдельного блока не просит: он и есть лента чата рядом с ними.
+             Профиль стоит первым и здесь, и в запросе: он про форму всего остального. -->
+        <section class="memory" id="memory">
+            <article class="tier tier-profile">
+                <div class="tier-head">
+                    <h2>Профиль</h2>
+                    <span class="tier-meta" id="profile-meta"></span>
+                </div>
+                <p class="tier-about">
+                    Кто собеседник и в каком виде он ждёт ответ. Уходит первым блоком в каждый запрос.
+                </p>
+                <!-- Шкалы правятся прямо здесь: выбор из трёх слов не требует ни
+                     формулировки, ни решения, куда его положить. -->
+                <div class="scales" id="scales"></div>
+                <div id="profile-body"></div>
+            </article>
+
+            <article class="tier tier-longterm">
+                <div class="tier-head">
+                    <h2>Долговременная</h2>
+                    <span class="tier-meta" id="longterm-meta"></span>
+                </div>
+                <p class="tier-about">
+                    Профиль, решения и знания. Одна на все диалоги, заполнена до первого сообщения.
+                </p>
+                <div id="longterm-body"></div>
+            </article>
+
+            <article class="tier tier-working">
+                <div class="tier-head">
+                    <h2>Рабочая — ТЗ задачи</h2>
+                    <span class="tier-meta" id="working-meta"></span>
+                    <button type="button" class="tier-copy" id="copy-spec" disabled>Скопировать</button>
+                </div>
+                <p class="tier-about">
+                    Требования текущей задачи. Своя у каждого диалога и уходит вместе с ним.
+                </p>
+                <div id="working-body"></div>
+            </article>
+        </section>
+
+        <section class="chat" id="chat" aria-live="polite">
+            <p class="placeholder" id="placeholder">Здесь появится диалог</p>
+        </section>
+
+        <form class="form" id="form">
+            <textarea
+                id="prompt"
+                class="prompt"
+                rows="3"
+                placeholder="Введите сообщение&#10;&#10;Enter — отправить, Shift + Enter — новая строка"
+                autofocus
+            ></textarea>
+
+            <div class="actions">
+                <span class="hint" id="status"></span>
+                <!-- Подпись кнопки ставит JS: число ходов приходит вместе с репликами. -->
+                <div class="actions-buttons">
+                    <button type="button" class="button button-quiet" id="compare-run" disabled>Спросить всех</button>
+                    <button type="button" class="button button-quiet" id="autorun" disabled></button>
+                    <button type="submit" class="button" id="submit" disabled>Отправить</button>
+                </div>
+            </div>
+        </form>
+    </main>
+</div>
+
+<!-- Три ответа рядом — это про ширину, поэтому окно, а не блок в колонке чата.
+     Диалога в этих ответах нет вовсе: сравнивать профили можно только тогда, когда
+     всё остальное совпадает. -->
+<dialog class="compare" id="compare">
+    <div class="compare-head">
+        <h2>Один вопрос — все профили</h2>
+        <button type="button" class="compare-close" id="compare-close">Закрыть</button>
+    </div>
+    <p class="compare-question" id="compare-question"></p>
+    <p class="compare-about">
+        Запрос уходит без ленты и без ТЗ, с той же долговременной памятью: отличается только блок профиля.
+    </p>
+    <div class="compare-body" id="compare-body"></div>
+</dialog>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

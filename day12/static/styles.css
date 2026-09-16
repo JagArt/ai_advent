@@ -1,0 +1,1037 @@
+:root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-hover: #eef0f4;
+    --border: #dfe3ea;
+    --text: #1a1d24;
+    --text-dim: #6b7383;
+    --accent: #2f6fed;
+    --accent-hover: #245ccd;
+    --accent-soft: #e8efff;
+    --error: #d64545;
+    --error-hover: #b93a3a;
+    --radius: 12px;
+    color-scheme: light;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Колонка чата фиксирована: ширина ленты не зависит ни от ширины окна, ни от
+   того, есть ли рядом панель — строки не переезжают при каждом изменении размера.
+   860 + 340 на память + отбивка между ними. */
+.layout {
+    display: grid;
+    grid-template-columns: 260px 1220px;
+    gap: 20px;
+    align-items: stretch;
+    height: 100%;
+    min-height: 0;
+}
+
+/* Без margin: auto — в grid авто-поля отменяют растягивание, и колонка ужимается
+   по содержимому: пустая лента оказывалась уже ленты с текстом.
+   Память занимает всю высоту справа: над лентой она отнимала у разговора треть
+   экрана, а рядом с ним встаёт в пустоту, которой шапка не пользуется. */
+.container {
+    display: grid;
+    grid-template-columns: 860px 340px;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "header memory"
+        "chat   memory"
+        "form   memory";
+    gap: 16px 20px;
+    min-width: 0;
+    min-height: 0;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
+
+.new-dialog {
+    padding: 10px 16px;
+    font-size: 14px;
+}
+
+.dialogs {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    gap: 4px;
+    margin: 0;
+    padding: 6px;
+    min-height: 0;
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    list-style: none;
+}
+
+/* Пока идёт стрим, панель не кликается: уход в другой диалог увёл бы ответ. */
+.dialogs.busy {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.dialog {
+    display: flex;
+    align-items: center;
+    border-radius: 8px;
+    transition: background 0.15s ease;
+}
+
+.dialog:hover {
+    background: var(--surface-hover);
+}
+
+.dialog.active {
+    background: var(--accent-soft);
+}
+
+.dialog-open {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0 8px;
+    padding: 8px 4px 8px 10px;
+    background: none;
+    color: inherit;
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.dialog-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.dialog-size {
+    flex-shrink: 0;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+/* От чьего лица шёл разговор — второй строкой: в этом дне два диалога об одном и
+   том же от разных профилей стоят в панели рядом, и различать их больше нечем. */
+.dialog-profile {
+    flex: 0 0 100%;
+    overflow: hidden;
+    color: var(--text-dim);
+    font-size: 11px;
+    line-height: 1.3;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.dialog-profile:empty {
+    display: none;
+}
+
+.dialog-delete {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+    padding: 0;
+    background: none;
+    color: var(--text-dim);
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, color 0.15s ease;
+}
+
+.dialog:hover .dialog-delete,
+.dialog-delete:focus-visible {
+    opacity: 1;
+}
+
+.dialog-delete:hover {
+    color: var(--error);
+}
+
+/* Без курсора наводить нечем — крестик виден всегда. */
+@media (hover: none) {
+    .dialog-delete {
+        opacity: 1;
+    }
+}
+
+.header {
+    grid-area: header;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: -0.02em;
+}
+
+.params {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.param {
+    padding: 3px 10px;
+    background: var(--surface);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Часть сообщений осталась за окном — счётчик контекста об этом сообщает. */
+.param-warning {
+    background: var(--accent-soft);
+    color: var(--text);
+    border-color: transparent;
+}
+
+.param-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 1px 4px 1px 10px;
+}
+
+/* У переключателя подпись справа от галочки, поэтому поля зеркальные. */
+.param-toggle {
+    padding: 1px 10px 1px 6px;
+    cursor: pointer;
+}
+
+.param-toggle input {
+    margin: 0;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.param-select {
+    padding: 2px 4px;
+    background: none;
+    color: var(--text);
+    border: none;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.param-select:disabled {
+    color: var(--text-dim);
+    cursor: not-allowed;
+}
+
+.chat {
+    grid-area: chat;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 18px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 82%;
+}
+
+.message-user {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+
+.message-agent {
+    align-self: flex-start;
+}
+
+.message-author {
+    color: var(--text-dim);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.message-body {
+    margin: 0;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    min-height: 20px;
+}
+
+.message-user .message-body {
+    background: var(--accent-soft);
+    border-color: transparent;
+}
+
+.thinking {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 24px;
+}
+
+.thinking span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--text-dim);
+    animation: thinking 1.2s ease-in-out infinite;
+}
+
+.thinking span:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.thinking span:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes thinking {
+    0%, 65%, 100% {
+        opacity: 0.25;
+        transform: translateY(0);
+    }
+
+    32% {
+        opacity: 1;
+        transform: translateY(-4px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .thinking span {
+        animation: none;
+        opacity: 0.5;
+    }
+}
+
+.form {
+    grid-area: form;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.prompt {
+    width: 100%;
+    height: 88px;
+    padding: 12px 16px;
+    resize: none;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: 15px;
+    line-height: 1.6;
+    outline: none;
+    transition: border-color 0.15s ease;
+}
+
+.prompt:focus {
+    border-color: var(--accent);
+}
+
+.prompt::placeholder {
+    color: var(--text-dim);
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+/* Кнопки формы держатся вместе, а подсказка остаётся у левого края: строка
+   состояния во время прогона длинная и не должна расталкивать кнопки. */
+.actions-buttons {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 8px;
+}
+
+.hint {
+    color: var(--text-dim);
+    font-size: 13px;
+}
+
+.hint.error {
+    color: var(--error);
+}
+
+.button {
+    padding: 10px 22px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.button:hover:not(:disabled) {
+    background: var(--accent-hover);
+}
+
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Автопрогон стоит рядом с «Отправить», но главное действие формы не он. */
+.button-quiet {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.button-quiet:hover:not(:disabled) {
+    background: var(--surface-hover);
+}
+
+.button.stop {
+    background: var(--error);
+}
+
+.button.stop:hover:not(:disabled) {
+    background: var(--error-hover);
+}
+
+.placeholder {
+    margin: auto;
+    color: var(--text-dim);
+}
+
+/* Два блока памяти стоят рядом с лентой: они не часть разговора, но и не
+   служебная статистика — это то, что агент знает помимо реплик на экране.
+   Уровни делят высоту колонки по содержимому: grow: 0 не даёт пустой рабочей
+   памяти растянуться на пол-экрана, shrink: 1 — ужимает обе, когда пунктов
+   больше, чем высоты, и каждая карточка прокручивается сама. */
+.memory {
+    grid-area: memory;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+    min-height: 0;
+}
+
+/* min-height — пол, ниже которого карточка не ужимается: без него длинная
+   долговременная память сплющивала рабочую до полосы с заголовком. */
+.memory .tier {
+    flex: 0 1 auto;
+    min-height: 96px;
+}
+
+.tier {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    min-height: 0;
+    overflow: auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+/* Блоки различает срок жизни, и полоса слева — единственное место, где это видно
+   без чтения: профиль старше всех разговоров, долговременная память переживёт
+   диалог, рабочая уйдёт вместе с ним. */
+.tier-profile {
+    border-left: 3px solid var(--text);
+}
+
+.tier-longterm {
+    border-left: 3px solid var(--accent);
+}
+
+.tier-working {
+    border-left: 3px solid var(--text-dim);
+}
+
+/* Шкалы — костяк профиля: у каждой всегда есть значение, поэтому они стоят таблицей
+   в два столбца, а не списком, из которого пункт можно удалить. */
+.scales {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+/* Первая колонка фиксирована: названия шкал должны стоять в столбик, иначе пять
+   селекторов подряд выглядят пятью разными настройками, а не одной шкалой на строку. */
+.scale {
+    display: grid;
+    grid-template-columns: 82px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.scale-name {
+    color: var(--text-dim);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.scale-select {
+    width: 100%;
+    padding: 3px 6px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.scale-select:disabled {
+    color: var(--text-dim);
+    cursor: not-allowed;
+}
+
+.tier-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.tier h2 {
+    margin: 0;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.tier-meta {
+    flex: 1 1 auto;
+    color: var(--text-dim);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.tier-about {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.tier-copy {
+    padding: 0;
+    background: none;
+    color: var(--accent);
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.tier-copy:disabled {
+    color: var(--text-dim);
+    cursor: not-allowed;
+}
+
+.tier-section-name {
+    color: var(--text-dim);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.tier-items {
+    margin: 2px 0 8px;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+}
+
+.tier-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 2px 0;
+    line-height: 1.45;
+}
+
+.tier-item-text {
+    flex: 1 1 auto;
+}
+
+/* Пункт из seed был здесь до первого сообщения: по метке видно, что память
+   началась не с нуля и что этот пункт в разговоре не выясняли. */
+.tier-item-origin {
+    color: var(--text-dim);
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.tier-item-delete {
+    padding: 0 2px;
+    background: none;
+    color: var(--text-dim);
+    border: none;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.tier-item:hover .tier-item-delete,
+.tier-item-delete:focus-visible {
+    opacity: 1;
+}
+
+.tier-item-delete:hover {
+    color: var(--error);
+}
+
+@media (hover: none) {
+    .tier-item-delete {
+        opacity: 1;
+    }
+}
+
+/* Что записалось на последнем ходу: без отметки блок выглядит неподвижным, хотя
+   за разбор каждого хода платят отдельно. */
+.tier-item-fresh .tier-item-text {
+    background: var(--accent-soft);
+}
+
+.tier-empty {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 13px;
+}
+
+/* Карточка стоит в ленте под ответом, а не в блоке памяти: это ещё не память, а
+   вопрос к пользователю — что из сказанного сохранить и на каком уровне. */
+.proposals {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-self: stretch;
+}
+
+.proposal {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+}
+
+.proposal-head {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    color: var(--text-dim);
+    font-size: 12px;
+}
+
+/* Свёрнутая карточка: строка вместо формы. Разговор идёт дальше, а решённые
+   вопросы не занимают ленту собой. */
+.proposal-summary {
+    display: none;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 13px;
+}
+
+.proposal-compact {
+    padding: 7px 12px;
+}
+
+.proposal-compact .proposal-summary {
+    display: flex;
+}
+
+.proposal-compact .proposal-head,
+.proposal-compact .proposal-text,
+.proposal-compact .proposal-actions {
+    display: none;
+}
+
+.proposal-badge {
+    flex: 0 0 auto;
+    color: var(--text-dim);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+/* Формулировка в одну строку: полностью она видна в блоке памяти, а здесь важнее,
+   что пункт записан и куда. */
+.proposal-line {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.proposal-edit,
+.proposal-collapse {
+    flex: 0 0 auto;
+    padding: 2px 4px;
+    background: none;
+    color: var(--text-dim);
+    border: none;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.proposal-edit:hover:not(:disabled),
+.proposal-collapse:hover {
+    color: var(--text);
+}
+
+.proposal-edit:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.proposal-why {
+    flex: 1 1 auto;
+    text-align: right;
+}
+
+/* Текст правится прямо в карточке: формулировку модели почти всегда хочется
+   подправить, и отдельный режим редактирования тут только мешал бы. */
+.proposal-text {
+    width: 100%;
+    padding: 8px 10px;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+}
+
+.proposal-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.proposal-section {
+    padding: 5px 8px;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.proposal-button {
+    padding: 6px 14px;
+    font-size: 13px;
+}
+
+/* Рекомендация агента подсвечена, но вторая кнопка рядом и такая же рабочая:
+   иначе выбор уровня превратился бы в подтверждение чужого решения. */
+.proposal-button-quiet {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.proposal-button-quiet:hover:not(:disabled) {
+    background: var(--surface-hover);
+}
+
+.proposal-skip {
+    margin-left: auto;
+    padding: 6px 4px;
+    background: none;
+    color: var(--text-dim);
+    border: none;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.proposal-skip:hover {
+    color: var(--error);
+}
+
+/* Сохранённая карточка не исчезает: пользователь должен видеть, куда ушёл пункт,
+   и мочь передумать — особенно когда сохранял не он, а агент. */
+.proposal-saved {
+    background: var(--accent-soft);
+    border-style: solid;
+    border-color: transparent;
+}
+
+.proposal-state {
+    color: var(--text);
+}
+
+/* Три ответа рядом — это про ширину, поэтому окно, а не блок в колонке чата. Шире
+   ленты оно и должно быть: колонки сравнения не читаются в 280 пикселей. */
+.compare {
+    width: min(1400px, calc(100vw - 40px));
+    max-height: calc(100vh - 40px);
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: inherit;
+}
+
+.compare::backdrop {
+    background: rgba(26, 29, 36, 0.35);
+}
+
+.compare-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.compare h2 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.compare-question {
+    margin: 10px 0 4px;
+    font-size: 15px;
+}
+
+.compare-about {
+    margin: 0 0 14px;
+    color: var(--text-dim);
+    font-size: 12px;
+}
+
+.compare-close {
+    margin-left: auto;
+    padding: 4px 8px;
+    background: none;
+    color: var(--text-dim);
+    border: none;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.compare-close:hover {
+    color: var(--text);
+}
+
+.compare-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+}
+
+.compare-column {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    padding: 12px 14px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.compare-name {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Шкалы над ответом: без них разница в ответах выглядит капризом модели. */
+.compare-scales {
+    margin: 0;
+    color: var(--text-dim);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.compare-answer {
+    margin: 0;
+    max-height: 46vh;
+    overflow: auto;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+/* Мерки считает сервер, здесь они только подписаны: числа в панели и в таблице
+   README одни и те же. */
+.compare-shape {
+    margin: auto 0 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 12px;
+}
+
+/* Граница окна: всё, что выше, осталось в ленте, но в запрос уже не уходит. */
+.window-mark {
+    align-self: center;
+    margin: 2px 0;
+    color: var(--text-dim);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.message-dropped .message-body {
+    opacity: 0.55;
+}
+
+/* Память справа требует 1500px плюс поля. Дальше она возвращается на прежнее
+   место — над лентой: ужать ради неё саму ленту нельзя, на ней держится ширина
+   строки. Порядок в разметке тот же, поэтому хватает вернуть колонку. */
+@media (max-width: 1540px) {
+    .layout {
+        grid-template-columns: 260px 860px;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    /* Над лентой места по вертикали мало, поэтому блоки снова встают рядом: профиль
+       и два уровня памяти в три колонки. */
+    .memory {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        flex-shrink: 0;
+        max-height: 34vh;
+    }
+}
+
+/* Две колонки требуют 1144px плюс поля. Дальше сжимать пришлось бы ленту, поэтому
+   вместо этого панель уезжает над ней, а ширина чата остаётся прежней. */
+@media (max-width: 1200px) {
+    /* Ширину задаёт max-width, а не трек: колонка в 860px считалась бы по
+       содержимому, и пустой чат оказался бы уже чата с текстом. */
+    .layout {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto 1fr;
+        max-width: 860px;
+        width: 100%;
+        gap: 16px;
+    }
+
+    .sidebar {
+        min-height: 0;
+    }
+
+    .dialogs {
+        max-height: 96px;
+    }
+}
+
+@media (max-width: 800px) {
+    body {
+        padding: 12px;
+    }
+
+    .message {
+        max-width: 100%;
+    }
+
+    .actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    /* Блок памяти в пол-экрана шириной нечитаем: разделы в нём переносятся по
+       слову. Уровни встают друг под друга, разделение от этого не страдает. */
+    .memory {
+        grid-template-columns: minmax(0, 1fr);
+        max-height: 40vh;
+    }
+}
