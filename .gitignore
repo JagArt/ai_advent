@@ -219,7 +219,7 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
-# Память агента day7–day12: база создаётся при первом старте
+# Память агента day7–day14: база создаётся при первом старте
 day7/history.db*
 day8/history.db*
 day9/history.db*
@@ -227,3 +227,4 @@ day10/history.db*
 day11/history.db*
 day12/history.db*
 day13/history.db*
+day14/history.db*
