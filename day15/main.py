@@ -29,7 +29,7 @@ from agent import (
     AgentTurn,
     answer_as,
 )
-from demo import COMPARE, DIALOG, RUN_PROFILE
+from demo import APPROVALS, COMPARE, DIALOG, RUN_PROFILE
 from gates import KIND_NAMES
 from invariants import GLOBAL, KINDS, SCOPES, TASK
 from llm import MODEL
@@ -258,6 +258,12 @@ async def defaults() -> dict[str, Any]:
         # Реплики автопрогона: те же, что в замере. Страница печатает их за
         # пользователя, поэтому ничего, кроме готового списка, ей не нужно.
         "autorun": list(DIALOG),
+        # После каких ходов прогон проходит гейт подтверждения. Список приходит с
+        # репликами, потому что принадлежит тому же сценарию: агент этот гейт не
+        # проходит, и без нажатия прогон не вышел бы из планирования.
+        "autorun_approvals": [
+            {"turn": number, "gate": gate} for number, gate in sorted(APPROVALS.items())
+        ],
         # Профиль, на который прогон переключается: выбран по длине ответов, чтобы за
         # ходом автомата было видно сам ход, а не полотно текста.
         "autorun_profile": RUN_PROFILE,

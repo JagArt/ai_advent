@@ -1957,7 +1957,7 @@ async function startAutorun() {
     let done = 0;
 
     setBusy(false);
-    setStatus("готовим чистый диалог: задача с первого шага, решения принимает агент");
+    setStatus("готовим чистый диалог: задача с первого шага, решения принимает агент, гейты — страница");
 
     try {
         // Прогон начинается с пустой рабочей памяти и с начала автомата: в непустом
@@ -1974,7 +1974,8 @@ async function startAutorun() {
         // На время прогона решает агент — и куда положить находку, и двигать ли
         // автомат: к кнопке в карточке прогон не пойдёт, а без решений смотреть было
         // бы не на что. Выбор пользователя при этом не переписывается — в
-        // localStorage временная галочка не уходит.
+        // localStorage временная галочка не уходит. Гейты подтверждения флаг не
+        // отдаёт агенту: их проходит страница по списку из autorunApprovals.
         setAutosave(true);
 
         for (const [index, prompt] of prompts.entries()) {
@@ -1987,6 +1988,7 @@ async function startAutorun() {
                 break;
             }
             done += 1;
+            await approveDuringRun(run.index);
         }
     } catch (error) {
         failure = error;
@@ -2008,6 +2010,28 @@ async function startAutorun() {
             setStatus(`Прогон прерван на ходу ${done + 1} из ${total}: ${failure?.message ?? "ход не дошёл"}`, true);
         }
         promptInput.focus();
+    }
+}
+
+// Гейт подтверждения в прогоне проходит страница, а не агент, и это не поблажка
+// прогону: в прогоне пользователь — и есть страница, а запрос уходит тот же, что от
+// кнопки в панели. Отказ агента на ходу до этого места как раз и объясняет, почему
+// нажатие понадобилось.
+async function approveDuringRun(number) {
+    const planned = (config.autorunApprovals ?? []).find((one) => one.turn === number);
+    if (!planned) {
+        return;
+    }
+
+    const gate = (task?.gates ?? []).find((one) => one.key === planned.gate);
+    const name = gate ? gate.name : planned.gate;
+    try {
+        applyMemory(await send(`/api/session/${sessionId}/gates/${planned.gate}`, { approved: true }));
+        setStatus(`гейт «${name}» утверждён: дальше ${openMove() || "путь всё ещё закрыт"}`);
+    } catch (error) {
+        // Гейт не утвердился — прогон продолжается: разговор упрётся в тот же гейт
+        // следующим ходом, и это честнее, чем оборвать прогон на середине.
+        setStatus(`гейт «${name}» не утверждён: ${error.message}`, true);
     }
 }
 
@@ -2400,6 +2424,10 @@ async function init() {
         scopes: payload.scopes,
         // Реплики прогона приходят с сервера: тот же диалог, что проходит замер.
         autorun: payload.autorun,
+        // После каких ходов прогон проходит гейт подтверждения. Список нужен потому,
+        // что это единственное действие разговора, которого у агента нет: без него
+        // прогон остался бы на планировании, сколько бы реплик ни напечатал.
+        autorunApprovals: payload.autorun_approvals,
         autorunProfile: payload.autorun_profile,
         compare: payload.compare,
     };
@@ -2495,7 +2523,8 @@ async function init() {
     }
     autorunButton.title = `Прогон ${config.autorun.length} реплик в новом диалоге:`
         + " задача проходит все четыре этапа от планирования до готово."
-        + " Находки и переходы на это время применяет агент — к кнопке в карточке прогон не пойдёт";
+        + " Находки и переходы на это время применяет агент — к кнопке в карточке прогон не пойдёт,"
+        + ` а гейты подтверждения (${config.autorunApprovals.length}) проходит страница за пользователя`;
     compareButton.title = "Текст из поля (или первый готовый вопрос) уходит каждому профилю"
         + " в отдельном запросе без диалога: видно только разницу профилей";
     setAutorunButton();

@@ -1473,7 +1473,7 @@ class Agent:
             await self._move(found, origin="agent", why=proposal.why)
             proposal.applied = True
 
-        return proposal, ""
+        return proposal, None, ""
 
     async def _commit(
         self,
