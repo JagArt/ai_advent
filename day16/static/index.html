@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP — подключение и инструменты</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Подключение MCP</h1>
+        <p class="subtitle">Один и тот же запрос — с инструментами MCP и без них</p>
+    </header>
+
+    <form class="form" id="form">
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="4"
+            placeholder="Введите запрос&#10;&#10;Ctrl + Enter — отправить"
+            autofocus
+        >Что просят сделать в day13 и чем это отличается от day15?</textarea>
+
+        <div class="actions">
+            <label class="toggle">
+                <input type="checkbox" id="mcp" checked>
+                <span>MCP</span>
+            </label>
+            <span class="hint" id="status"></span>
+            <button type="button" class="copy" id="check">Проверить соединение</button>
+            <button type="submit" class="button" id="submit">Спросить</button>
+        </div>
+    </form>
+
+    <section class="panel" id="connection">
+        <div class="panel-head">
+            <span class="panel-title">Соединение</span>
+            <span class="meta" id="connectionMeta"></span>
+        </div>
+        <div class="panel-body" id="connectionBody">
+            <span class="placeholder">MCP включён: соединение поднимется на первом запросе</span>
+        </div>
+    </section>
+
+    <section class="panel" id="calls" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Вызовы инструментов</span>
+            <span class="meta" id="callsMeta"></span>
+        </div>
+        <div class="panel-body" id="callsBody"></div>
+    </section>
+
+    <section class="result-wrap">
+        <div class="result-head">
+            <div>
+                <span class="result-title">Ответ</span>
+                <span class="meta" id="answerMeta"></span>
+            </div>
+            <button type="button" class="copy" id="copy" hidden>Копировать</button>
+        </div>
+        <pre class="result" id="answer"><span class="placeholder">Здесь появится ответ модели</span></pre>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
