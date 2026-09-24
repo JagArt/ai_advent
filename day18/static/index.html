@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP — планировщик и сводки</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Планировщик и сводки</h1>
+        <p class="subtitle">MCP-сервер по расписанию снимает git этого репозитория, агент пересказывает каждую сводку</p>
+    </header>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Лента сводок</span>
+            <span class="badge" id="watcher">подключаемся...</span>
+        </div>
+        <div class="panel-body feed" id="feed">
+            <span class="placeholder">Сводок пока нет: первая появится по расписанию задачи summary</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Расписание</span>
+            <span class="meta" id="jobsMeta"></span>
+            <button type="button" class="copy" id="refreshJobs">Обновить</button>
+        </div>
+        <div class="panel-body" id="jobsBody">
+            <span class="placeholder">Загружаем...</span>
+        </div>
+    </section>
+
+    <form class="form" id="form">
+        <span class="panel-title">Спросить агента</span>
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="3"
+            placeholder="Введите запрос&#10;&#10;Ctrl + Enter — отправить"
+        >Что происходило в репозитории за последний час?</textarea>
+
+        <div class="examples" id="examples">
+            <button type="button" class="chip">Что происходило в репозитории за последний час?</button>
+            <button type="button" class="chip">Собирай снимки раз в 2 минуты, а сводку делай каждые 5 минут</button>
+            <button type="button" class="chip">Сделай разовую сводку через минуту</button>
+            <button type="button" class="chip">Какие задачи стоят в расписании?</button>
+        </div>
+
+        <div class="actions">
+            <span class="hint" id="status"></span>
+            <button type="button" class="copy" id="check">Проверить соединение</button>
+            <button type="submit" class="button" id="submit">Спросить</button>
+        </div>
+    </form>
+
+    <section class="panel" id="connection" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Соединение</span>
+            <span class="meta" id="connectionMeta"></span>
+        </div>
+        <div class="panel-body" id="connectionBody"></div>
+    </section>
+
+    <section class="panel" id="calls" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Вызовы инструментов</span>
+            <span class="meta" id="callsMeta"></span>
+        </div>
+        <div class="panel-body" id="callsBody"></div>
+    </section>
+
+    <section class="result-wrap">
+        <div class="result-head">
+            <div>
+                <span class="result-title">Ответ</span>
+                <span class="meta" id="answerMeta"></span>
+            </div>
+            <button type="button" class="copy" id="copy" hidden>Копировать</button>
+        </div>
+        <pre class="result" id="answer"><span class="placeholder">Здесь появится ответ агента</span></pre>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

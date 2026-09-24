@@ -229,3 +229,7 @@ day12/history.db*
 day13/history.db*
 day14/history.db*
 day15/history.db*
+
+# Расписание, снимки и лента сводок day18: создаются при первом старте
+day18/scheduler.db*
+day18/feed.json
