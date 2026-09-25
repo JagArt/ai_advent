@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP — композиция инструментов</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Композиция инструментов</h1>
+        <p class="subtitle">search → summarize → saveToFile: данные ходят между инструментами артефактами, а не через модель</p>
+    </header>
+
+    <form class="form" id="pipelineForm">
+        <span class="panel-title">Пайплайн</span>
+        <input
+            id="query"
+            class="prompt line"
+            type="text"
+            placeholder="Что найти в документации проекта"
+            value="как устроена память агента"
+        >
+
+        <div class="examples" id="queries">
+            <button type="button" class="chip">как устроена память агента</button>
+            <button type="button" class="chip">как считаются токены и стоимость</button>
+            <button type="button" class="chip">гейты между этапами задачи</button>
+            <button type="button" class="chip">зачем нужен MCP-сервер</button>
+        </div>
+
+        <div class="row">
+            <label class="field">
+                <span>разделов</span>
+                <input id="limit" class="number" type="number" min="1" max="10" value="5">
+            </label>
+            <label class="field wide">
+                <span>имя файла</span>
+                <input id="filename" class="number wide" type="text" placeholder="собирается из запроса">
+            </label>
+            <div class="modes" id="modes">
+                <label class="toggle">
+                    <input type="radio" name="mode" value="auto" checked>
+                    цепочкой
+                </label>
+                <label class="toggle">
+                    <input type="radio" name="mode" value="manual">
+                    по шагам
+                </label>
+            </div>
+        </div>
+
+        <div class="actions">
+            <span class="hint" id="pipelineStatus">Цепочкой — один вызов run_pipeline, шаги приезжают уведомлениями. По шагам — три инструмента зовёт модель.</span>
+            <button type="submit" class="button" id="run">Запустить</button>
+        </div>
+    </form>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Шаги</span>
+            <span class="meta" id="stepsMeta"></span>
+        </div>
+        <div class="panel-body steps" id="steps"></div>
+    </section>
+
+    <section class="panel" id="resultPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Результат</span>
+            <span class="meta" id="resultMeta"></span>
+        </div>
+        <div class="panel-body" id="resultBody"></div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Прогоны</span>
+            <span class="meta" id="runsMeta"></span>
+            <button type="button" class="copy" id="refreshRuns">Обновить</button>
+        </div>
+        <div class="panel-body" id="runsBody">
+            <span class="placeholder">Загружаем...</span>
+        </div>
+    </section>
+
+    <form class="form" id="form">
+        <span class="panel-title">Спросить агента</span>
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="3"
+            placeholder="Введите запрос&#10;&#10;Ctrl + Enter — отправить"
+        >Найди в документации, чем day17 отличается от day18, и сохрани сводку файлом</textarea>
+
+        <div class="examples" id="examples">
+            <button type="button" class="chip">Найди в документации, чем day17 отличается от day18, и сохрани сводку файлом</button>
+            <button type="button" class="chip">Что лежит в артефакте, который вернул последний поиск?</button>
+            <button type="button" class="chip">Сохрани в файл артефакт #1</button>
+            <button type="button" class="chip">Какие прогоны пайплайна уже были?</button>
+        </div>
+
+        <div class="actions">
+            <span class="hint" id="status"></span>
+            <button type="button" class="copy" id="check">Проверить соединение</button>
+            <button type="submit" class="button" id="submit">Спросить</button>
+        </div>
+    </form>
+
+    <section class="panel" id="connection" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Соединение</span>
+            <span class="meta" id="connectionMeta"></span>
+        </div>
+        <div class="panel-body" id="connectionBody"></div>
+    </section>
+
+    <section class="panel" id="calls" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Вызовы инструментов</span>
+            <span class="meta" id="callsMeta"></span>
+        </div>
+        <div class="panel-body" id="callsBody"></div>
+    </section>
+
+    <section class="result-wrap">
+        <div class="result-head">
+            <div>
+                <span class="result-title">Ответ</span>
+                <span class="meta" id="answerMeta"></span>
+            </div>
+            <button type="button" class="copy" id="copy" hidden>Копировать</button>
+        </div>
+        <pre class="result" id="answer"><span class="placeholder">Здесь появится ответ агента</span></pre>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
