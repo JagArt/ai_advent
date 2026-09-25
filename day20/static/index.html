@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCP — реестр серверов и маршрутизация</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Реестр MCP-серверов</h1>
+        <p class="subtitle">Три сервера, один каталог инструментов: агент выбирает инструмент, реестр разводит вызовы и держит артефакты</p>
+    </header>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Серверы</span>
+            <span class="meta" id="serversMeta"></span>
+            <button type="button" class="copy" id="refreshServers">Подключиться</button>
+        </div>
+        <div class="panel-body" id="serversBody">
+            <span class="placeholder">Подключаемся ко всем серверам реестра...</span>
+        </div>
+    </section>
+
+    <section class="panel" id="catalogPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Каталог инструментов</span>
+            <span class="meta" id="catalogMeta"></span>
+        </div>
+        <div class="panel-body" id="catalogBody"></div>
+    </section>
+
+    <form class="form" id="flowForm">
+        <span class="panel-title">Длинный флоу</span>
+        <input
+            id="query"
+            class="prompt line"
+            type="text"
+            placeholder="Тема отчёта"
+            value="уровни памяти агента day11"
+        >
+
+        <div class="examples" id="queries">
+            <button type="button" class="chip">уровни памяти агента day11</button>
+            <button type="button" class="chip">MCP-сервер и клиент day16</button>
+            <button type="button" class="chip">артефакты и пайплайн day19</button>
+            <button type="button" class="chip">гейты между этапами day15</button>
+        </div>
+
+        <div class="row">
+            <label class="field">
+                <span>разделов</span>
+                <input id="limit" class="number" type="number" min="1" max="10" value="4">
+            </label>
+            <label class="field">
+                <span>тезисов</span>
+                <input id="bullets" class="number" type="number" min="3" max="10" value="5">
+            </label>
+            <label class="field wide">
+                <span>имя файла</span>
+                <input id="name" class="number wide" type="text" placeholder="собирается из темы">
+            </label>
+            <div class="modes" id="modes">
+                <label class="toggle">
+                    <input type="radio" name="mode" value="flow" checked>
+                    контрактом
+                </label>
+                <label class="toggle">
+                    <input type="radio" name="mode" value="agent">
+                    агентом
+                </label>
+            </div>
+        </div>
+
+        <div class="actions">
+            <span class="hint" id="flowStatus">Контрактом — семь шагов проходит реестр. Агентом — инструменты и порядок выбирает модель, а проверка сравнивает её маршрут с контрактом.</span>
+            <button type="submit" class="button" id="run">Запустить</button>
+        </div>
+    </form>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Шаги</span>
+            <span class="meta" id="stepsMeta"></span>
+        </div>
+        <div class="panel-body steps" id="steps"></div>
+    </section>
+
+    <section class="panel" id="verdictPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Проверка порядка</span>
+            <span class="meta" id="verdictMeta"></span>
+        </div>
+        <div class="panel-body" id="verdictBody"></div>
+    </section>
+
+    <section class="panel" id="resultPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Отчёт</span>
+            <span class="meta" id="resultMeta"></span>
+        </div>
+        <div class="panel-body" id="resultBody"></div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Журнал маршрутизации</span>
+            <span class="meta" id="routesMeta"></span>
+            <button type="button" class="copy" id="refreshRoutes">Обновить</button>
+        </div>
+        <div class="panel-body" id="routesBody">
+            <span class="placeholder">Загружаем...</span>
+        </div>
+    </section>
+
+    <form class="form" id="form">
+        <span class="panel-title">Спросить агента</span>
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="3"
+            placeholder="Введите запрос&#10;&#10;Ctrl + Enter — отправить"
+        >Найди коммиты про day18 и скажи, какие папки они трогали</textarea>
+
+        <div class="examples" id="examples">
+            <button type="button" class="chip">Найди коммиты про day18 и скажи, какие папки они трогали</button>
+            <button type="button" class="chip">Найди в документации, чем day17 отличается от day18</button>
+            <button type="button" class="chip">Позови search и найди что-нибудь про артефакты</button>
+            <button type="button" class="chip">Что уже лежит в журнале хранилища?</button>
+        </div>
+
+        <div class="actions">
+            <span class="hint" id="status"></span>
+            <button type="submit" class="button" id="submit">Спросить</button>
+        </div>
+    </form>
+
+    <section class="panel" id="calls" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Вызовы инструментов</span>
+            <span class="meta" id="callsMeta"></span>
+        </div>
+        <div class="panel-body" id="callsBody"></div>
+    </section>
+
+    <section class="result-wrap">
+        <div class="result-head">
+            <div>
+                <span class="result-title">Ответ</span>
+                <span class="meta" id="answerMeta"></span>
+            </div>
+            <button type="button" class="copy" id="copy" hidden>Копировать</button>
+        </div>
+        <pre class="result" id="answer"><span class="placeholder">Здесь появится ответ агента</span></pre>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
