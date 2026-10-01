@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Индексация документов: чанки, эмбеддинги, сравнение стратегий</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Индексация документов</h1>
+        <p class="subtitle">Один корпус, три стратегии разбиения, локальные эмбеддинги и индекс в SQLite — с метаданными у каждого чанка</p>
+    </header>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Корпус</span>
+            <span class="meta" id="corpusMeta"></span>
+        </div>
+        <div class="panel-body" id="corpusBody">
+            <span class="placeholder">Читаем корпус...</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Индексы</span>
+            <span class="meta" id="buildMeta"></span>
+            <button type="button" class="copy" id="build">Собрать заново</button>
+        </div>
+        <div class="panel-body" id="buildBody">
+            <span class="placeholder">Загружаем...</span>
+        </div>
+    </section>
+
+    <form class="form" id="searchForm">
+        <span class="panel-title">Поиск по трём индексам сразу</span>
+        <input
+            id="query"
+            class="prompt line"
+            type="text"
+            placeholder="Запрос"
+            value="как считаются токены запроса и бюджет контекста"
+        >
+
+        <div class="examples" id="examples">
+            <button type="button" class="chip">как считаются токены запроса и бюджет контекста</button>
+            <button type="button" class="chip">гейты между этапами задачи</button>
+            <button type="button" class="chip">артефакты между инструментами MCP</button>
+            <button type="button" class="chip">сжатие истории диалога конспектом</button>
+            <button type="button" class="chip">инкрементальная переиндексация по sha файла</button>
+        </div>
+
+        <div class="actions">
+            <label class="field">
+                <span>найти</span>
+                <input id="limit" class="number" type="number" min="1" max="20" value="5">
+            </label>
+            <span class="hint" id="searchStatus">Вектор запроса считается один раз и уходит во все три индекса: сравнивается разбиение, а не эмбеддинги.</span>
+            <button type="submit" class="button" id="run">Найти</button>
+        </div>
+    </form>
+
+    <section class="panel" id="hitsPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Что нашлось</span>
+            <span class="meta" id="hitsMeta"></span>
+        </div>
+        <div class="panel-body" id="hitsBody"></div>
+    </section>
+
+    <section class="panel" id="chunkPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Чанк целиком</span>
+            <span class="meta" id="chunkMeta"></span>
+            <button type="button" class="copy" id="closeChunk">Закрыть</button>
+        </div>
+        <div class="panel-body" id="chunkBody"></div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Границы чанков в одном документе</span>
+            <span class="meta" id="cutsMeta"></span>
+        </div>
+        <div class="panel-body" id="cutsBody">
+            <span class="placeholder">Загружаем...</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Сравнение стратегий</span>
+            <span class="meta" id="compareMeta"></span>
+            <button type="button" class="copy" id="compare">Сравнить</button>
+        </div>
+        <div class="panel-body" id="compareBody">
+            <span class="placeholder">Набор проб лежит в probes.json — сравнение считается по нему, без модели.</span>
+        </div>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

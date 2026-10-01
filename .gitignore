@@ -219,6 +219,9 @@ __marimo__/
 # Streamlit
 .streamlit/secrets.toml
 
+# macOS
+.DS_Store
+
 # Память агента day7–day15: база создаётся при первом старте
 day7/history.db*
 day8/history.db*
@@ -243,3 +246,8 @@ day20/orchestration.db*
 day20/docs.db*
 day20/vault.db*
 day20/out/
+
+# Индекс day21 создаётся при первом запуске; PDF в corpus/ — внешние файлы.
+# probes.json, наоборот, коммитится: без него сравнение стратегий невоспроизводимо.
+day21/index.db*
+day21/corpus/*.pdf
