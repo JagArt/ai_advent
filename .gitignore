@@ -251,3 +251,7 @@ day20/out/
 # probes.json, наоборот, коммитится: без него сравнение стратегий невоспроизводимо.
 day21/index.db*
 day21/corpus/*.pdf
+
+# То же в day22; questions.json и probes.json коммитятся — без них нечем мерить.
+day22/index.db*
+day22/corpus/*.pdf

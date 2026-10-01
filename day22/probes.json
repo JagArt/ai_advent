@@ -1,0 +1,1208 @@
+{
+  "model": "deepseek-v4-flash",
+  "seed": 21,
+  "created_at": "2026-09-30T12:52:14+00:00",
+  "count": 120,
+  "probes": [
+    {
+      "query": "парсинг кандидатов из items remember",
+      "question": "Что происходит с элементами списка items при разборе ответа в функции parse из day12/remember.py?",
+      "path": "day12/remember.py",
+      "section": "def parse",
+      "start": 7435,
+      "end": 7648,
+      "passage": "        raise ValueError(\"ожидался объект с полем items\")\n\n    candidates = []\n    for entry in raw:\n        candidate = _candidate(entry)\n        if candidate is not None:\n            candidates.append(candidate)",
+      "doc_sha256": "11f3c4e007898d96a0c1bcd8379d935eed98e30d6bf171355d4d61266f63b488"
+    },
+    {
+      "query": "MCP подключение API SSE страница",
+      "question": "Какие файлы в day16 отвечают за API, SSE и страницу с тумблером и лентой вызовов?",
+      "path": "day16/README.md",
+      "section": "Файлы",
+      "start": 10774,
+      "end": 11120,
+      "passage": "режим с MCP и без, цикл вызовов, события для страницы |\n| [main.py](main.py) | API и SSE |\n| [static/](static/) | страница: тумблер, панель соединения, лента вызовов, ответ |\n\n## API\n\n| Метод | Путь | Зачем |\n| --- | --- | --- |\n| `POST` | `/api/connect` | только соединение и список инструментов, без модели |\n| `POST` | `/api/ask` | `{\"prompt\":",
+      "doc_sha256": "143071cce7671984309b9138431bcd3a6c69f109f5029d312f2bc9a64be21707"
+    },
+    {
+      "query": "разбор ответа модели отбрасывание ссылок",
+      "question": "Что делает функция _bullets при разборе ответа модели в MCP-сервере?",
+      "path": "day19/server.py",
+      "section": "def _bullets",
+      "start": 19239,
+      "end": 19473,
+      "passage": "def _bullets(text: str, hits: int, max_bullets: int) -> list[dict[str, Any]]:\n    \"\"\"Разбор ответа модели. Ссылки на несуществующие фрагменты отбрасываются.\"\"\"\n    bullets: list[dict[str, Any]] = []\n\n    for line in text.splitlines():",
+      "doc_sha256": "72ff0c3a2310b210b966bff3ce81df83a88dae09815769e9b9ced3003ec0378d"
+    },
+    {
+      "query": "перенос находки между адресами профиля",
+      "question": "На какие адреса можно положить обычную находку в карточке профиля и что потом с ней можно сделать?",
+      "path": "day12/README.md",
+      "section": "Карточка: третий адрес и находки-шкалы",
+      "start": 6883,
+      "end": 7088,
+      "passage": "\"коротко\",\n   \"why\": \"просит ответы в два-три предложения\"}\n]}\n```\n\nОбычная находка — формулировка в раздел; её можно положить на любой из трёх адресов и потом перенести. Правка шкалы — только про профиль:",
+      "doc_sha256": "4d3512aaa65872b28337d1b15c41dd149b47634059c35a1a8633165b586f3406"
+    },
+    {
+      "query": "_collect reply answer_id Proposal",
+      "question": "Как в классе Agent называется метод, который превращает ответ модели в список предложений Proposal и возвращает пустой список, если ответ не по форме?",
+      "path": "day13/agent.py",
+      "section": "class Agent",
+      "start": 27307,
+      "end": 27583,
+      "passage": "            saved=saved,\n            move=move,\n            rejected=rejected,\n            memory=self._snapshot(),\n        )\n\n    def _collect(self, reply: str, answer_id: int) -> list[Proposal]:\n        \"\"\"Находки хода в очередь карточек. Ответ не по форме — находок нет.\"\"\"",
+      "doc_sha256": "238045a145471c7646dd1fa602e1ca42d28478556e300c560694e1e3da0847db"
+    },
+    {
+      "query": "короткий диалог 3 хода стоимость токены",
+      "question": "Сколько стоит короткий диалог из трёх ходов с учётом заголовка диалога?",
+      "path": "day8/README.md",
+      "section": "Замеры / Короткий диалог: 3 хода",
+      "start": 3375,
+      "end": 3833,
+      "passage": "### Короткий диалог: 3 хода\n\n| Ход | Контекст, сообщ. | Вход | из них кэш | Ответ | Всего | Оценка | Стоимость хода | Накоплено |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n| 1 | 0 | 104 | 0 | 113 | 217 | 139 (+33.7%) | $0.000097 | $0.000097 |\n| 2 | 2 | 236 | 128 | 113 | 349 | 325 (+37.7%) | $0.000099 | $0.000197 |\n| 3 | 4 | 364 | 256 | 235 | 599 | 487 (+33.8%) | $0.000181 | $0.000377 |\n\nПлюс $0.000026 за заголовок диалога — итого $0.000404.",
+      "doc_sha256": "a3e3395818443f98fdfad01c3ba4ebaf396b721e857daa21691d83d92d2cbf3a"
+    },
+    {
+      "query": "регулярное выражение поиск блоков кода",
+      "question": "какое регулярное выражение в модуле shape.py используется для поиска блоков кода в тексте?",
+      "path": "day12/shape.py",
+      "section": "модуль",
+      "start": 1047,
+      "end": 1303,
+      "passage": "# пункта списка гораздо чаще, чем код, и такая мерка ловила бы не то.\nCODE = re.compile(r\"```\")\n\n# Обращение видно по местоимениям: их формы не спутать, а вот глаголы («смотри» и\n# «смотрите») различать пришлось бы морфологией, и ради двух слов это лишнее.",
+      "doc_sha256": "078c78c5f0dc31f8e255a55a6c5331c013cd328fd349345c5758730c2e797c36"
+    },
+    {
+      "query": "конечный автомат задачи рабочая память",
+      "question": "Через что выражается условие каждого шага в конечном автомате задачи из day13?",
+      "path": "day13/README.md",
+      "section": "вступление",
+      "start": 568,
+      "end": 773,
+      "passage": "Автомат живёт в [task.py](task.py) и устроен так, что двинуть его словами нельзя. Условие каждого шага выражено через рабочую память — через разделы ТЗ, которые наполняются только подтверждёнными пунктами.",
+      "doc_sha256": "fcc602e933bc22e4f149233d54e95b1eb719deaf4ad6c52f35b6c46ae8f9823a"
+    },
+    {
+      "query": "предложение перехода автомат шаг требования",
+      "question": "Что должна вернуть модель, если по итогам хода двигаться некуда?",
+      "path": "day13/progress.py",
+      "section": "модуль",
+      "start": 2619,
+      "end": 2838,
+      "passage": "или\n{\"move\": {\"step\": \"требования\", \"why\": \"...\"}}\nДвигаться некуда — верни {\"move\": null}.\n\"\"\"\n\n@dataclass(frozen=True)\nclass Suggestion:\n    \"\"\"Что назвала модель. Ещё не переход: имя цели и причина, больше ничего.\"\"\"",
+      "doc_sha256": "cea746a017b1ac0587d646bbb312c9b62f543fe85bc8f0c485a3701bfbf0862b"
+    },
+    {
+      "query": "SSE формат ответа event done error",
+      "question": "Какие события и данные приходят в потоке ответа API, включая завершение и ошибку?",
+      "path": "day2/README.md",
+      "section": "API",
+      "start": 1417,
+      "end": 1720,
+      "passage": "кадры `data: <json-строка>` с частями ответа, затем `event: done` с `{finish_reason, word_count}` либо `event: error` с текстом ошибки. При `constrained: true` применяются ограничения из файла.\n\n`GET /api/constraints` возвращает содержимое `constraints.json` — интерфейс рисует из него блок ограничений.",
+      "doc_sha256": "71cfbc0bfdc5e26413daa9dc075d971e8d4f6eaa64fd7fd401e04c9c769a32b0"
+    },
+    {
+      "query": "AgentRegistry порядок ключей вытеснение сессий",
+      "question": "Как в классе AgentRegistry обновляется порядок сессий при обращении к агенту?",
+      "path": "day10/main.py",
+      "section": "class AgentRegistry",
+      "start": 2210,
+      "end": 2443,
+      "passage": "        agent = self._agents.get(session_id)\n        if agent is not None:\n            # Порядок ключей — очередь на вытеснение, обращение возвращает сессию в конец.\n            self._agents[session_id] = self._agents.pop(session_id)",
+      "doc_sha256": "b11371fef5db3dea873320466e150c61d752bb1e2f135aa5b5ca05ce875cccbf"
+    },
+    {
+      "query": "SSE стриминг ответа эксперты выключены",
+      "question": "Какой формат ответа отдаёт API при потоковой передаче и что означает пустой список experts?",
+      "path": "day3/README.md",
+      "section": "API",
+      "start": 871,
+      "end": 1081,
+      "passage": "[]}` и отдаёт `text/event-stream`: кадры `data: <json-строка>` с частями ответа, затем `event: done` с `{finish_reason, word_count}` либо `event: error` с текстом ошибки.\n\nПустой `experts` — эксперты выключены.",
+      "doc_sha256": "5d456c51cfc6ab4c7e2ac2455e9dfd819e22f44a50c60752deb3878336c8aba2"
+    },
+    {
+      "query": "подсчёт сообщений сессии SQLite",
+      "question": "Как в классе Storage посчитать количество сообщений в конкретной сессии?",
+      "path": "day9/storage.py",
+      "section": "class Storage",
+      "start": 7727,
+      "end": 7929,
+      "passage": "    def _count(self, session_id: str) -> int:\n        with self._connect() as connection:\n            (total,) = connection.execute(\n                \"SELECT count(*) FROM messages WHERE session_id = ?\",",
+      "doc_sha256": "17ee9e20d0a2f7c29ed8fc6117fbb4b37f508ed0806e5fe7234f8a7b0df73bed"
+    },
+    {
+      "query": "новый диалог удаление сессии CASCADE",
+      "question": "Что происходит при нажатии на крестик в списке диалогов и как удаление связано с перепиской?",
+      "path": "day7/README.md",
+      "section": "Список диалогов",
+      "start": 3056,
+      "end": 3268,
+      "passage": "кнопка «Новый диалог» заводит ещё одну, клик по строке открывает её ленту, крестик удаляет вместе с перепиской (`ON DELETE CASCADE`) и выбрасывает агента из кэша. `list_sessions()` собирает панель одним запросом:",
+      "doc_sha256": "23d34e21019ab0e9d8996570732f1bc554de659b8584849d3802595c0462d59b"
+    },
+    {
+      "query": "фильтр кандидатов уже в памяти профиле",
+      "question": "Как в модуле remember отсеиваются кандидаты, которые уже есть в памяти или профиле?",
+      "path": "day15/remember.py",
+      "section": "def fresh",
+      "start": 10170,
+      "end": 10379,
+      "passage": "    \"\"\"Кандидаты, которых в памяти и в профиле ещё нет.\n\n    Промпт просит не повторяться, но просьба — не гарантия: модель охотно\n    предлагает записать то, что уже лежит в блоке у неё перед глазами. У шкалы",
+      "doc_sha256": "11f3c4e007898d96a0c1bcd8379d935eed98e30d6bf171355d4d61266f63b488"
+    },
+    {
+      "query": "срок хранения файлов инвариант команды",
+      "question": "Почему в диалоге не удалось изменить срок хранения готовых файлов с семи дней на тридцать?",
+      "path": "day14/README.md",
+      "section": "Guard в два слоя",
+      "start": 19089,
+      "end": 19445,
+      "passage": "> **Ход 7**, без блока инвариантов, оборвано на #6, переписано\n>\n> — Про хранение передумал: пользователи просят, давай держать готовые файлы 30 дней, место дешёвое.\n>\n   200|> — ~~Принято, срок хранения меняем на 30 дней.~~ *(оборвано детектором, пользователь этого не увидел)*\n>\n> — Срок хранения семь дней — это инвариант команды, тридцать дней закрыты.",
+      "doc_sha256": "2b788cb2a2b0b5abf77277ee129260f9a55799f8849489340e741cf6f3942461"
+    },
+    {
+      "query": "FileResponse отдача index.html без кэша",
+      "question": "Как в day17/main.py устроена отдача файла index.html через FileResponse с заголовками NO_CACHE?",
+      "path": "day17/main.py",
+      "section": "def index",
+      "start": 983,
+      "end": 1199,
+      "passage": "async def index() -> FileResponse:\n    return FileResponse(STATIC_DIR / \"index.html\", headers=NO_CACHE)\n\ndef sse_frame(data: object, event: str | None = None) -> str:\n    prefix = f\"event: {event}\\n\" if event else \"\"",
+      "doc_sha256": "f8519c084a9471c68ab49835c76e0efa42662bb56cefba07aa9b72333c0d8555"
+    },
+    {
+      "query": "типы памяти агента краткосрочная рабочая долговременная",
+      "question": "На какие типы нужно разделить информацию в задании одиннадцатого дня про память агента?",
+      "path": "day11/TASK.md",
+      "section": "вступление",
+      "start": 81,
+      "end": 465,
+      "passage": "Разделите информацию минимум на 3 типа:\n\n- краткосрочная (текущий диалог)\n- рабочая (данные текущей задачи)\n- долговременная (профиль, решения, знания)\n\nСделайте так, чтобы:\n\n- разные типы памяти хранились отдельно\n- вы явно выбирали, что и куда сохраняется\n\n## Результат\n\nТри типа хранения информации — внутренняя часть агента, которая работает\nодновременно для разных частей задачи.",
+      "doc_sha256": "f7e5a9eda340b7b06d8dfc1ed5b42a5fd7f587b81a39e74499860a701735a25c"
+    },
+    {
+      "query": "sqlite схема chunks вектор blob",
+      "question": "Как в SQLite-индексе проекта AI Advent хранятся векторы и метаданные чанков?",
+      "path": "day21/index.py",
+      "section": "модуль",
+      "start": 2652,
+      "end": 2901,
+      "passage": "    tokens     INTEGER NOT NULL,\n    sha256     TEXT    NOT NULL,\n    text       TEXT    NOT NULL,\n    vector     BLOB    NOT NULL,\n    UNIQUE (strategy, path, ordinal)\n);\nCREATE INDEX IF NOT EXISTS chunks_by_strategy ON chunks (strategy, chunk_id);",
+      "doc_sha256": "b6dd47bd7119c58edbc4bd0859cc9f752c41a0c58d7c3e31f187e8e347135638"
+    },
+    {
+      "query": "таблицы jobs snapshots summaries sqlite",
+      "question": "какие таблицы хранятся в базе SQLite планировщика и что записывается в каждую из них",
+      "path": "day18/README.md",
+      "section": "Что лежит в SQLite",
+      "start": 2066,
+      "end": 2511,
+      "passage": "| Таблица | Что в ней |\n| --- | --- |\n| `jobs` | вид задачи, период (`NULL` — разовая), `next_run_at`, `last_run_at`, число запусков, последняя ошибка, активна ли |\n| `snapshots` | время, HEAD, новые коммиты с прошлого снимка вместе с папками, которые они трогали, число грязных и неотслеживаемых файлов, объём незакоммиченных строк, папки с грязными файлами |\n| `summaries` | период `(from, to]` и агрегат в JSON |\n\nВремя в базе хранится в UTC:",
+      "doc_sha256": "854e9b11650757417258365535e9f401933df72d0f73d545a23ed6fe89ab1baf"
+    },
+    {
+      "query": "фиксированные разделы памяти агента",
+      "question": "Почему в модели памяти агента список разделов фиксирован и какие разделы входят в долговременную память?",
+      "path": "day11/memory.py",
+      "section": "модуль",
+      "start": 1192,
+      "end": 1401,
+      "passage": "TARGETS = (*TIERS, SKIP)\n\n# Разделы фиксированы: иначе модель заводит новый раздел на каждый ход, и блок\n# памяти расползается в пересказ разговора.\nSECTIONS = {\n    LONGTERM: (\"профиль\", \"решения\", \"знания\"),",
+      "doc_sha256": "3aa8e758a030378e29a765e43711190b1c4954b0e12ce98efdf87304d9c1c2fc"
+    },
+    {
+      "query": "оценка удержания гейта 0 2",
+      "question": "Как в day15 оценивают удержание гейта по шкале от 0 до 2?",
+      "path": "day15/README.md",
+      "section": "Прогон: с блоком гейтов и без него",
+      "start": 18314,
+      "end": 18543,
+      "passage": "Оценивает 0–2: 2 — работа названа закрытой или утверждение названо чужим решением, и назван выход; 1 — гейт удержан наполовину, отказ невнятный или без выхода; 0 — не удержан: закрытая работа сделана или гейт объявлен пройденным.",
+      "doc_sha256": "93a85746add21bbb8cac6b0460fa69b03230c61de3c8c3d201aa451609c5c8df"
+    },
+    {
+      "query": "BUDGET_OPTIONS лимит токенов агент",
+      "question": "Какие варианты бюджета токенов доступны в переключателе в шапке агента из day10?",
+      "path": "day10/agent.py",
+      "section": "модуль",
+      "start": 1854,
+      "end": 2111,
+      "passage": "# Значения для переключателя в шапке: на 500 токенах обрезка наступает через\n# пару ходов, и потерю памяти видно вживую.\nBUDGET_OPTIONS = (500, 2000, 4000, 16000)\n\nMIN_BUDGET = 100\n\n# Имя новой ветки по умолчанию: корневая называется «основная», остальные —",
+      "doc_sha256": "b973197769b532f2e90327e38cacf7ff800b54c90475c14fbd0490bd30900a3b"
+    },
+    {
+      "query": "расход токенов картотека факты сравнение",
+      "question": "Насколько увеличивается расход токенов при добавлении картотеки фактов к шести сообщениям в замерах day10?",
+      "path": "day10/README.md",
+      "section": "Замеры / Расход токенов по ходам",
+      "start": 8066,
+      "end": 8275,
+      "passage": "| 6 сообщ. + картотека 137 ток. (9 фактов) | 519 | 726 | +39.9% | $0.000065 | $0.000193 |\n| 5 | 6 сообщ. | 6 сообщ. + картотека 126 ток. (9 фактов) | 441 | 661 | +49.9% | $0.000107 | $0.000182 |\n| 6 | 6 сообщ.",
+      "doc_sha256": "ad7aa959a0bd4fd66da0fda496292ec341ee46b6758e1f06f997fad2026fdc32"
+    },
+    {
+      "query": "аудитор детектор разница переписывает ответ",
+      "question": "Чем аудитор отличается от детектора и какие решения принимает модуль аудита?",
+      "path": "day14/audit.py",
+      "section": "модуль",
+      "start": 444,
+      "end": 695,
+      "passage": "Отсюда и разница в силе. Детектор переписывает ответ, аудитор приносит карточку:\nзадним числом переписать отданное нельзя, а знать о нарушении полезнее, чем не знать.\n\nМодуль решений не принимает и правил не толкует: он собирает запрос и читает ответ.",
+      "doc_sha256": "7239d7b1979041f08ea9c028007aa12e8c7739b1fd70836157e2fbcd02a688f6"
+    },
+    {
+      "query": "api models список моделей провайдер",
+      "question": "Что возвращает эндпоинт GET /api/models в проекте?",
+      "path": "day5/README.md",
+      "section": "Выводы",
+      "start": 5791,
+      "end": 5994,
+      "passage": "HTML, CSS, JS |\n\n## API\n\n`GET /api/models` возвращает запрос по умолчанию, `temperature`, `max_tokens`, признак пиковых тарифов и список моделей: ключ, уровень, id, провайдер, ссылки и платная ли модель.",
+      "doc_sha256": "a311d4ea40bf23f28b0aeb45a1593b5d4f068735bb79715e5c1d95fef687b303"
+    },
+    {
+      "query": "маршрутизация фактов по секциям памяти",
+      "question": "Как функция section_of определяет, в какую секцию памяти отнести факт из разговора?",
+      "path": "day14/remember.py",
+      "section": "def section_of",
+      "start": 9591,
+      "end": 9841,
+      "passage": "    if tier == PROFILE:\n        return user_profile.section_of(raw)\n\n    name = clean(raw).lower()\n    sections = SECTIONS[tier]\n    if name in sections:\n        return name\n    # Синонимы отличаются окончанием: «требование», «ограничение», «вопрос».",
+      "doc_sha256": "11f3c4e007898d96a0c1bcd8379d935eed98e30d6bf171355d4d61266f63b488"
+    },
+    {
+      "query": "поиск по документации проекта README TASK",
+      "question": "По каким файлам проекта ищет инструмент search и как корпус делится на разделы?",
+      "path": "day19/README.md",
+      "section": "Инструменты",
+      "start": 3811,
+      "end": 4076,
+      "passage": "`search` ищет по документации самого проекта: `README.md` в корне, `dayN/README.md` и `dayN/TASK.md` — 37 файлов, 191 раздел. Корпус режется по заголовкам, заголовки внутри блоков с ``` не считаются заголовками (в README этого проекта есть блоки с markdown внутри).",
+      "doc_sha256": "4dc14347314a45290a500dd4e00d6ee0eca079cf639c6f7e0af5c924fbc96803"
+    },
+    {
+      "query": "маршрутизация памяти разговора профиль",
+      "question": "Как в модуле remember.py устроена маршрутизация того, что из разговора стоит запомнить и куда это положить?",
+      "path": "day13/remember.py",
+      "section": "модуль",
+      "start": 1092,
+      "end": 1341,
+      "passage": "    ChatCompletionUserMessageParam,\n)\n\nimport profile as user_profile\nfrom memory import LONGTERM, SECTIONS, TIERS, WORKING, Store\nfrom profile import PROFILE, SCALES, Profile\n\n# Отказ — такое же решение, как и выбор адреса, и обрабатывается там же.",
+      "doc_sha256": "11f3c4e007898d96a0c1bcd8379d935eed98e30d6bf171355d4d61266f63b488"
+    },
+    {
+      "query": "проверка порядка вызовов MCP серверов",
+      "question": "Как в day20 проверить, что порядок вызовов MCP-серверов совпадает с контрактом?",
+      "path": "day20/README.md",
+      "section": "Прогон из терминала",
+      "start": 14170,
+      "end": 14470,
+      "passage": "ok, 2586 мс\n\nПроверка порядка\n  контракт:  git__search → git__files → docs__search → docs__summarize → vault__save_file → vault__journal_append → vault__verify\n  как вышло: git__search → git__files → docs__search → docs__summarize → vault__save_file → vault__journal_append → vault__verify\n  серверы:",
+      "doc_sha256": "d3b7cef2dfd22d34248c3d66cc71a47c1f4712b9c94fd97da09041e4fe11cd1b"
+    },
+    {
+      "query": "очередь асинхронных выгрузок Celery или RQ",
+      "question": "Какой вопрос про выбор между Celery и RQ используется в сценарии сравнения?",
+      "path": "day13/demo.py",
+      "section": "модуль",
+      "start": 469,
+      "end": 699,
+      "passage": "# против прозы), второй — объяснение термина (эксперт против новичка), третий —\n# рассуждение, где длину ответа не задаёт ничего, кроме профиля.\nCOMPARE = (\n    \"Очередь для асинхронных выгрузок: остаться на Celery или взять RQ?\",",
+      "doc_sha256": "04674cb3273155944e61ee11a907c29bc14c181fc622aa8c820c9420abbc2544"
+    },
+    {
+      "query": "MAX_TOKENS finish_reason length обрезка ответа",
+      "question": "Что происходит, если ответ модели упирается в лимит MAX_TOKENS и приходит finish_reason length?",
+      "path": "day6/README.md",
+      "section": "Агент как сущность",
+      "start": 1952,
+      "end": 2341,
+      "passage": "Отдельный ответ ограничен `MAX_TOKENS = 2000`: если модель упрётся в потолок, приходит `finish_reason: length` и под полем ввода появляется отметка об обрезке.\n\nХод попадает в память только целиком. Если стрим оборвался — ошибка API или пользователь нажал «Остановить», — в историю не уходит ни вопрос, ни обрывок ответа, и страница убирает эту пару из ленты, возвращая текст в поле ввода.",
+      "doc_sha256": "f20cfe7c70c354e1bb9fc76013257d0e11ce84a852e9f445617915b296f27725"
+    },
+    {
+      "query": "async count session_id storage",
+      "question": "Как в классе Storage реализован асинхронный подсчёт количества записей для сессии?",
+      "path": "day7/storage.py",
+      "section": "class Storage",
+      "start": 6913,
+      "end": 7118,
+      "passage": "    async def count(self, session_id: str) -> int:\n        return await asyncio.to_thread(self._count, session_id)\n\n    def _count(self, session_id: str) -> int:\n        with self._connect() as connection:",
+      "doc_sha256": "8840005d54f60dbf132df20acf2e9ffc961c84b88b2211f8de593d894240b73a"
+    },
+    {
+      "query": "расход токенов сжатие конспект ходы",
+      "question": "Как менялся расход токенов при сжатии истории на первых восьми ходах в day9?",
+      "path": "day9/README.md",
+      "section": "Замеры / Расход токенов по ходам",
+      "start": 6638,
+      "end": 6869,
+      "passage": "+ конспект 854 ток. (40 сообщ.) | 2411 | 1036 | -57.0% | $0.000076 | $0.000208 |\n| вопрос 5 | 48 | 8 сообщ. + конспект 854 ток. (40 сообщ.) | 2451 | 1074 | -56.2% | $0.000081 | $0.000085 |\n\nПервые восемь ходов сжатие только мешает:",
+      "doc_sha256": "68448e489bf0c7b3d17c5dee7fd94883978e12e6f4e14916ba063fccc336b4e4"
+    },
+    {
+      "query": "encode список текстов эмбеддинги нормированные",
+      "question": "Что возвращает функция encode из day21/embed.py, если на вход подан пустой список текстов?",
+      "path": "day21/embed.py",
+      "section": "def encode",
+      "start": 2363,
+      "end": 2566,
+      "passage": "def encode(texts: list[str]) -> Encoded:\n    \"\"\"Векторы для списка текстов, нормированные, в порядке входа.\"\"\"\n    if not texts:\n        return Encoded(np.zeros((0, dimensions()), dtype=np.float32), 0.0)",
+      "doc_sha256": "51f3527aa5d4f1b844ae735bc6d6ed422241dc99878272d9563c5c3e627c0647"
+    },
+    {
+      "query": "три уровня памяти рост сообщений",
+      "question": "как меняются три уровня памяти по мере роста числа сообщений в диалоге на day11",
+      "path": "day11/README.md",
+      "section": "Прогон: собираем ТЗ за 12 ходов / Как растут три уровня",
+      "start": 7116,
+      "end": 7356,
+      "passage": "| 6 сообщ. | 11 п. | 11 п. |\n| вопрос 1 | 24 сообщ. | 6 сообщ. | 12 п. | 11 п. |\n| вопрос 2 | 26 сообщ. | 6 сообщ. | 12 п. | 11 п. |\n| вопрос 3 | 28 сообщ. | 6 сообщ. | 12 п. | 11 п. |\n\nТри колонки ведут себя по-разному, и в этом весь день.",
+      "doc_sha256": "73329ff0fc90edf7b4341764f50ad73212a83e70c26b83de511afbedb596a5e4"
+    },
+    {
+      "query": "stream_chat вызовы инструментов finish_reason",
+      "question": "Как в day16/llm.py устроена функция stream_chat и что она делает с вызовами инструментов?",
+      "path": "day16/llm.py",
+      "section": "def stream_chat",
+      "start": 1005,
+      "end": 1287,
+      "passage": "async def stream_chat(\n    messages: list[ChatCompletionMessageParam],\n    *,\n    tools: list[dict[str, Any]] | None,\n    temperature: float,\n    max_tokens: int,\n) -> AsyncIterator[AnswerDelta]:\n    \"\"\"Один проход к модели. Вызовы инструментов отдаются вместе с `finish_reason`.\"\"\"",
+      "doc_sha256": "9c12d715f56ded51aa5d2d44acaadb14d39a39e92256d8bf5025bf2bb884871e"
+    },
+    {
+      "query": "mcp tool done error кадры",
+      "question": "Какие типы событий приходят в потоке ответа при работе первого инструмента MCP в day17?",
+      "path": "day17/README.md",
+      "section": "API",
+      "start": 6314,
+      "end": 6532,
+      "passage": "`mcp` — рукопожатие и инструменты (только при включённом тумблере), безымянные кадры — куски ответа, `tool` — вызов инструмента с аргументами, результатом и временем, `done` — итог хода, `error` — ошибка вместо ответа.",
+      "doc_sha256": "a79480156878b72d3a90b9737d91b478709a3910f29a010791fff35db86afaf7"
+    },
+    {
+      "query": "Document chars sha256 свойства",
+      "question": "Как в классе Document получить длину текста и его хеш SHA-256?",
+      "path": "day21/corpus.py",
+      "section": "class Document",
+      "start": 1851,
+      "end": 2102,
+      "passage": "    text: str\n    pages: tuple[Page, ...] = field(default_factory=tuple)\n\n    @property\n    def chars(self) -> int:\n        return len(self.text)\n\n    @property\n    def sha256(self) -> str:\n        return hashlib.sha256(self.text.encode()).hexdigest()",
+      "doc_sha256": "5506662cd6be281299797d181802f904ec8fc76475c644e28ee2d45262497226"
+    },
+    {
+      "query": "слайдер температура api defaults выключен",
+      "question": "Почему слайдер и поле температуры недоступны до ответа сервера в проекте AI Advent?",
+      "path": "day4/README.md",
+      "section": "вступление",
+      "start": 1228,
+      "end": 1547,
+      "passage": "до ответа `/api/defaults` слайдер, числовое поле и кнопка выключены — шкала правится в одном месте.\n\n## Выводы по температуре\n\nЗамеры на дефолтном промпте: по три генерации на каждое значение, разнообразие — средняя мера Жаккара по множествам слов между парами ответов (чем ниже схожесть, тем сильнее ответы разошлись).",
+      "doc_sha256": "100b6459793646b8695ca3b606228db8da716e05a06e26ce7f7ef22264f17504"
+    },
+    {
+      "query": "oneline cell DASH report.py",
+      "question": "Какие функции в day10/report.py нормализуют текст и значение ячейки для markdown-отчёта?",
+      "path": "day10/report.py",
+      "section": "модуль",
+      "start": 276,
+      "end": 482,
+      "passage": "from typing import Any\n\nDASH = \"—\"\n\ndef oneline(text: str) -> str:\n    return \" \".join(text.split())\n\ndef cell(value: Any) -> str:\n    # Таблица идёт прямиком в README, а в ответах модели и судьи попадаются",
+      "doc_sha256": "6401381382602658b93ee5dabc4d7927f5551890baea61efbc17c457330f66db"
+    },
+    {
+      "query": ".env.example ключи DEEPSEEK_API_KEY OPENROUTER_API_KEY",
+      "question": "Какие переменные окружения нужно указать в файле .env для настройки проекта AI Advent?",
+      "path": "README.md",
+      "section": "Настройка",
+      "start": 4339,
+      "end": 4588,
+      "passage": "## Настройка\n\nСкопируйте `.env.example` в `.env` и укажите ключи:\n\n```\nDEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxx\nDEEPSEEK_MODEL=deepseek-v4-flash\nOPENROUTER_API_KEY=sk-or-v1-xxxxxxxxxxxxxxxx\n```\n\n`.env` лежит в корне и подхватывается из папок day1–day20.",
+      "doc_sha256": "535e0074755b81c9e2c1e994e1e8d86ef37dbfed1cbe8509f66eae66a95b6177"
+    },
+    {
+      "query": "reset база seed диалоги",
+      "question": "Какой метод класса Storage возвращает базу к состоянию после первого запуска с seed и без диалогов?",
+      "path": "day13/storage.py",
+      "section": "class Storage",
+      "start": 10046,
+      "end": 10256,
+      "passage": "            )\n        connection.commit()\n\n    async def reset(self) -> None:\n        \"\"\"Вернуть базу к состоянию после первого запуска: seed и ни одного диалога.\"\"\"\n        await asyncio.to_thread(self._reset)",
+      "doc_sha256": "d22478aff5b282d104faa95cf189a18fd57afacd4d76c253549bae5e740da494"
+    },
+    {
+      "query": "ответ без MCP содержимое репозитория",
+      "question": "Почему ответ модели без MCP считается правильным, если она не знает содержимого репозитория?",
+      "path": "day16/README.md",
+      "section": "Прогон: один вопрос с MCP и без",
+      "start": 8487,
+      "end": 8760,
+      "passage": "Чтобы ответить точно, нужно посмотреть файлы этих папок (например, README или инструкции внутри).\n\nОтвет без MCP — правильный, и это важнее, чем если бы он был выдуманным. Модель не знает содержимого репозитория и говорит об этом прямо, потому что промпт её об этом просил.",
+      "doc_sha256": "143071cce7671984309b9138431bcd3a6c69f109f5029d312f2bc9a64be21707"
+    },
+    {
+      "query": "профиль пользователя шкалы пункты",
+      "question": "Почему в модуле профиля пользователя нельзя описать профиль только шкалами или только пунктами?",
+      "path": "day12/profile.py",
+      "section": "модуль",
+      "start": 840,
+      "end": 1081,
+      "passage": "объяснение». Одно без другого не работает: на одних шкалах профиль не описать, а\nна одних пунктах он расползается в пожелания, из которых модель выбирает сама.\n\nМодуль ничего не знает ни про базу, ни про сеть: он хранит профиль и собирает из",
+      "doc_sha256": "0d4a6322e1a0361058b5d7bb684252567d8505693561bf9745ed79fa2559f4c8"
+    },
+    {
+      "query": "профиль Марины длина ответа таблицы",
+      "question": "Какая правка в профиле Марины повысила её оценку с 3/6 до 5/6 в day12?",
+      "path": "day12/README.md",
+      "section": "Прогон: один вопрос — три профиля",
+      "start": 14072,
+      "end": 14395,
+      "passage": "У Марины «длина: один абзац, до шести предложений» вместе с «формат: таблицы» давала гарантированное нарушение — таблица не абзац; после того как формулировка стала «до шести предложений связного текста, не считая таблицу», её оценка выросла с 3/6 до 5/6, и это единственная правка, которая на замере действительно помогла.",
+      "doc_sha256": "4d3512aaa65872b28337d1b15c41dd149b47634059c35a1a8633165b586f3406"
+    },
+    {
+      "query": "удаление сессии удаление сообщений каскадом",
+      "question": "Как в классе Storage реализовано удаление сессии вместе с её сообщениями?",
+      "path": "day8/storage.py",
+      "section": "class Storage",
+      "start": 5774,
+      "end": 6050,
+      "passage": "        ]\n\n    async def delete_session(self, session_id: str) -> None:\n        await asyncio.to_thread(self._delete_session, session_id)\n\n    def _delete_session(self, session_id: str) -> None:\n        # Сообщения уносит ON DELETE CASCADE — внешние ключи включены в _connect.",
+      "doc_sha256": "61cde7063f8db1ec49eeca3366761b769e3df86b7e55c128bd4fbf25c4d34926"
+    },
+    {
+      "query": "счётчики history context tokens budget",
+      "question": "Какие счётчики размера и токенов диалога и контекста появились в API на восьмой день?",
+      "path": "day8/README.md",
+      "section": "Скрипт сценариев",
+      "start": 12168,
+      "end": 12390,
+      "passage": "HTML, CSS, JS |\n\n## API\n\nСчётчиков стало три: `history_size` и `history_tokens` — весь диалог в базе, `context_size` и `context_tokens` — окно, которое уйдёт в модель, и `context_budget` — на какой бюджет это окно набрано.",
+      "doc_sha256": "a3e3395818443f98fdfad01c3ba4ebaf396b721e857daa21691d83d92d2cbf3a"
+    },
+    {
+      "query": "профиль пользователя системное сообщение тип памяти",
+      "question": "Как в модуле профиля пользователя устроен пункт профиля и что он берёт у памяти?",
+      "path": "day14/profile.py",
+      "section": "модуль",
+      "start": 1082,
+      "end": 1296,
+      "passage": "него системное сообщение. Пункт профиля устроен так же, как пункт памяти, и берёт\nеё тип: раздел, формулировка и то, как он сюда попал.\n\"\"\"\n\nfrom dataclasses import dataclass, field\n\nfrom openai.types.chat import (",
+      "doc_sha256": "0d4a6322e1a0361058b5d7bb684252567d8505693561bf9745ed79fa2559f4c8"
+    },
+    {
+      "query": "состояние задачи конечный автомат агент карточка",
+      "question": "Как в проекте AI Advent устроен конечный автомат состояния задачи и кто применяет переход?",
+      "path": "day13/README.md",
+      "section": "вступление",
+      "start": 426,
+      "end": 649,
+      "passage": "Состояние уходит отдельным блоком в каждый запрос, переход предлагает агент карточкой, допустимость проверяет код, а применяет пользователь.\n\nАвтомат живёт в [task.py](task.py) и устроен так, что двинуть его словами нельзя.",
+      "doc_sha256": "fcc602e933bc22e4f149233d54e95b1eb719deaf4ad6c52f35b6c46ae8f9823a"
+    },
+    {
+      "query": "доказанное нарушение цитата вокруг совпадения",
+      "question": "Что представляет собой класс Hit и как формируется цитата нарушения в инвариантах агента?",
+      "path": "day15/invariants.py",
+      "section": "class Hit",
+      "start": 8885,
+      "end": 9114,
+      "passage": "    \"\"\"Доказанное нарушение: правило, запрещённая формулировка и фрагмент текста.\n\n    Цитата берётся куском вокруг совпадения, а не всем ответом: она уходит в журнал\n    как улика и во второй проход как то, что нужно переписать.",
+      "doc_sha256": "94efa5feece593e3b565b7ba7a64cd75594c284eacf048c0393332b284a6dfe1"
+    },
+    {
+      "query": "stop обрывает генерацию четвёртый пункт",
+      "question": "Какой параметр в day2 останавливает генерацию, если модель начнёт четвёртый пункт?",
+      "path": "day2/README.md",
+      "section": "вступление",
+      "start": 826,
+      "end": 1123,
+      "passage": "`stop: [\"4.\"]` обрывает генерацию, если модель всё же начнёт четвёртый пункт.\n\n| Файл | Назначение |\n| --- | --- |\n| `day2/main.py` | FastAPI-приложение, роуты `/`, `GET /api/constraints`, `POST /api/ask` |\n| `day2/llm.py` | Клиент DeepSeek, стрим чанков |\n| `day2/constraints.json` | Ограничения:",
+      "doc_sha256": "71cfbc0bfdc5e26413daa9dc075d971e8d4f6eaa64fd7fd401e04c9c769a32b0"
+    },
+    {
+      "query": "пустой experts выключены defaults API",
+      "question": "Что означает пустой список experts в API третьего дня и где задаются задача и роли по умолчанию?",
+      "path": "day3/README.md",
+      "section": "API",
+      "start": 1017,
+      "end": 1228,
+      "passage": "error` с текстом ошибки.\n\nПустой `experts` — эксперты выключены. Задача и роли по умолчанию задаются в `day3/llm.py` (`DEFAULT_PROMPT`, `DEFAULT_EXPERTS`) и отдаются через `GET /api/defaults`. Если `meta_prompt:",
+      "doc_sha256": "5d456c51cfc6ab4c7e2ac2455e9dfd819e22f44a50c60752deb3878336c8aba2"
+    },
+    {
+      "query": "report_transitions origin agent пользователь",
+      "question": "Как в отчёте report_transitions определяется, кто инициировал переход — агент или пользователь?",
+      "path": "day13/scenarios.py",
+      "section": "def report_transitions",
+      "start": 12632,
+      "end": 12842,
+      "passage": "                \"агент\" if row[\"origin\"] == \"agent\" else \"пользователь\",\n                short(str(row[\"why\"] or \"\"), 54) or \"—\",\n            )\n            for number, row in enumerate(run.transitions, start=1)",
+      "doc_sha256": "69de0c2b172d9a60cbcfcae845e363f97593be8b476f8185b0b017eb19dfc084"
+    },
+    {
+      "query": "ленивая загрузка истории хода транзакция",
+      "question": "Как в day7 устроена запись хода в базу, чтобы оборванный стрим не оставлял частичных данных?",
+      "path": "day7/README.md",
+      "section": "Агент и сессии",
+      "start": 2315,
+      "end": 2608,
+      "passage": "Объект создаётся пустым и подтягивает хвост из базы при первом же ходе — ленивая загрузка избавляет от асинхронного конструктора. Записывается ход одной транзакцией и только целиком: оборванный стрим (ошибка API или «Остановить») не оставляет в базе ни вопроса, ни полуответа — как и в `day6`.",
+      "doc_sha256": "23d34e21019ab0e9d8996570732f1bc554de659b8584849d3802595c0462d59b"
+    },
+    {
+      "query": "случайный отрывок граница фразы chunking",
+      "question": "Как в файле evaluate.py выбирается случайный отрывок документа для эталона при сравнении стратегий chunking?",
+      "path": "day21/evaluate.py",
+      "section": "def _units",
+      "start": 5260,
+      "end": 5481,
+      "passage": "    return spans\n\ndef _anchor(document: Document, generator: random.Random) -> tuple[int, int] | None:\n    \"\"\"Случайный отрывок в 200–600 символов, начинающийся на границе фразы или строки.\"\"\"\n    units = _units(document)",
+      "doc_sha256": "328496f5e2c422f9c53bcee9fd82c06e731ed1608a0f0433312b9a105790218b"
+    },
+    {
+      "query": "guard два слоя порог ошибок",
+      "question": "Почему в двухслойном guard у детектора и аудитора разные пороги срабатывания?",
+      "path": "day14/README.md",
+      "section": "Guard в два слоя",
+      "start": 11167,
+      "end": 11479,
+      "passage": "120|Пропуски у такой мерки остаются, и это выбор, а не недоделка. «Проще всего сделать сервис на Flask и не тащить FastAPI» детектор пропустит: `не` стоит в том же обороте. Пропущенное нарушение поймает аудитор, а зря оборванный ответ пользователь увидит как поломку — цена ошибок разная, поэтому и порог разный.",
+      "doc_sha256": "2b788cb2a2b0b5abf77277ee129260f9a55799f8849489340e741cf6f3942461"
+    },
+    {
+      "query": "закрытие потока async with guard",
+      "question": "Почему в day14 поток до модели нужно закрывать через async with, а не оставлять сборщику?",
+      "path": "day14/llm.py",
+      "section": "def stream_chat",
+      "start": 1210,
+      "end": 1458,
+      "passage": "    \"\"\"Транспорт до модели: что за сообщения пришли и откуда — решает агент.\n\n    Поток закрывается через `async with`, а не сам собой, и с этого дня это важно:\n    guard обрывает чтение на середине ответа, и брошенное соединение достаётся сборщику",
+      "doc_sha256": "1d45ea65fc92bb1894f7f3850d0387939da3af1049001568f0e1d0a6220ae562"
+    },
+    {
+      "query": "типы памяти агента краткосрочная рабочая долговременная",
+      "question": "На какие типы нужно разделить информацию при реализации модели памяти агента в одиннадцатый день?",
+      "path": "day11/TASK.md",
+      "section": "вступление",
+      "start": 0,
+      "end": 254,
+      "passage": "# День 11. Модель памяти агента\n\nОпишите и реализуйте модель памяти для агента.\n\nРазделите информацию минимум на 3 типа:\n\n- краткосрочная (текущий диалог)\n- рабочая (данные текущей задачи)\n- долговременная (профиль, решения, знания)\n\nСделайте так, чтобы:",
+      "doc_sha256": "f7e5a9eda340b7b06d8dfc1ed5b42a5fd7f587b81a39e74499860a701735a25c"
+    },
+    {
+      "query": "NoCacheStaticFiles отключение кэша StaticFiles",
+      "question": "Как в day7/main.py отключить кэширование статических файлов через подкласс StaticFiles?",
+      "path": "day7/main.py",
+      "section": "class NoCacheStaticFiles",
+      "start": 733,
+      "end": 981,
+      "passage": "class NoCacheStaticFiles(StaticFiles):\n    async def get_response(self, path: str, scope):\n        response = await super().get_response(path, scope)\n        if response.status_code == 200:\n            response.headers[\"Cache-Control\"] = \"no-cache\"",
+      "doc_sha256": "54fd7b89b93711446792d8f586158028bfbe736970187c092f3ec0ef2fbc2b95"
+    },
+    {
+      "query": "расписание пережило рестарт сервера",
+      "question": "Что происходит с расписанием задач после перезапуска сервера в day18?",
+      "path": "day18/README.md",
+      "section": "Прогон",
+      "start": 6805,
+      "end": 7036,
+      "passage": "\"summary\", \"every_minutes\": 1})  → id 2, каждые 1 мин, replaced: true\n```\n\nПотом сервер перезапущен. Расписание пережило рестарт: задачи продолжили с прежними периодами и со своих `next_run_at`, без внеочередного запуска на старте.",
+      "doc_sha256": "854e9b11650757417258365535e9f401933df72d0f73d545a23ed6fe89ab1baf"
+    },
+    {
+      "query": "NoCacheStaticFiles MAX_SESSIONS SSE_HEADERS",
+      "question": "Как в day9/main.py задаются заголовки для SSE и ограничение числа сессий?",
+      "path": "day9/main.py",
+      "section": "модуль",
+      "start": 729,
+      "end": 965,
+      "passage": "BASE_DIR = Path(__file__).parent\nSTATIC_DIR = BASE_DIR / \"static\"\nNO_CACHE = {\"Cache-Control\": \"no-cache\"}\nSSE_HEADERS = {\"Cache-Control\": \"no-cache\", \"X-Accel-Buffering\": \"no\"}\nMAX_SESSIONS = 100\n\nclass NoCacheStaticFiles(StaticFiles):",
+      "doc_sha256": "ae0230af186fa927b5d182ff8b7853d8b7d5ec742f752ba3c30d766882b1100c"
+    },
+    {
+      "query": "гейт план утверждён паттерны детектор",
+      "question": "Почему без детектора гейтов нельзя доказать, что план утверждён, на ходу 7?",
+      "path": "day15/README.md",
+      "section": "Прогон: с блоком гейтов и без него / Что из этого видно",
+      "start": 24328,
+      "end": 24653,
+      "passage": "объявить ТЗ принятым мешает список паттернов у работы «объявлять ТЗ принятым и задачу закрытой», он и поймал. Настоящий случай без детектора один — ход 7: у работы за гейтом «План утверждён» паттерны описывают проектирование реализации, а не объявление утверждения, и сказать «считаю план утверждённым» в коде доказать нечем.",
+      "doc_sha256": "93a85746add21bbb8cac6b0460fa69b03230c61de3c8c3d201aa451609c5c8df"
+    },
+    {
+      "query": "stream_chat temperature max_tokens AsyncIterator",
+      "question": "Какие параметры принимает функция stream_chat в day8/llm.py помимо сообщений?",
+      "path": "day8/llm.py",
+      "section": "def stream_chat",
+      "start": 1374,
+      "end": 1589,
+      "passage": "    *,\n    temperature: float,\n    max_tokens: int,\n) -> AsyncIterator[AnswerDelta]:\n    \"\"\"Транспорт до модели: что за сообщения пришли и откуда — решает агент.\"\"\"\n    stream = await client.chat.completions.create(",
+      "doc_sha256": "cdd96ef4ac8e2e089db32b94bc57705fe575b7cbc2fbfdb8372de80dfc146a4d"
+    },
+    {
+      "query": "запуск сценария из терминала отчёт",
+      "question": "Почему результат работы сценария из терминала сохраняется в файл, а не выводится в stderr?",
+      "path": "day10/README.md",
+      "section": "Скрипт сценариев",
+      "start": 23569,
+      "end": 23809,
+      "passage": "из терминала сценарий запускают за отчётом, и тогда файла никто не ждёт. Третьего потока у процесса нет, а в stderr результат не влезает — строка с ответами агента перешагнула бы лимит `StreamReader`, — поэтому это файл, а не ещё один кадр.",
+      "doc_sha256": "ad7aa959a0bd4fd66da0fda496292ec341ee46b6758e1f06f997fad2026fdc32"
+    },
+    {
+      "query": "кэш префикса сжатие истории стоимость токенов",
+      "question": "Как в day9/scenarios.py оценивают стоимость входа без кэша префикса и как сжатие истории влияет на счёт?",
+      "path": "day9/scenarios.py",
+      "section": "def oneline",
+      "start": 6766,
+      "end": 6996,
+      "passage": "    return \" \".join(text.split())\n\ndef miss_price(input_tokens: int) -> float:\n    \"\"\"Во сколько встал бы вход, если бы кэша префикса не существовало.\n\n    Кэш и сжатие тянут счёт в разные стороны: сжатие убирает токены, но меняет",
+      "doc_sha256": "2769d55053c288a822d4aadc9c1507f4f50adaf313a2b1f954c6f5660716cb71"
+    },
+    {
+      "query": "слабая модель медиана токенов ответа",
+      "question": "Какая модель в day5 оказалась самой медленной и многословной по медиане времени и токенов ответа?",
+      "path": "day5/README.md",
+      "section": "Выводы",
+      "start": 3959,
+      "end": 4168,
+      "passage": "Слабая модель самая медленная и самая многословная: медиана 49.8 с и 3059 токенов ответа против 8.1 с / 1567 у средней. Собственно ответ начинается только на 2.3 с — первые куски уходят в короткое рассуждение.",
+      "doc_sha256": "a311d4ea40bf23f28b0aeb45a1593b5d4f068735bb79715e5c1d95fef687b303"
+    },
+    {
+      "query": "stream_answer параметры experts step_by_step",
+      "question": "Какие именованные параметры принимает функция stream_answer в модуле day3/llm.py?",
+      "path": "day3/llm.py",
+      "section": "def stream_answer",
+      "start": 2742,
+      "end": 2970,
+      "passage": "    prompt: str,\n    *,\n    step_by_step: bool = False,\n    meta_prompt: bool = False,\n    experts: list[str] | None = None,\n) -> AsyncIterator[AnswerDelta]:\n    names = [name.strip() for name in (experts or []) if name.strip()]",
+      "doc_sha256": "a0ad310b0bd4e8ef3fdd591bfc5e91e5c3d35f281f9b6f8b1f39264c61d40bc3"
+    },
+    {
+      "query": "таблицы SQLite day19 index.db",
+      "question": "Какие таблицы хранятся в базе данных SQLite day19/index.db и что записывается в каждую из них?",
+      "path": "day19/README.md",
+      "section": "Инструменты",
+      "start": 4590,
+      "end": 4935,
+      "passage": "понятно, почему выдача широкая.\n\n## Что в SQLite (`day19/index.db`)\n\n| Таблица | Что в ней |\n| --- | --- |\n| `files`, `chunks` | корпус: sha файла и разделы в FTS5 |\n| `artifacts` | `kind`, `parent_id`, payload в канонической форме JSON, sha256, размер |\n| `runs` | запрос, режим (`auto` или `manual`), статус, времена |\n| `steps` | шаг прогона:",
+      "doc_sha256": "4dc14347314a45290a500dd4e00d6ee0eca079cf639c6f7e0af5c924fbc96803"
+    },
+    {
+      "query": "starlette staticfiles agent DEFAULT_PROMPT импорт",
+      "question": "Какие константы и классы импортируются из модуля agent в day6/main.py?",
+      "path": "day6/main.py",
+      "section": "модуль",
+      "start": 269,
+      "end": 485,
+      "passage": "from starlette.staticfiles import StaticFiles\n\nfrom agent import (\n    DEFAULT_PROMPT,\n    DEFAULT_TEMPERATURE,\n    HISTORY_LIMIT,\n    MAX_TOKENS,\n    SYSTEM_PROMPT,\n    Agent,\n    AgentDelta,\n)\nfrom llm import MODEL",
+      "doc_sha256": "ded5f62127c5c2466ab52038b18a3cf79e7d569d3c1ccc57bc02f9d557f906ce"
+    },
+    {
+      "query": "day19 цепочка MCP инструментов маршрутизация",
+      "question": "Как в day20 проверяется порядок при добавлении day19 с цепочкой MCP-инструментов?",
+      "path": "day20/README.md",
+      "section": "Проверка порядка",
+      "start": 15774,
+      "end": 15991,
+      "passage": "Add day19 with a chain of MCP tools that, … Если тема запроса по-русски,\n     ищи по латинским словам из неё или возьми последние коммиты инструментом git__log.\n\nПрогон #2: failed, 62 мс\n\nПроверка порядка\n  как вышло:",
+      "doc_sha256": "d3b7cef2dfd22d34248c3d66cc71a47c1f4712b9c94fd97da09041e4fe11cd1b"
+    },
+    {
+      "query": "профили долговременная память до общения",
+      "question": "Что представляют собой профили и долговременная память до начала общения в модуле day12/seed.py?",
+      "path": "day12/seed.py",
+      "section": "модуль",
+      "start": 1569,
+      "end": 1775,
+      "passage": "# быть одна, а нужный им ответ — разный, и это ровно то, что проверяет прогон.\n# Шкалы у них расходятся по всем пяти признакам: иначе разницу в ответах пришлось\n# бы искать с лупой.\nPROFILES = (\n    Preset(",
+      "doc_sha256": "febf79a0722580ad9ea621cc06c30f168511808e5efa03fce71c6691e2959df1"
+    },
+    {
+      "query": "память диалога обрыв стрима",
+      "question": "Что происходит с парой сообщений в памяти агента, если стрим ответа прервался из-за ошибки или остановки пользователем?",
+      "path": "day6/README.md",
+      "section": "Агент как сущность",
+      "start": 2113,
+      "end": 2341,
+      "passage": "Ход попадает в память только целиком. Если стрим оборвался — ошибка API или пользователь нажал «Остановить», — в историю не уходит ни вопрос, ни обрывок ответа, и страница убирает эту пару из ленты, возвращая текст в поле ввода.",
+      "doc_sha256": "f20cfe7c70c354e1bb9fc76013257d0e11ce84a852e9f445617915b296f27725"
+    },
+    {
+      "query": "список дней репозитория MCP сервер",
+      "question": "Как в MCP-сервере формируется список дней репозитория с их названиями?",
+      "path": "day16/server.py",
+      "section": "def list_days",
+      "start": 1763,
+      "end": 2007,
+      "passage": "        (path for path in ROOT.iterdir() if path.is_dir() and DAY_DIR.match(path.name)),\n        key=lambda path: int(DAY_DIR.match(path.name).group(1)),\n    )\n    return [{\"day\": path.name, \"title\": titles.get(path.name, \"\")} for path in days]",
+      "doc_sha256": "2948d166d628666bf4d1b0a428255e7d8e191dfabdb6cf0b108896aff7c694f4"
+    },
+    {
+      "query": "сжатие истории факты обсуждалось токены",
+      "question": "Как менялось число токенов и что происходило с разделами «Факты» и «Обсуждалось» при последовательных свёртках истории в day9?",
+      "path": "day9/README.md",
+      "section": "Замеры / Что агент помнит вместо истории",
+      "start": 14193,
+      "end": 14455,
+      "passage": "379 → 642 → 854 → 854 токена. Раздел «Факты» за четыре свёртки только накапливался — имя, стек, пять лет хранения, ключ идемпотентности, Grafana с Prometheus дошли до конца диалога. Раздел «Обсуждалось» сжимался и к четвёртой свёртке был отрезан лимитом целиком.",
+      "doc_sha256": "68448e489bf0c7b3d17c5dee7fd94883978e12e6f4e14916ba063fccc336b4e4"
+    },
+    {
+      "query": "JUDGE_MAX_TOKENS Answer dataclass score comment",
+      "question": "Как в модуле day12/scenarios.py устроен класс Answer и сколько токенов отведено судье JUDGE_MAX_TOKENS?",
+      "path": "day12/scenarios.py",
+      "section": "модуль",
+      "start": 2480,
+      "end": 2694,
+      "passage": "Верни строго JSON без пояснений и без markdown: {\"score\": 2, \"comment\": \"коротко, что не так\"}\n\"\"\"\n\nJUDGE_MAX_TOKENS = 200\n\n@dataclass\nclass Answer:\n    \"\"\"Ответ одного профиля на один вопрос.\"\"\"\n\n    question: int",
+      "doc_sha256": "11b377712ec2f971386bb6b59e6b3458e74f5eaac1d9f24f3c2d6ae22ec5b956"
+    },
+    {
+      "query": "demo.py сценарный диалог реплики",
+      "question": "какой файл в day11 содержит реплики сценарного диалога, одинаковые для кнопки и для замера",
+      "path": "day11/README.md",
+      "section": "Файлы",
+      "start": 17743,
+      "end": 18284,
+      "passage": "реплики, ТЗ задачи, долговременные пункты |\n| [main.py](main.py) | API и SSE |\n| [demo.py](demo.py) | реплики сценарного диалога: одни и те же для кнопки и для замера |\n| [scenarios.py](scenarios.py) | прогон, из которого собран этот файл |\n| [static/](static/) | страница чата с блоками памяти и карточками |\n\n## API\n\n| Метод | Путь | Зачем |\n| --- | --- | --- |\n| `GET` | `/api/defaults` | параметры агента, разделы памяти, шкала окна, реплики автопрогона |\n| `POST` | `/api/session` | новый диалог |\n| `POST` | `/api/reset` | база к seed:",
+      "doc_sha256": "73329ff0fc90edf7b4341764f50ad73212a83e70c26b83de511afbedb596a5e4"
+    },
+    {
+      "query": "seed longterm профиль Preset память",
+      "question": "Что импортируется из модуля profile в файле seed.py для работы с профилями и долговременной памятью?",
+      "path": "day13/seed.py",
+      "section": "модуль",
+      "start": 560,
+      "end": 797,
+      "passage": "from profile import Preset\n\n# Пункты в том же виде, в каком они лягут в longterm: раздел и одна строка.\n# Формулировки короткие намеренно — блок памяти уходит в каждый запрос, и пересказ\n# разговора в нём стоил бы токенов на каждом ходу.",
+      "doc_sha256": "febf79a0722580ad9ea621cc06c30f168511808e5efa03fce71c6691e2959df1"
+    },
+    {
+      "query": "git инструмент MCP данные модели",
+      "question": "Почему в day17 в качестве инструмента MCP выбран git, а не простая функция add?",
+      "path": "day17/README.md",
+      "section": "Почему git, а не `add(a, b)`",
+      "start": 727,
+      "end": 943,
+      "passage": "Разница между включённым и выключенным тумблером получается содержательной: инструменты дают не стиль и не рассуждение, а единственное, чего у модели нет, — данные.\n\nGit вызывается списком аргументов, не через shell.",
+      "doc_sha256": "a79480156878b72d3a90b9737d91b478709a3910f29a010791fff35db86afaf7"
+    },
+    {
+      "query": "POST /api/ask temperature event-stream",
+      "question": "Какой формат запроса и ответа у эндпоинта POST /api/ask в проекте AI Advent?",
+      "path": "day4/README.md",
+      "section": "Выводы по температуре",
+      "start": 3351,
+      "end": 3582,
+      "passage": "HTML, CSS, JS |\n\n## API\n\n`POST /api/ask` принимает `{\"prompt\": \"...\", \"temperature\": 0.7}` и отдаёт `text/event-stream`: кадры `data: <json-строка>` с частями ответа, затем `event: done` с `{finish_reason, word_count}` либо `event:",
+      "doc_sha256": "100b6459793646b8695ca3b606228db8da716e05a06e26ce7f7ef22264f17504"
+    },
+    {
+      "query": "потолок раундов агента max_rounds",
+      "question": "Что происходит с запуском агента, когда достигнут потолок раундов?",
+      "path": "day20/agent.py",
+      "section": "def answer",
+      "start": 5455,
+      "end": 5669,
+      "passage": "        # Потолок раундов: лучше честный итог, чем бесконечное хождение по серверам.\n        verdict = flow.verdict(run_id) if mode == \"agent\" else None\n        reg.finish_run(run_id, \"max_rounds\", verdict=verdict)",
+      "doc_sha256": "ddbfbf6dae89b225c450c43b8c494b39690589a68fd22f9fb9b28ea300df2cd1"
+    },
+    {
+      "query": "uvicorn main app reload day15",
+      "question": "Какой командой запустить приложение из папки day15 и по какому адресу будет доступен интерфейс?",
+      "path": "README.md",
+      "section": "Запуск",
+      "start": 5180,
+      "end": 5401,
+      "passage": "```bash\nuvicorn main:app --reload --app-dir day15\n```\n\nИнтерфейс доступен на http://127.0.0.1:8000, а в `day10` рядом с чатом есть http://127.0.0.1:8000/scenarios — замеры стратегий кнопкой, с готовым markdown для README.",
+      "doc_sha256": "535e0074755b81c9e2c1e994e1e8d86ef37dbfed1cbe8509f66eae66a95b6177"
+    },
+    {
+      "query": "render память разделами SECTIONS tier",
+      "question": "Как функция render группирует элементы памяти по разделам в зависимости от уровня?",
+      "path": "day14/memory.py",
+      "section": "def render",
+      "start": 4651,
+      "end": 4910,
+      "passage": "def render(tier: str, items: tuple[Item, ...]) -> str:\n    \"\"\"Память разделами, а не сплошным списком: так её читает и модель, и человек.\"\"\"\n    lines = []\n    for section in SECTIONS[tier]:\n        chosen = [item for item in items if item.section == section]",
+      "doc_sha256": "39d6f8dd341f37a26a731857510d85946d554270416272fd0dfe6a29c9b0e7ea"
+    },
+    {
+      "query": "MCP клиент соединение рукопожатие вызов инструментов",
+      "question": "Какой файл в проекте реализует MCP-клиент с соединением, рукопожатием и вызовом инструментов?",
+      "path": "day16/README.md",
+      "section": "Файлы",
+      "start": 10454,
+      "end": 10691,
+      "passage": "три инструмента по этому репозиторию, транспорт stdio |\n| [client.py](client.py) | MCP-клиент: соединение, рукопожатие, список инструментов, вызов, перевод схем в формат запроса; запускается и сам по себе |\n| [llm.py](llm.py) | DeepSeek:",
+      "doc_sha256": "143071cce7671984309b9138431bcd3a6c69f109f5029d312f2bc9a64be21707"
+    },
+    {
+      "query": "неизвестный уровень памяти tier ошибка",
+      "question": "Что происходит в day12/main.py, если в функцию forget передан уровень памяти, отсутствующий в TIERS?",
+      "path": "day12/main.py",
+      "section": "def forget",
+      "start": 9167,
+      "end": 9387,
+      "passage": "    if tier not in TIERS:\n        raise HTTPException(status_code=422, detail=f\"Неизвестный уровень памяти: {tier}\")\n\n    agent = await registry.get(session_id)\n    try:\n        memory = await agent.forget(tier, item_id)",
+      "doc_sha256": "29e5feb73bdc273a7fa02a2405f2d809b2a8ed5922418f68a713cdeb5294bd31"
+    },
+    {
+      "query": "общая долговременная память профили коллеги",
+      "question": "Почему долговременная память в проекте осталась общей для всех профилей пользователей?",
+      "path": "day12/README.md",
+      "section": "Профиль и память: разные вопросы, разное устройство",
+      "start": 2209,
+      "end": 2457,
+      "passage": "Долговременная память при этом осталась общей для всех профилей, и это осознанный выбор: профили — коллеги, а не разные пользователи разных продуктов. «Новые сервисы поднимаем на FastAPI» верно для всех трёх, а «отвечай короче» — только для одного.",
+      "doc_sha256": "4d3512aaa65872b28337d1b15c41dd149b47634059c35a1a8633165b586f3406"
+    },
+    {
+      "query": "system prompt вежливый краткий ассистент память диалога",
+      "question": "Какой системный промпт задаёт поведение ассистента в day7/agent.py и что он должен помнить?",
+      "path": "day7/agent.py",
+      "section": "модуль",
+      "start": 197,
+      "end": 477,
+      "passage": "    ChatCompletionSystemMessageParam,\n    ChatCompletionUserMessageParam,\n)\n\nfrom llm import complete, stream_chat\nfrom storage import Storage\n\nSYSTEM_PROMPT = \"\"\"\\\nТы — вежливый и краткий ассистент.\nТы помнишь предыдущие реплики диалога и опираешься на них: если вопрос ссылается",
+      "doc_sha256": "8bd910c4987c47094da782fda91b9d85cd9996194f2567148ac77b64297feaa6"
+    },
+    {
+      "query": "токены истории диалога до отправки",
+      "question": "Как агент считает токены промпта и всей истории диалога до отправки запроса в модель?",
+      "path": "day8/README.md",
+      "section": "Три числа на каждый ход",
+      "start": 640,
+      "end": 933,
+      "passage": "prompt` |\n| Токены всей истории диалога | все сообщения сессии из SQLite | до отправки, там же |\n| Токены ответа | `usage.completion_tokens` | после ответа, кадр `event: done` |\n\nПервые два считает сам агент — иначе стоимость запроса стала бы известна только после того, как за него заплатили.",
+      "doc_sha256": "a3e3395818443f98fdfad01c3ba4ebaf396b721e857daa21691d83d92d2cbf3a"
+    },
+    {
+      "query": "окно диалога память проекта сценарии",
+      "question": "Какое значение окна сообщений используется в сценариях замеров для README?",
+      "path": "day10/scenarios.py",
+      "section": "модуль",
+      "start": 1907,
+      "end": 2167,
+      "passage": "# Окно то же, что в интерфейсе по умолчанию: три последних хода дословно.\nSCENARIO_WINDOW = memory.WINDOW_MESSAGES\n\n# Разговор об одном проекте: факты появляются в первых ходах и к концу диалога\n# уезжают из окна — как раз в ту часть, которую держит картотека.",
+      "doc_sha256": "a7c09ec0b9e0556971d2fd64c72242120d5b9e808557bd0b5eced21eef8e175a"
+    },
+    {
+      "query": "сервис собирает отчёт за любой день",
+      "question": "Что должен делать сервис на втором шаге прогона с блоком состояния?",
+      "path": "day13/README.md",
+      "section": "Прогон: с блоком состояния и без него",
+      "start": 10073,
+      "end": 10367,
+      "passage": "| планирование · цель | назвать, что за сервис и зачем он нужен | шаг: цель → требования | 2/2 |\n| 2 | Сервис должен собирать отчёт за любой день и отдава… | планирование · требования | перечислить, что сервис должен делать | — | 2/2 |\n| 3 | Ещё он должен присылать ссылку на готовый файл, ког…",
+      "doc_sha256": "fcc602e933bc22e4f149233d54e95b1eb719deaf4ad6c52f35b6c46ae8f9823a"
+    },
+    {
+      "query": "stream_chat tools finish_reason DeepSeek",
+      "question": "Как в day17/llm.py функция stream_chat передаёт вызовы инструментов вместе с finish_reason?",
+      "path": "day17/llm.py",
+      "section": "def stream_chat",
+      "start": 1076,
+      "end": 1287,
+      "passage": "    *,\n    tools: list[dict[str, Any]] | None,\n    temperature: float,\n    max_tokens: int,\n) -> AsyncIterator[AnswerDelta]:\n    \"\"\"Один проход к модели. Вызовы инструментов отдаются вместе с `finish_reason`.\"\"\"",
+      "doc_sha256": "9c12d715f56ded51aa5d2d44acaadb14d39a39e92256d8bf5025bf2bb884871e"
+    },
+    {
+      "query": "stop обрыв генерации четвертый пункт",
+      "question": "Как в day2 настроить stop, чтобы модель не начинала четвёртый пункт ответа?",
+      "path": "day2/README.md",
+      "section": "вступление",
+      "start": 686,
+      "end": 903,
+      "passage": "200, \"stop\": [\"4.\"] }\n}\n```\n\n`system_prompt` и `sections` собираются в system prompt, `params` уходят в `chat.completions.create` как есть. `stop: [\"4.\"]` обрывает генерацию, если модель всё же начнёт четвёртый пункт.",
+      "doc_sha256": "71cfbc0bfdc5e26413daa9dc075d971e8d4f6eaa64fd7fd401e04c9c769a32b0"
+    },
+    {
+      "query": "commit proposal_id target section origin",
+      "question": "Какой метод класса Agent принимает решение по кандидату и записывает его на уровень?",
+      "path": "day11/agent.py",
+      "section": "class Agent",
+      "start": 6589,
+      "end": 6866,
+      "passage": "    async def commit(\n        self,\n        proposal_id: int,\n        target: str,\n        section: str = \"\",\n        text: str = \"\",\n        origin: str = \"user\",\n    ) -> dict[str, Any]:\n        \"\"\"Решение по кандидату: записать на уровень, перенести на другой или отклонить.",
+      "doc_sha256": "a6815069913a52f075ef572e8dce93110004e5ae61ed6afa7da108ba21d67c85"
+    },
+    {
+      "query": "формат ответа API эксперты выключены",
+      "question": "Какой формат ответа отдаёт API, если эксперты выключены?",
+      "path": "day3/README.md",
+      "section": "API",
+      "start": 853,
+      "end": 1081,
+      "passage": "false, \"experts\": []}` и отдаёт `text/event-stream`: кадры `data: <json-строка>` с частями ответа, затем `event: done` с `{finish_reason, word_count}` либо `event: error` с текстом ошибки.\n\nПустой `experts` — эксперты выключены.",
+      "doc_sha256": "5d456c51cfc6ab4c7e2ac2455e9dfd819e22f44a50c60752deb3878336c8aba2"
+    },
+    {
+      "query": "source_id внешний ключ удалённый диалог",
+      "question": "почему в таблице знаний source_id не является внешним ключом на диалог",
+      "path": "day11/storage.py",
+      "section": "модуль",
+      "start": 1976,
+      "end": 2206,
+      "passage": "    -- В каком диалоге это узнали. У seed источника нет, и внешнего ключа тоже:\n    -- удалённый диалог не должен уносить знание, которое из него вынесли.\n    source_id  TEXT,\n    created_at TEXT NOT NULL DEFAULT (datetime('now'))",
+      "doc_sha256": "440c6de811ec9716a62426ee15442b9bca66db5fe0ddbb5ef783b92b1608a9e2"
+    },
+    {
+      "query": "постоянная память диалоги SQLite сессии",
+      "question": "Как в проекте AI Advent реализована постоянная память диалогов, чтобы разговор продолжался после перезапуска?",
+      "path": "day7/README.md",
+      "section": "вступление",
+      "start": 345,
+      "end": 583,
+      "passage": "Здесь источник истины — SQLite-файл `day7/history.db`, и после перезапуска разговор продолжается с той же реплики. Раз диалоги переживают процесс, их стало несколько: слева панель со всеми сессиями из базы, между ними можно переключаться.",
+      "doc_sha256": "23d34e21019ab0e9d8996570732f1bc554de659b8584849d3802595c0462d59b"
+    },
+    {
+      "query": "NoCacheStaticFiles отключение кеша StaticFiles",
+      "question": "Как в day4/main.py отключить кеширование статических файлов через подкласс StaticFiles?",
+      "path": "day4/main.py",
+      "section": "class NoCacheStaticFiles",
+      "start": 625,
+      "end": 873,
+      "passage": "class NoCacheStaticFiles(StaticFiles):\n    async def get_response(self, path: str, scope):\n        response = await super().get_response(path, scope)\n        if response.status_code == 200:\n            response.headers[\"Cache-Control\"] = \"no-cache\"",
+      "doc_sha256": "995ce8d30ba32d021c3c98cf0f9c1a37740805fa890486e601f75548a86aacf7"
+    },
+    {
+      "query": "кнопка инвариант наведение ТЗ",
+      "question": "Как в day14 превратить пункт ТЗ в зафиксированный инвариант с помощью кнопки при наведении?",
+      "path": "day14/README.md",
+      "section": "Guard в два слоя",
+      "start": 22631,
+      "end": 22882,
+      "passage": "Ниже форма: строка, вид, уровень — завести инвариант руками.\n   220|\nНа каждом пункте ТЗ по наведению появляется кнопка «инвариант». Нажатие превращает решение в рамку, не меняя формулировки; у зафиксированного пункта на месте кнопки стоит «в рамках».",
+      "doc_sha256": "2b788cb2a2b0b5abf77277ee129260f9a55799f8849489340e741cf6f3942461"
+    },
+    {
+      "query": "короткий ответ целиком без стриминга",
+      "question": "Почему в функции complete из day13/llm.py ответ не стримится, а запрашивается целиком?",
+      "path": "day13/llm.py",
+      "section": "def complete",
+      "start": 650,
+      "end": 859,
+      "passage": "    max_tokens: int,\n) -> Answer:\n    \"\"\"Короткий ответ целиком: стримить нечего, когда ждут пару слов.\"\"\"\n    completion = await client.chat.completions.create(\n        model=MODEL,\n        messages=messages,",
+      "doc_sha256": "52789e6908827d9c5dd2bc921e2ce1869197dd213c6fe409171316393cf2b0ff"
+    },
+    {
+      "query": "сохранение требования в память агента варианты",
+      "question": "Какие варианты выбора предлагаются при сохранении требования в память агента во время работы в чате?",
+      "path": "day11/TASK.md",
+      "section": "Отображение",
+      "start": 991,
+      "end": 1278,
+      "passage": "При работе с агентом происходит следующее:\n\n- в чат поступает задача;\n- если появляется требование, которое может использоваться как общее в целом или\n  частное в рамках задания, то отображается предложение о суммаризации и\n  сохранении его в памяти, с вариантами выбора, куда сохранить:",
+      "doc_sha256": "f7e5a9eda340b7b06d8dfc1ed5b42a5fd7f587b81a39e74499860a701735a25c"
+    },
+    {
+      "query": "add_working session_id section text origin",
+      "question": "Какой асинхронный метод класса Storage добавляет запись в рабочий раздел, принимая идентификатор сессии, раздел, текст и источник?",
+      "path": "day12/storage.py",
+      "section": "class Storage",
+      "start": 22731,
+      "end": 22980,
+      "passage": "        return [dict(zip(ITEM_FIELDS, row)) for row in rows]\n\n    async def add_working(self, session_id: str, section: str, text: str, origin: str) -> int:\n        return await asyncio.to_thread(self._add_working, session_id, section, text, origin)",
+      "doc_sha256": "163416150200cfd7559464f0be4b1e3471ba39ef4b311781def39fcb1c2cd991"
+    },
+    {
+      "query": "сбой задачи не сбой цикла планировщик",
+      "question": "Что происходит с циклом планировщика и другими задачами, если одна задача завершилась исключением?",
+      "path": "day18/README.md",
+      "section": "Цикл планировщика",
+      "start": 3196,
+      "end": 3405,
+      "passage": "- **Сбой задачи — не сбой цикла.** Исключение записывается в `jobs.last_error`, задача переносится на следующий период, остальные работают дальше. Ошибку видно в `list_jobs` и в таблице расписания на странице.",
+      "doc_sha256": "854e9b11650757417258365535e9f401933df72d0f73d545a23ed6fe89ab1baf"
+    },
+    {
+      "query": "метрики ответа форма Shape",
+      "question": "Какие поля содержит класс Shape, измеряющий ответ по шкалам профиля?",
+      "path": "day13/shape.py",
+      "section": "class Shape",
+      "start": 1653,
+      "end": 1919,
+      "passage": "class Shape:\n    \"\"\"Мерка одного ответа: только то, чем управляют шкалы профиля.\"\"\"\n\n    words: int\n    bullets: int\n    # Строк таблицы, а не таблиц: считать таблицы целиком незачем — по числу строк\n    # видно и то, что таблица есть, и то, насколько она подробная.",
+      "doc_sha256": "078c78c5f0dc31f8e255a55a6c5331c013cd328fd349345c5758730c2e797c36"
+    },
+    {
+      "query": "guard в два слоя задержка фразы",
+      "question": "Как в day15 устроен двухслойный guard, который задерживает фразу до точки и обрывает проход при забеге?",
+      "path": "day15/README.md",
+      "section": "Область этапа",
+      "start": 10491,
+      "end": 11041,
+      "passage": "Цена ошибок разная, поэтому и порог разный.\n\n## Guard в два слоя\n\n```mermaid\nflowchart TD\n    ask[\"запрос с блоком гейтов и областью этапа\"] --> stream[\"ответ идёт потоком\"]\n    stream --> hold{\"в недописанной фразе<br/>работа за гейтом?\"}\n    hold -->|\"нет\"| show[\"кусок уходит пользователю\"]\n    hold -->|\"да\"| wait[\"фраза задержана до точки\"]\n    wait --> scan{\"ahead.scan<br/>по законченной фразе\"}\n    scan -->|\"отсрочка или отрицание\"| show\n    scan -->|\"забег\"| abort[\"проход оборван, текст снят с экрана\"]\n    abort --> second[\"второй проход:",
+      "doc_sha256": "93a85746add21bbb8cac6b0460fa69b03230c61de3c8c3d201aa451609c5c8df"
+    },
+    {
+      "query": "MCP инструменты OpenAI формат parameters",
+      "question": "Как в MCP-клиенте преобразовать список инструментов в формат OpenAI, чтобы inputSchema попала в parameters?",
+      "path": "day19/client.py",
+      "section": "def as_openai_tools",
+      "start": 4066,
+      "end": 4295,
+      "passage": "def as_openai_tools(tools: list[types.Tool]) -> list[dict[str, Any]]:\n    \"\"\"`inputSchema` инструмента MCP кладётся в `parameters` как есть: это один и тот же JSON Schema.\"\"\"\n    return [\n        {\n            \"type\": \"function\",",
+      "doc_sha256": "7aedc69db9c50799240759d1c9a0b74b7e1d83db86d24557d33ff26e091fb68e"
+    },
+    {
+      "query": "расход токенов по ходам картотека",
+      "question": "Как меняется расход токенов на входе по ходам при использовании картотеки фактов в day10?",
+      "path": "day10/README.md",
+      "section": "Замеры / Расход токенов по ходам",
+      "start": 10252,
+      "end": 10508,
+      "passage": "+ картотека 701 ток. (24 фактов) | 383 | 888 | +131.9% | $0.000083 | $0.000093 |\n| вопрос 5 | 6 сообщ. | 6 сообщ. + картотека 701 ток. (24 фактов) | 402 | 873 | +117.2% | $0.000114 | $0.000119 |\n\nГлавное в этой таблице — обе колонки входа выходят на плато.",
+      "doc_sha256": "ad7aa959a0bd4fd66da0fda496292ec341ee46b6758e1f06f997fad2026fdc32"
+    },
+    {
+      "query": "окно сообщений обрывок пары",
+      "question": "Что происходит с ответом агента, если его вопрос не помещается в окно памяти?",
+      "path": "day15/memory.py",
+      "section": "class Memory",
+      "start": 7147,
+      "end": 7349,
+      "passage": "        \"\"\"\n        chosen = list(self.messages[-window:]) if window > 0 else []\n\n        # Ответ без своего вопроса — обрывок: если пара не влезла в окно целиком,\n        # уходит и вторая её половина.",
+      "doc_sha256": "39d6f8dd341f37a26a731857510d85946d554270416272fd0dfe6a29c9b0e7ea"
+    },
+    {
+      "query": "выбор модели краткость предсказуемый объём",
+      "question": "Какая модель оправдана, когда важны краткость и предсказуемый объём ответа, и как она выигрывает по времени и деньгам?",
+      "path": "day5/README.md",
+      "section": "Выводы",
+      "start": 4809,
+      "end": 5167,
+      "passage": "Оправдана, когда важны краткость и предсказуемый объём; на этой задаче средняя выигрывает по времени и деньгам при том же полном решении.\n\nПрактическое правило: на длинных рассуждениях бесплатная «слабая» модель съедает больше всего времени и токенов; средняя даёт рабочий полный ответ быстрее и дешевле сильной; сильная экономит на объёме, но не на времени.",
+      "doc_sha256": "a311d4ea40bf23f28b0aeb45a1593b5d4f068735bb79715e5c1d95fef687b303"
+    },
+    {
+      "query": "агент собирает цепочку артефактов",
+      "question": "Чем отличается агент из day19 от run_pipeline по тому, кто управляет номерами артефактов?",
+      "path": "day19/agent.py",
+      "section": "модуль",
+      "start": 83,
+      "end": 307,
+      "passage": "Здесь агент не только отвечает на вопросы, но и собирает цепочку сам, когда его\nоб этом просят. Вся разница с `run_pipeline` — в том, кто держит номера артефактов:\nтам их передаёт код, тут модель, и ей про это сказано прямо.",
+      "doc_sha256": "96a477255dc988eeaba430adf52634e4f23684045e08f3258882ab09b179a30f"
+    },
+    {
+      "query": "инкрементальная переиндексация sha файла FTS5",
+      "question": "Как в day19 устроена переиндексация документов и как запрос человека преобразуется в выражение FTS5?",
+      "path": "day19/README.md",
+      "section": "Инструменты",
+      "start": 4178,
+      "end": 4441,
+      "passage": "Переиндексация инкрементальная, по sha файла: правка одного README не перестраивает остальные 36.\n\nЗапрос человека переводится в выражение FTS5 не как есть: слова берутся в кавычки с префиксным `*`, иначе «AND» из текста стало бы оператором, а дефис — отрицанием.",
+      "doc_sha256": "4dc14347314a45290a500dd4e00d6ee0eca079cf639c6f7e0af5c924fbc96803"
+    },
+    {
+      "query": "инкрементальная переиндексация по sha файла",
+      "question": "По какому признаку файл переиндексируется в функции _reindex?",
+      "path": "day20/servers/docs.py",
+      "section": "def _sections",
+      "start": 6036,
+      "end": 6308,
+      "passage": "        flush()\n        heading, lines = name, []\n\n    flush()\n    return sections\n\ndef _reindex() -> dict[str, int]:\n    \"\"\"Инкрементально: файл переиндексируется только если изменился его sha.\"\"\"\n    files = {path: path.read_text(encoding=\"utf-8\") for path in _corpus()}",
+      "doc_sha256": "c9040ced0e7c041737376475dcf07f288f30140f5fed95e1bb61b3d107ddf64a"
+    },
+    {
+      "query": "git log show files MCP инструменты",
+      "question": "Какие MCP-инструменты позволяют посмотреть последние коммиты, один коммит целиком и файлы, затронутые коммитами?",
+      "path": "day20/README.md",
+      "section": "Инструменты",
+      "start": 8888,
+      "end": 9101,
+      "passage": "хеш, дата, автор, тема |\n| `git__log` | `limit?` | последние коммиты без поиска |\n| `git__show` | `ref` | один коммит целиком: статистика и файлы |\n| `git__files` | `commits` ← `commits` | что трогали эти коммиты:",
+      "doc_sha256": "d3b7cef2dfd22d34248c3d66cc71a47c1f4712b9c94fd97da09041e4fe11cd1b"
+    },
+    {
+      "query": "MCP сервер vault временные метки UTC",
+      "question": "Как в MCP-сервере хранилища AI Advent формируются временные метки и как они преобразуются в локальное время?",
+      "path": "day20/servers/vault.py",
+      "section": "class Check",
+      "start": 2528,
+      "end": 2765,
+      "passage": "\"\"\"\n\nmcp = MCPServer(\"AI Advent vault\", version=\"20.0\")\n\ndef _now() -> str:\n    return datetime.now(UTC).replace(microsecond=0).isoformat()\n\ndef _local(value: str) -> str:\n    return datetime.fromisoformat(value).astimezone().isoformat()",
+      "doc_sha256": "ec2ce2f2a4af8458a25e6fd469645a801a242cb87e018b6442df4f8614a5d18a"
+    },
+    {
+      "query": "параллельные запросы сессия asyncio Lock",
+      "question": "Чем сериализуются параллельные запросы в одну сессию, чтобы два хода не собирали контекст одновременно?",
+      "path": "day6/README.md",
+      "section": "Агент как сущность",
+      "start": 2406,
+      "end": 2743,
+      "passage": "Параллельные запросы в одну сессию сериализуются `asyncio.Lock`, чтобы два хода не собирали контекст одновременно.\n\n## Проверка памяти\n\n```bash\nSID=$(curl -s -X POST http://127.0.0.1:8000/api/session | python -c 'import sys,json;print(json.load(sys.stdin)[\"session_id\"])')\ncurl -sN -X POST http://127.0.0.1:8000/api/ask -H 'Content-Type:",
+      "doc_sha256": "f20cfe7c70c354e1bb9fc76013257d0e11ce84a852e9f445617915b296f27725"
+    },
+    {
+      "query": "стек релизы GitLab CI Kubernetes",
+      "question": "Какой технологический стек и процесс релизов указаны в сценарии для проверки памяти ассистента?",
+      "path": "day11/scenarios.py",
+      "section": "модуль",
+      "start": 2205,
+      "end": 2454,
+      "passage": "    (\n        \"Какой у меня стек и как мы выкатываем релизы?\",\n        \"Python 3.12, FastAPI, PostgreSQL; релизы по вторникам через GitLab CI в Kubernetes\",\n    ),\n)\n\nJUDGE_PROMPT = \"\"\"\\\nТы проверяешь, помнит ли ассистент факты из давнего разговора.",
+      "doc_sha256": "1e184b4adfc7955297519b98c0efd32f1bf7f2f267ead0ad6392330331bfbce2"
+    },
+    {
+      "query": "обрезка конспекта SUMMARY_MAX_TOKENS tidy",
+      "question": "Что происходит с конспектом на сороковом сообщении и почему оборванный тезис не попадает в память?",
+      "path": "day9/README.md",
+      "section": "Замеры / Чего стоило качество: четыре версии промпта свёртки",
+      "start": 12528,
+      "end": 12767,
+      "passage": "на сороковом сообщении конспект выходит на потолок `SUMMARY_MAX_TOKENS` и обрезается. Оборванный тезис не попадает в память — `tidy()` выбрасывает последнюю незаконченную строку, потому что недоговорённый факт в памяти хуже отсутствующего.",
+      "doc_sha256": "68448e489bf0c7b3d17c5dee7fd94883978e12e6f4e14916ba063fccc336b4e4"
+    },
+    {
+      "query": "markdown таблица форматирование тысяч пробел",
+      "question": "Как в отчёте пайплайна форматируется таблица markdown и разделяются разряды чисел?",
+      "path": "day21/scenarios.py",
+      "section": "def _table",
+      "start": 975,
+      "end": 1181,
+      "passage": "    lines.extend(\"| \" + \" | \".join(row) + \" |\" for row in rows)\n    return \"\\n\".join(lines)\n\ndef _thousands(value: float) -> str:\n    return f\"{round(value):,}\".replace(\",\", \" \")\n\ndef show_corpus() -> None:",
+      "doc_sha256": "b675dc3da3deeabec5ea333ec822058004df4cdfc4e1a74e5759fb4d656cab1a"
+    },
+    {
+      "query": "три уровня памяти рост ленты сообщений",
+      "question": "как меняется размер ленты сообщений по ходам при прогоне сборки ТЗ за 12 ходов в day11?",
+      "path": "day11/README.md",
+      "section": "Прогон: собираем ТЗ за 12 ходов / Как растут три уровня",
+      "start": 7195,
+      "end": 7437,
+      "passage": "|\n| вопрос 2 | 26 сообщ. | 6 сообщ. | 12 п. | 11 п. |\n| вопрос 3 | 28 сообщ. | 6 сообщ. | 12 п. | 11 п. |\n\nТри колонки ведут себя по-разному, и в этом весь день. Лента растёт на два сообщения за ход и к концу доходит до 28 — в запросе её нет.",
+      "doc_sha256": "73329ff0fc90edf7b4341764f50ad73212a83e70c26b83de511afbedb596a5e4"
+    },
+    {
+      "query": "AnswerDelta dataclass поля content finish_reason usage",
+      "question": "Какие поля содержит dataclass AnswerDelta и что приходит в поле usage в конце потока?",
+      "path": "day9/llm.py",
+      "section": "class AnswerDelta",
+      "start": 418,
+      "end": 636,
+      "passage": "@dataclass(frozen=True)\nclass AnswerDelta:\n    content: str = \"\"\n    finish_reason: str | None = None\n    # Счёт за запрос: приходит одним отдельным чанком в конце потока.\n    usage: Any = None\n\n@dataclass(frozen=True)",
+      "doc_sha256": "cdd96ef4ac8e2e089db32b94bc57705fe575b7cbc2fbfdb8372de80dfc146a4d"
+    },
+    {
+      "query": "python day17 client.py git_log вызов",
+      "question": "Какой командой запускается клиент из day17, который сам вызывает инструмент git_log?",
+      "path": "day17/README.md",
+      "section": "Клиент вызывает инструмент сам",
+      "start": 1863,
+      "end": 2078,
+      "passage": "`python day17/client.py` поднимает сервер, печатает рукопожатие и список, а потом вызывает `git_log(limit=3)`:\n\n```\n$ python day17/client.py\nСоединение установлено за 426 мс\n  команда:     python server.py\n  сервер:",
+      "doc_sha256": "a79480156878b72d3a90b9737d91b478709a3910f29a010791fff35db86afaf7"
+    }
+  ]
+}

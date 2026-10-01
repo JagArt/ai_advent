@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Первый RAG-запрос: ответ с базой и без неё</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Первый RAG-запрос</h1>
+        <p class="subtitle">Вопрос уходит к модели дважды: как есть и вместе с найденными чанками — разница видна рядом, в тексте и в токенах</p>
+    </header>
+
+    <form class="form" id="askForm">
+        <span class="panel-title">Вопрос</span>
+        <input
+            id="question"
+            class="prompt line"
+            type="text"
+            placeholder="Вопрос по базе проекта"
+            value="На каком порту слушает постоянный MCP-сервер хранилища в day20?"
+        >
+
+        <div class="examples" id="examples"></div>
+
+        <div class="actions">
+            <label class="field">
+                <span>поиск</span>
+                <select id="retriever" class="number"></select>
+            </label>
+            <label class="field">
+                <span>чанков</span>
+                <input id="limit" class="number" type="number" min="1" max="12" value="5">
+            </label>
+            <span class="hint" id="askStatus">Промпт, модель и температура у обоих режимов одни и те же. Отличается ровно один блок — найденные выдержки.</span>
+            <button type="submit" class="button" id="run">Спросить</button>
+        </div>
+    </form>
+
+    <section class="panel" id="answersPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Два ответа</span>
+            <span class="meta" id="answersMeta"></span>
+        </div>
+        <div class="panel-body">
+            <div class="answers" id="answers"></div>
+        </div>
+    </section>
+
+    <section class="panel" id="contextPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Что ушло в контекст</span>
+            <span class="meta" id="contextMeta"></span>
+        </div>
+        <div class="panel-body" id="contextBody"></div>
+    </section>
+
+    <section class="panel" id="chunkPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Чанк целиком</span>
+            <span class="meta" id="chunkMeta"></span>
+            <button type="button" class="copy" id="closeChunk">Закрыть</button>
+        </div>
+        <div class="panel-body" id="chunkBody"></div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Контрольный набор</span>
+            <span class="meta" id="questionsMeta"></span>
+            <button type="button" class="copy" id="runQuestions">Прогнать</button>
+        </div>
+        <div class="panel-body" id="questionsBody">
+            <span class="placeholder">Загружаем...</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Три ретривера на пробах day21</span>
+            <span class="meta" id="retrievalMeta"></span>
+            <button type="button" class="copy" id="runRetrieval">Сравнить</button>
+        </div>
+        <div class="panel-body" id="retrievalBody">
+            <span class="placeholder">Набор проб лежит в probes.json — сравнение считается по нему, без модели и без ключа.</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Корпус и индекс</span>
+            <span class="meta" id="corpusMeta"></span>
+            <button type="button" class="copy" id="build">Собрать заново</button>
+        </div>
+        <div class="panel-body" id="corpusBody">
+            <span class="placeholder">Читаем корпус...</span>
+        </div>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
