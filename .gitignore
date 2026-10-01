@@ -255,3 +255,8 @@ day21/corpus/*.pdf
 # То же в day22; questions.json и probes.json коммитятся — без них нечем мерить.
 day22/index.db*
 day22/corpus/*.pdf
+
+# То же в day23. Кэши rewrites.json и relevance.json коммитятся вместе с набором:
+# без них матрица режимов стоит сотни вызовов модели и не воспроизводится.
+day23/index.db*
+day23/corpus/*.pdf

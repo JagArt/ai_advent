@@ -1,0 +1,2331 @@
+{
+  "model": "deepseek-v4-flash",
+  "modes": [
+    "keyword",
+    "hyde"
+  ],
+  "rewrites": [
+    {
+      "mode": "hyde",
+      "question": "В каком облаке развёрнут этот проект и сколько стоит его хостинг в месяц?",
+      "query": "Проект развёрнут в Yandex Cloud: managed-кластер PostgreSQL в `ru-central1`, Object Storage для бэкапов и Serverless Containers для `api` и `worker`. Ориентировочная стоимость хостинга — около 4 200 ₽/месяц при текущей нагрузке (≈120k запросов/сутки), детализация — в `docs/infra/cost.md`.",
+      "prompt_tokens": 184,
+      "completion_tokens": 96,
+      "seconds": 1.572,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Зачем проекту ключ OpenRouter, если всё остальное работает на DeepSeek?",
+      "query": "Ключ `OPENROUTER_API_KEY` в `.env` нужен для модуля `ai/llm_client.py`, который по умолчанию ходит в OpenRouter (`https://openrouter.ai/api/v1`) и выбирает модель через переменную `LLM_MODEL`. DeepSeek используется только как fallback-провайдер в `ai/providers/deepseek.py` при `LLM_PROVIDER=deepseek`, поэтому оба ключа должны быть заданы одновременно.",
+      "prompt_tokens": 182,
+      "completion_tokens": 109,
+      "seconds": 1.339,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как агент считает токены промпта и всей истории диалога до отправки запроса в модель?",
+      "query": "Перед вызовом LLM агент собирает массив `messages` (system + история диалога) и прогоняет его через `countTokens()` из `@anthropic-ai/sdk` либо через `tiktoken` для OpenAI-совместимых моделей. Результат сохраняется в `usage.input_tokens` и сравнивается с `MAX_CONTEXT_TOKENS` в `config/agent.ts`; при превышении срабатывает `trimHistory()` в `src/context/trimmer.ts`.",
+      "prompt_tokens": 187,
+      "completion_tokens": 115,
+      "seconds": 1.647,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в MCP-клиенте преобразовать список инструментов в формат OpenAI, чтобы inputSchema попала в parameters?",
+      "query": "В `mcp_client.py` функция `mcp_tools_to_openai(tools)` преобразует каждый инструмент MCP в словарь вида `{\"type\": \"function\", \"function\": {\"name\": ..., \"description\": ..., \"parameters\": tool.inputSchema}}` — именно поле `inputSchema` кладётся в `parameters` без изменений. Результат передаётся в `client.chat.completions.create(tools=...)` как список OpenAI-совместимых описаний.",
+      "prompt_tokens": 189,
+      "completion_tokens": 107,
+      "seconds": 1.21,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в MCP-сервере формируется список дней репозитория с их названиями?",
+      "query": "Список дней репозитория формируется в `mcp_server/tools/list_days.py` функцией `list_days()`, которая читает каталог `data/repo/` и возвращает массив объектов `{date, title}`. Название дня берётся из первого заголовка `# ...` в файле `data/repo/<date>/README.md`; при отсутствии заголовка используется значение `date` в формате `YYYY-MM-DD`.",
+      "prompt_tokens": 185,
+      "completion_tokens": 105,
+      "seconds": 0.995,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в MCP-сервере хранилища AI Advent формируются временные метки и как они преобразуются в локальное время?",
+      "query": "В MCP-сервере хранилища (`mcp_server/storage_server.py`) временные метки формируются в UTC через `datetime.now(timezone.utc)` и сохраняются в таблицах `messages` и `sessions` в формате ISO 8601 с суффиксом `Z`. Преобразование в локальное время выполняется на стороне клиента функцией `format_timestamp()` из `utils/time_utils.py` с использованием `zoneinfo.ZoneInfo` и параметра `TZ` из `.env`.",
+      "prompt_tokens": 193,
+      "completion_tokens": 118,
+      "seconds": 1.332,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в SQLite-индексе проекта AI Advent хранятся векторы и метаданные чанков?",
+      "query": "Векторы и метаданные чанков хранятся в SQLite-таблице `chunks` (файл `data/index.db`), где для каждой записи заданы поля `id`, `source_path`, `chunk_index`, `text`, `embedding` (BLOB с float32-вектором размерности 1536) и `metadata` (JSON-строка). Поиск по косинусной близости выполняется функцией `search_chunks()` в `index/store.py` через `sqlite-vss` (виртуальная таблица `vss_chunks`), а при отсутствии расширения — полным перебором с `numpy.dot`.",
+      "prompt_tokens": 188,
+      "completion_tokens": 153,
+      "seconds": 1.461,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day14 превратить пункт ТЗ в зафиксированный инвариант с помощью кнопки при наведении?",
+      "query": "В `day14` пункт ТЗ фиксируется как инвариант через компонент `SpecItem` с кнопкой `PinButton`, которая появляется по `onMouseEnter` и вызывает `pinInvariant(specId)`. После вызова `pinInvariant` запись сохраняется в `invariants.json` с полем `\"pinned\": true`, а в UI отображается бейдж `InvariantBadge`.",
+      "prompt_tokens": 192,
+      "completion_tokens": 96,
+      "seconds": 1.227,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day15 оценивают удержание гейта по шкале от 0 до 2?",
+      "query": "В `day15/evaluate.py` удержание гейта оценивается функцией `score_gate_retention()` по трёхбалльной шкале: `0` — гейт не удержан (сработал раньше времени или пропущен), `1` — частичное удержание с кратковременным открытием, `2` — стабильное удержание на протяжении всего окна `gate_window_ms`. Итоговый балл пишется в поле `gate_retention_score` таблицы `day15_results` и агрегируется в `summary.json` как среднее по всем прогонам.",
+      "prompt_tokens": 186,
+      "completion_tokens": 143,
+      "seconds": 1.573,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day15 устроен двухслойный guard, который задерживает фразу до точки и обрывает проход при забеге?",
+      "query": "В `day15/agent.py` функция `_split_ready_text()` делит буфер на «готовые» предложения по терминаторам `.`, `!`, `?` и возвращает только текст до последней точки, оставляя хвост в `self._pending` до следующего чанка. Поверх этого `_guard_race()` проверяет `len(self._pending) > MAX_PENDING_CHARS` (по умолчанию 240) и при забеге без точки вызывает `self._flush_pending(force=True)` с обрывом прохода через `raise GuardTrip`.",
+      "prompt_tokens": 195,
+      "completion_tokens": 133,
+      "seconds": 1.692,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day16/llm.py устроена функция stream_chat и что она делает с вызовами инструментов?",
+      "query": "В `day16/llm.py` функция `stream_chat` выполняет потоковый вызов LLM через `client.chat.completions.create(..., stream=True)` и отдаёт наружу чанки по мере поступления. Вызовы инструментов (`tool_calls`) собираются из дельт по индексу `delta.tool_calls[i].index`, накапливая `function.name` и `function.arguments` до `finish_reason == \"tool_calls\"`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 108,
+      "seconds": 1.254,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day17/llm.py функция stream_chat передаёт вызовы инструментов вместе с finish_reason?",
+      "query": "В `day17/llm.py` функция `stream_chat` накапливает дельты `tool_calls` по индексу и отдаёт их в чанках вместе с `finish_reason`, который приходит от провайдера (`tool_calls` либо `stop`). Каждый чанк содержит поля `delta.content`, `delta.tool_calls` и `finish_reason`, а финальный вызов инструмента собирается из накопленных `id`, `function.name` и `function.arguments`.",
+      "prompt_tokens": 188,
+      "completion_tokens": 118,
+      "seconds": 1.461,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day17/main.py устроена отдача файла index.html через FileResponse с заголовками NO_CACHE?",
+      "query": "В `day17/main.py` эндпоинт `GET /` возвращает `FileResponse(\"index.html\", headers=NO_CACHE)`, где `NO_CACHE` — словарь с `Cache-Control: no-store, no-cache, must-revalidate` и `Pragma: no-cache`. Тот же `NO_CACHE` применяется к отдаче статики через `StaticFiles` и к ответам `/api/*`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 96,
+      "seconds": 1.043,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day19 устроена переиндексация документов и как запрос человека преобразуется в выражение FTS5?",
+      "query": "В `day19` переиндексация выполняется скриптом `reindex.py`, который читает документы из `docs/`, разбивает их на чанки и перезаписывает таблицу `chunks_fts` (FTS5, `tokenize='unicode61'`) через `INSERT INTO chunks_fts(rowid, text)`. Запрос человека преобразуется в выражение FTS5 функцией `build_fts_query()` в `search.py`: текст токенизируется, из него удаляются стоп-слова, а термы соединяются оператором `AND` с префиксным поиском `term*`.",
+      "prompt_tokens": 191,
+      "completion_tokens": 142,
+      "seconds": 1.565,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day2 настроить stop, чтобы модель не начинала четвёртый пункт ответа?",
+      "query": "В `day2/stop_sequences.py` список `STOP_SEQUENCES` задаёт строки, при достижении которых генерация обрывается; для нумерованных ответов добавьте `\"\\n4.\"` и `\"\\n4)\"`. Проверьте, что `stop` передаётся в вызов `client.messages.create(...)` вместе с `max_tokens`, иначе параметр игнорируется.",
+      "prompt_tokens": 185,
+      "completion_tokens": 92,
+      "seconds": 1.373,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day20 проверить, что порядок вызовов MCP-серверов совпадает с контрактом?",
+      "query": "В `day20` порядок вызовов MCP-серверов проверяется тестом `tests/test_mcp_call_order.py`, который сравнивает фактическую последовательность из `mcp_call_log.jsonl` с эталонным списком `expected_call_order` из `contracts/mcp_contract.yaml`. Для каждого шага сверяются поля `server_name`, `tool_name` и `step_index`; при расхождении тест падает с `AssertionError: call order mismatch at step N`.",
+      "prompt_tokens": 192,
+      "completion_tokens": 110,
+      "seconds": 1.254,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day20 проверяется порядок при добавлении day19 с цепочкой MCP-инструментов?",
+      "query": "В `day20/tests/test_chain_order.py` порядок вызовов MCP-инструментов проверяется через `assert_called_once_with` и сравнение `call_args_list` с ожидаемой цепочкой `[\"search\", \"fetch\", \"summarize\"]`. При добавлении `day19` с цепочкой MCP-инструментов тест `test_chain_order_preserved` сверяет `tool_call_sequence` из `day20/agent/runner.py` с эталонным списком из `day19/config/mcp_chain.yaml`.",
+      "prompt_tokens": 187,
+      "completion_tokens": 125,
+      "seconds": 1.35,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day4/main.py отключить кеширование статических файлов через подкласс StaticFiles?",
+      "query": "В `day4/main.py` для отключения кеширования статики объявляется подкласс `NoCacheStaticFiles(StaticFiles)`, в котором переопределяется метод `is_not_modified`, всегда возвращающий `False`. Экземпляр монтируется через `app.mount(\"/static\", NoCacheStaticFiles(directory=\"static\"), name=\"static\")`.",
+      "prompt_tokens": 187,
+      "completion_tokens": 82,
+      "seconds": 1.206,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day7 устроена запись хода в базу, чтобы оборванный стрим не оставлял частичных данных?",
+      "query": "В `day7/app.py` ход сохраняется в таблицу `messages` только после завершения стрима: чанки копятся в буфере `assistant_parts`, и `INSERT` с ролью `assistant` выполняется в блоке `finally` после `async for chunk in stream`. Если клиент обрывает соединение и стрим падает с `asyncio.CancelledError`, запись не коммитится, поэтому частичный ответ в `messages` не попадает.",
+      "prompt_tokens": 193,
+      "completion_tokens": 111,
+      "seconds": 1.517,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day7/main.py отключить кэширование статических файлов через подкласс StaticFiles?",
+      "query": "В `day7/main.py` для отключения кэширования статики объявите подкласс `NoCacheStaticFiles(StaticFiles)` и переопределите `is_not_modified`, всегда возвращая `False`. Подключите его через `app.mount(\"/static\", NoCacheStaticFiles(directory=\"static\"), name=\"static\")`, чтобы отключить проверку `If-Modified-Since` и `If-None-Match`.",
+      "prompt_tokens": 187,
+      "completion_tokens": 98,
+      "seconds": 1.258,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day9/main.py задаются заголовки для SSE и ограничение числа сессий?",
+      "query": "В `day9/main.py` SSE-поток отдаётся через `StreamingResponse` с медиатипом `text/event-stream` и заголовками `Cache-Control: no-cache` и `X-Accel-Buffering: no`. Ограничение одновременных сессий задаётся константой `MAX_SESSIONS` и проверяется через `asyncio.Semaphore(MAX_SESSIONS)` перед стартом обработки запроса.",
+      "prompt_tokens": 184,
+      "completion_tokens": 102,
+      "seconds": 1.02,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в day9/scenarios.py оценивают стоимость входа без кэша префикса и как сжатие истории влияет на счёт?",
+      "query": "В `day9/scenarios.py` функция `estimate_cost_no_cache()` считает стоимость входа как `input_tokens * price_per_1k / 1000` по полному промпту без учёта префиксного кэша, тогда как `estimate_cost_with_cache()` вычитает `cached_tokens` по ставке `cache_read_price`. Сжатие истории через `compress_history()` уменьшает `input_tokens` в `scenarios`, из-за чего итоговый `total_cost` падает пропорционально коэффициенту сжатия `compression_ratio`.",
+      "prompt_tokens": 195,
+      "completion_tokens": 128,
+      "seconds": 1.405,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в классе Agent называется метод, который превращает ответ модели в список предложений Proposal и возвращает пустой список, если ответ не по форме?",
+      "query": "Метод `Agent.parse_proposals()` принимает сырой ответ модели и возвращает `list[Proposal]`, разбирая его по регулярному выражению `PROPOSAL_RE`. Если ответ не соответствует ожидаемому формату, метод возвращает пустой список `[]` без выброса исключения.",
+      "prompt_tokens": 194,
+      "completion_tokens": 67,
+      "seconds": 1.078,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в классе AgentRegistry обновляется порядок сессий при обращении к агенту?",
+      "query": "Метод `AgentRegistry.touch(session_id)` обновляет `last_used_at` сессии и пересортировывает внутренний список `self._sessions` по убыванию времени последнего обращения. Порядок хранится в `self._order` (LRU-очередь), при этом `get_agent(session_id)` вызывает `touch()` перед возвратом агента из `self._agents`.",
+      "prompt_tokens": 185,
+      "completion_tokens": 95,
+      "seconds": 1.554,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в классе Document получить длину текста и его хеш SHA-256?",
+      "query": "Класс `Document` в `src/document.py` предоставляет свойства `text_length` (длина `self.text` в символах) и `content_hash` — SHA-256 от `self.text.encode(\"utf-8\")` в hex-формате. Оба значения кэшируются в `self._text_length` и `self._content_hash` при первом обращении.",
+      "prompt_tokens": 182,
+      "completion_tokens": 84,
+      "seconds": 1.179,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в классе Storage посчитать количество сообщений в конкретной сессии?",
+      "query": "Метод `Storage.count_messages(session_id)` возвращает `int` — число записей в таблице `messages` с указанным `session_id`. Внутри выполняется `SELECT COUNT(*) FROM messages WHERE session_id = ?` через `self._conn.execute`.",
+      "prompt_tokens": 179,
+      "completion_tokens": 60,
+      "seconds": 1.044,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в классе Storage реализован асинхронный подсчёт количества записей для сессии?",
+      "query": "Метод `Storage.count(session_id)` в `storage.py` выполняет `SELECT COUNT(*) FROM messages WHERE session_id = ?` через `await self._conn.execute(...)` и возвращает `int` из `cursor.fetchone()[0]`. Для сессий с большим числом записей используется индекс `idx_messages_session_id`, создаваемый в `_init_schema()`.",
+      "prompt_tokens": 186,
+      "completion_tokens": 85,
+      "seconds": 1.234,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в классе Storage реализовано удаление сессии вместе с её сообщениями?",
+      "query": "Метод `Storage.delete_session(session_id)` в `storage.py` выполняет `DELETE FROM sessions WHERE id = ?`, а связанные записи в `messages` удаляются каскадно через `ON DELETE CASCADE` по внешнему ключу `session_id`. Перед удалением проверяется существование сессии, при отсутствии возвращается `False`.",
+      "prompt_tokens": 182,
+      "completion_tokens": 76,
+      "seconds": 1.187,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в модуле day12/scenarios.py устроен класс Answer и сколько токенов отведено судье JUDGE_MAX_TOKENS?",
+      "query": "В `day12/scenarios.py` класс `Answer` — это dataclass с полями `text: str`, `tokens: int` и `model: str`, который возвращается функцией `ask_model()` после вызова OpenAI API. Лимит токенов для судьи задаётся константой `JUDGE_MAX_TOKENS = 512` в начале модуля и передаётся в `client.chat.completions.create(..., max_tokens=JUDGE_MAX_TOKENS)`.",
+      "prompt_tokens": 195,
+      "completion_tokens": 112,
+      "seconds": 1.183,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в модуле remember отсеиваются кандидаты, которые уже есть в памяти или профиле?",
+      "query": "В `remember` кандидаты фильтруются через `_is_duplicate(candidate, existing)`: нормализованный текст сравнивается с записями из `memory_items` и полями профиля (`profile_facts`) по `content_hash`, а также по косинусной близости эмбеддингов выше `DEDUP_THRESHOLD` (0.92). Уже сохранённые и совпавшие кандидаты помечаются `status=\"skipped\"` и не попадают в `INSERT INTO memory_items`.",
+      "prompt_tokens": 186,
+      "completion_tokens": 121,
+      "seconds": 1.684,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в модуле remember.py устроена маршрутизация того, что из разговора стоит запомнить и куда это положить?",
+      "query": "В `remember.py` маршрутизация выполняется функцией `route_memory_item()`, которая по полю `kind` (`fact`, `preference`, `task`, `episodic`) выбирает целевую таблицу: `memory_facts`, `memory_preferences`, `memory_tasks` или `memory_episodes`. Решение принимает `classify_memory()` через LLM-промпт `ROUTING_PROMPT` с fallback на эвристику `_heuristic_route()` при `confidence < 0.6`. Запись идёт через `MemoryStore.upsert()` с ключом дедупликации `(user_id, kind, normalized_text)`.",
+      "prompt_tokens": 195,
+      "completion_tokens": 157,
+      "seconds": 1.567,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в модуле профиля пользователя устроен пункт профиля и что он берёт у памяти?",
+      "query": "Пункт профиля в модуле профиля пользователя (`profile_item`) читает данные из памяти через `memory.get_profile()` и отображает поля `name`, `avatar_url` и `bio`. Обновление пункта выполняется вызовом `memory.update_profile(field, value)` с последующей перерисовкой виджета.",
+      "prompt_tokens": 186,
+      "completion_tokens": 74,
+      "seconds": 1.453,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в отчёте report_transitions определяется, кто инициировал переход — агент или пользователь?",
+      "query": "В `report_transitions` инициатор перехода определяется по полю `initiator`, которое заполняется из `transition.initiator` в `state_machine.py` и принимает значения `agent` или `user`. Для переходов, вызванных вызовом инструмента, `initiator` выставляется в `agent` в `tool_runner.py`, а для переходов из UI — в `user` в `handlers/transition_handler.py`.",
+      "prompt_tokens": 187,
+      "completion_tokens": 98,
+      "seconds": 1.432,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в отчёте пайплайна форматируется таблица markdown и разделяются разряды чисел?",
+      "query": "Таблица markdown в отчёте пайплайна формируется модулем `report.py` функцией `format_markdown_table()`: заголовок из списка колонок, затем строка-разделитель `|---|`, затем строки данных. Числовые значения прогоняются через `format_number()`, который вставляет разделитель разрядов — неразрывный пробел (`\\u00A0`) для тысяч, например `1 234 567`.",
+      "prompt_tokens": 188,
+      "completion_tokens": 106,
+      "seconds": 1.368,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в проекте AI Advent реализована постоянная память диалогов, чтобы разговор продолжался после перезапуска?",
+      "query": "История диалога сохраняется в `data/chat_history.json` через модуль `memory.py`: функция `save_history(session_id, messages)` вызывается после каждого ответа ассистента, а `load_history(session_id)` — при старте сессии в `main.py`. Ключ сессии берётся из `SESSION_ID` в `.env`, поэтому после перезапуска процесса `uvicorn` на порту 8000 переписка подгружается из файла и продолжается с того же места.",
+      "prompt_tokens": 191,
+      "completion_tokens": 113,
+      "seconds": 1.583,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в проекте AI Advent устроен конечный автомат состояния задачи и кто применяет переход?",
+      "query": "Состояние задачи хранится в таблице `tasks` (поле `status`) и меняется только через `TaskStateMachine.transition(task_id, event)` в `core/state_machine.py`; прямые UPDATE статуса в обход этого модуля запрещены. Переход применяет воркер `task_runner` (порт 8081) после получения события из очереди `task_events`, а API-слой лишь публикует событие и не трогает `status` напрямую.",
+      "prompt_tokens": 184,
+      "completion_tokens": 114,
+      "seconds": 1.495,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как в файле evaluate.py выбирается случайный отрывок документа для эталона при сравнении стратегий chunking?",
+      "query": "В `evaluate.py` эталонный отрывок выбирается функцией `sample_reference_chunk(doc, seed=42)` — она берёт случайный фрагмент исходного документа длиной `REF_CHUNK_SIZE` символов через `random.Random(seed).randint(0, len(doc) - REF_CHUNK_SIZE)`. Для воспроизводимости между стратегиями chunking (`fixed`, `recursive`, `semantic`) используется один и тот же `seed`, а результат кэшируется в `reference_cache.json`.",
+      "prompt_tokens": 191,
+      "completion_tokens": 120,
+      "seconds": 1.225,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как меняется расход токенов на входе по ходам при использовании картотеки фактов в day10?",
+      "query": "В `day10` при включённой картотеке фактов входной контекст собирается в `build_context()` из `facts_store.json`: на каждом ходе в промпт добавляются только релевантные факты, отобранные по `top_k` и порогу `score_threshold`, поэтому `prompt_tokens` растёт не линейно, а ступенчато — по мере накопления фактов в `facts_store.json`. В логах `usage.prompt_tokens` по ходам видно, что первые ходы дешевле, а скачок происходит при добавлении новых записей в картотеку, тогда как `completion_tokens` остаётся примерно постоянным.",
+      "prompt_tokens": 190,
+      "completion_tokens": 159,
+      "seconds": 1.751,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как менялось число токенов и что происходило с разделами «Факты» и «Обсуждалось» при последовательных свёртках истории в day9?",
+      "query": "В `day9/context_manager.py` функция `summarize_history()` при превышении `MAX_TOKENS` сворачивает старые сообщения в `summary`, при этом поле `facts` из раздела «Факты» переносится в новую свёртку без потерь, а `discussed` («Обсуждалось») накапливается инкрементально. После каждой свёртки `count_tokens()` пересчитывает `total_tokens` по формуле `system + summary + last_n_messages`, и в логах `day9/logs/context.log` видно, как число токенов ступенчато падает с ~8000 до ~3000.",
+      "prompt_tokens": 204,
+      "completion_tokens": 158,
+      "seconds": 1.657,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как менялся расход токенов при сжатии истории на первых восьми ходах в day9?",
+      "query": "В `day9` сжатие истории выполняется в `compress_history()` модуля `context.py` и вызывается при превышении `MAX_HISTORY_TOKENS`; на первых восьми ходах `tokens_before` растёт с ~1200 до ~4800, а `tokens_after` держится в диапазоне 900–1400. В логах `day9/logs/token_usage.csv` видно, что `compression_ratio` на шагах 1–8 меняется от 1.0 до ~3.4, а поле `saved_tokens` становится ненулевым начиная с 5-го хода.",
+      "prompt_tokens": 186,
+      "completion_tokens": 153,
+      "seconds": 1.592,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как устроены имена инструментов в общем каталоге трёх MCP-серверов day20?",
+      "query": "В каталоге `day20/mcp/` имена инструментов формируются как `<server>.<tool>`: префикс задаётся в `server.json` каждого сервера (`files`, `git`, `sqlite`), а суффикс — полем `name` в `tools[]`. Реестр `mcp/catalog.py` собирает их в словарь `TOOL_INDEX` по ключу `f\"{server_id}.{tool_name}\"`, поэтому коллизии между серверами исключены.",
+      "prompt_tokens": 189,
+      "completion_tokens": 114,
+      "seconds": 1.352,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как функция render группирует элементы памяти по разделам в зависимости от уровня?",
+      "query": "Функция `render` в `memory_view.py` группирует элементы по полю `level` через `groupby`, формируя секции `core`, `working` и `archive` в порядке, заданном словарём `LEVEL_ORDER`. Элементы с `level` ниже порога `MEMORY_LEVEL_THRESHOLD` попадают в раздел `archive`, остальные распределяются по соответствующим секциям.",
+      "prompt_tokens": 180,
+      "completion_tokens": 95,
+      "seconds": 1.32,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Как функция section_of определяет, в какую секцию памяти отнести факт из разговора?",
+      "query": "Функция `section_of` в `memory/sections.py` классифицирует факт по ключевым словам и эвристикам, возвращая одну из секций: `profile`, `preferences`, `projects`, `relations` или `misc`. Приоритет отдаётся совпадениям по регулярным выражениям из `SECTION_PATTERNS`, а при отсутствии совпадений факт попадает в `misc` с пониженным весом `weight=0.3`.",
+      "prompt_tokens": 185,
+      "completion_tokens": 110,
+      "seconds": 1.273,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какая модель в day5 оказалась самой медленной и многословной по медиане времени и токенов ответа?",
+      "query": "В отчёте `day5/report.md` по метрикам `median_latency_ms` и `median_total_tokens` самой медленной и многословной оказалась модель `qwen3:30b-a3b` — медиана времени ответа и медиана токенов у неё выше, чем у `llama3.1:8b` и `gemma3:12b`. В сводной таблице `day5/results.csv` она занимает последнюю строку по обоим столбцам.",
+      "prompt_tokens": 190,
+      "completion_tokens": 116,
+      "seconds": 1.331,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какая модель оправдана, когда важны краткость и предсказуемый объём ответа, и как она выигрывает по времени и деньгам?",
+      "query": "Для сценариев, где важны краткость и предсказуемый объём ответа, в `config/models.yaml` оправдана модель `gpt-4o-mini` с параметром `max_tokens: 256` и `temperature: 0.2`. По сравнению с `gpt-4o` она даёт меньший `completion_tokens` на тот же `prompt`, что снижает `latency` в `POST /v1/chat/completions` и стоимость за 1K токенов примерно в 15–20 раз.",
+      "prompt_tokens": 200,
+      "completion_tokens": 125,
+      "seconds": 1.669,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какая модель считает эмбеддинги в day21 и почему взята именно она, а не базовая potion-base-8M?",
+      "query": "В `day21/embed.py` эмбеддинги считает `potion-base-32M` из `model2vec`, загружаемая через `StaticModel.from_pretrained(\"minishlab/potion-base-32M\")`; размерность вектора — 256, `normalize=True`. Базовая `potion-base-8M` даёт 256-мерные векторы того же качества на бенчмарках, но 32M выбрана как компромисс между размером артефакта `embeddings.npz` и устойчивостью к редким токенам в корпусе `day21/data/faq.jsonl`.",
+      "prompt_tokens": 196,
+      "completion_tokens": 149,
+      "seconds": 1.456,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какая правка в профиле Марины повысила её оценку с 3/6 до 5/6 в day12?",
+      "query": "В `day12/profile_marina.md` оценка выросла с 3/6 до 5/6 после правки блока «Опыт»: формулировку `отвечала за поддержку клиентов` заменили на `выстроила процесс обработки обращений с SLA 4 часа и снизила долю эскалаций на 30%`. Дополнительно в разделе «Навыки» добавлен явный стек `SQL, Python, Tableau` вместо общего `аналитические инструменты`.",
+      "prompt_tokens": 193,
+      "completion_tokens": 120,
+      "seconds": 1.204,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие MCP-инструменты позволяют посмотреть последние коммиты, один коммит целиком и файлы, затронутые коммитами?",
+      "query": "MCP-сервер `git` предоставляет инструменты `git_log` (список последних коммитов с параметрами `repo_path`, `max_count`, `branch`), `git_show` (полный diff одного коммита по `commit_hash`) и `git_diff` для сравнения диапазонов `base`/`head`. Затронутые коммитом файлы возвращаются в поле `files` ответа `git_show` и через `git_diff --name-only`. В `mcp.config.json` эти инструменты регистрируются под namespace `git.*` и требуют переменной `GIT_REPO_ROOT`.",
+      "prompt_tokens": 199,
+      "completion_tokens": 139,
+      "seconds": 1.382,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие варианты бюджета токенов доступны в переключателе в шапке агента из day10?",
+      "query": "В шапке агента из day10 переключатель бюджета токенов (`TokenBudgetSwitcher`) предлагает варианты `small`, `medium` и `large`, соответствующие лимитам из `config/token_budgets.yaml`. Выбранное значение сохраняется в `localStorage` под ключом `aiadvent.tokenBudget` и прокидывается в `AgentHeader` через проп `budget`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 91,
+      "seconds": 1.182,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие варианты выбора предлагаются при сохранении требования в память агента во время работы в чате?",
+      "query": "При сохранении требования в память агента из чата доступны варианты `save_to_memory`: `global` (запись в `memory/global.md`), `project` (в `memory/projects/<project_id>.md`) и `session` (только в контекст текущей сессии, без записи на диск). Выбор передаётся в параметре `scope` вызова инструмента `memory_write` и по умолчанию равен `project`.",
+      "prompt_tokens": 188,
+      "completion_tokens": 104,
+      "seconds": 1.305,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие именованные параметры принимает функция stream_answer в модуле day3/llm.py?",
+      "query": "Функция `stream_answer` в модуле `day3/llm.py` принимает именованные параметры `prompt`, `model`, `temperature`, `max_tokens` и `stream`. Значения по умолчанию: `model=\"gpt-4o-mini\"`, `temperature=0.7`, `max_tokens=1024`, `stream=True`. Возвращает генератор токенов при `stream=True` и строку при `stream=False`.",
+      "prompt_tokens": 185,
+      "completion_tokens": 104,
+      "seconds": 1.092,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие константы и классы импортируются из модуля agent в day6/main.py?",
+      "query": "В `day6/main.py` из модуля `agent` импортируются `Agent`, `AgentConfig`, `DEFAULT_MODEL` и `MAX_TOKENS`. Константа `DEFAULT_MODEL` задаёт модель по умолчанию, а `MAX_TOKENS` ограничивает длину ответа. Класс `AgentConfig` используется для конфигурации экземпляра `Agent`.",
+      "prompt_tokens": 185,
+      "completion_tokens": 91,
+      "seconds": 1.049,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие параметры принимает функция stream_chat в day8/llm.py помимо сообщений?",
+      "query": "В `day8/llm.py` функция `stream_chat(messages, model, temperature, max_tokens)` принимает помимо `messages` параметры `model` (имя модели, по умолчанию `gpt-4o-mini`), `temperature` (float, по умолчанию `0.7`) и `max_tokens` (int, по умолчанию `1024`). Дополнительно поддерживается необязательный флаг `stream=True`, управляющий режимом потоковой выдачи токенов через `yield`.",
+      "prompt_tokens": 185,
+      "completion_tokens": 126,
+      "seconds": 1.408,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие поля содержит dataclass AnswerDelta и что приходит в поле usage в конце потока?",
+      "query": "`AnswerDelta` — это dataclass в `ai_advent/streaming.py` с полями `content: str`, `finish_reason: str | None` и `usage: Usage | None`. В конце потока в `usage` приходит объект `Usage` с полями `prompt_tokens`, `completion_tokens` и `total_tokens`, который заполняется только в финальном чанке при `stream_options={\"include_usage\": True}`.",
+      "prompt_tokens": 184,
+      "completion_tokens": 104,
+      "seconds": 1.138,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие поля содержит класс Shape, измеряющий ответ по шкалам профиля?",
+      "query": "Класс `Shape` в `src/ai_advent/metrics/shape.py` хранит поля `profile` (список значений по шкалам), `scales` (имена шкал профиля) и `distance` (метрика расхождения, по умолчанию косинусная). Поле `profile` заполняется из `response.scale_scores`, а `scales` — из `profile_config.scale_names`.",
+      "prompt_tokens": 181,
+      "completion_tokens": 98,
+      "seconds": 1.587,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие события и данные приходят в потоке ответа API, включая завершение и ошибку?",
+      "query": "Поток ответа API (`/api/chat/stream`) отдаёт SSE-события с полями `type` и `data`: `token` (фрагмент текста), `tool_call` (имя и аргументы инструмента), `done` (финальный `message_id` и `usage`) и `error` (код и текст ошибки). Завершение потока всегда сопровождается событием `done` либо `error`, после которого соединение закрывается; при обрыве клиент получает `error` с `code: \"stream_interrupted\"`.",
+      "prompt_tokens": 185,
+      "completion_tokens": 128,
+      "seconds": 1.624,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие счётчики размера и токенов диалога и контекста появились в API на восьмой день?",
+      "query": "В `GET /api/dialogs/{id}` и `GET /api/dialogs` добавлены поля `message_count`, `total_tokens` и `context_tokens`; для каждого сообщения в `GET /api/dialogs/{id}/messages` возвращаются `token_count` и `context_tokens`. Значения `total_tokens` и `context_tokens` считаются по модели `gpt-4o-mini` через `tiktoken` в модуле `app/services/token_counter.py`.",
+      "prompt_tokens": 192,
+      "completion_tokens": 112,
+      "seconds": 1.253,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие таблицы хранятся в базе данных SQLite day19/index.db и что записывается в каждую из них?",
+      "query": "В `day19/index.db` создаются таблицы `messages` (поля `id`, `user_id`, `role`, `content`, `created_at`) и `users` (`id`, `username`, `created_at`). В `messages` пишется каждое сообщение диалога с ролью `user` или `assistant`, в `users` — запись при первом обращении пользователя. Схема инициализируется в `day19/db.py` функцией `init_db()`.",
+      "prompt_tokens": 191,
+      "completion_tokens": 112,
+      "seconds": 1.188,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие типы событий приходят в потоке ответа при работе первого инструмента MCP в day17?",
+      "query": "В `day17` поток ответа ассистента при вызове MCP-инструмента приходит как SSE-события с типами `tool_call`, `tool_result` и `message_delta`; первый инструмент (`mcp__filesystem__read_file`) инициирует событие `tool_call` с полями `tool_name` и `arguments`. Результат выполнения приходит отдельным событием `tool_result` с `tool_call_id`, после чего возобновляется поток `message_delta` с текстом финального ответа.",
+      "prompt_tokens": 187,
+      "completion_tokens": 123,
+      "seconds": 1.4,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие файлы в day16 отвечают за API, SSE и страницу с тумблером и лентой вызовов?",
+      "query": "В `day16` HTTP-слой и SSE реализованы в `app/main.py`: эндпоинты `/api/chat`, `/api/events` и `/api/stream` отдают JSON и `text/event-stream` через `EventSourceResponse`. Страница с тумблером и лентой вызовов лежит в `app/static/index.html` вместе с `app/static/app.js`, где `toggle` переключает режим, а `renderCalls()` рисует ленту вызовов инструментов.",
+      "prompt_tokens": 194,
+      "completion_tokens": 119,
+      "seconds": 1.196,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какие функции в day10/report.py нормализуют текст и значение ячейки для markdown-отчёта?",
+      "query": "В `day10/report.py` нормализацию выполняют `_normalize_text(value)` — приводит значение ячейки к строке, схлопывает пробелы и экранирует символы `|` и переводы строк для вставки в markdown-таблицу, и `_normalize_cell(value)` — оборачивает результат `_normalize_text` и подставляет `\"\"` для `None`. Обе функции используются при сборке строк отчёта в `build_markdown_report(rows, columns)`.",
+      "prompt_tokens": 190,
+      "completion_tokens": 119,
+      "seconds": 1.552,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какое значение окна сообщений используется в сценариях замеров для README?",
+      "query": "В сценариях замеров `scripts/bench.py` и `scripts/measure_latency.py` окно сообщений задаётся параметром `--window-size` со значением по умолчанию `20`. Это же значение (`WINDOW_SIZE = 20`) фиксируется в `config/bench.yaml` и используется при построении таблицы `bench_results` для README.",
+      "prompt_tokens": 183,
+      "completion_tokens": 86,
+      "seconds": 1.006,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой асинхронный метод класса Storage добавляет запись в рабочий раздел, принимая идентификатор сессии, раздел, текст и источник?",
+      "query": "Метод `Storage.add_record(session_id, section, text, source)` — асинхронный (`async def`) и добавляет запись в рабочий раздел (`working`), возвращая `record_id`. Внутри вызывает `INSERT INTO records (session_id, section, text, source, created_at)` и коммитит транзакцию через `self.conn.commit()`.",
+      "prompt_tokens": 198,
+      "completion_tokens": 85,
+      "seconds": 1.28,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой вопрос про выбор между Celery и RQ используется в сценарии сравнения?",
+      "query": "В сценарии сравнения очередь задач настраивается через `celery_app.py` с брокером Redis на порту 6379, а альтернатива — `rq_worker.py` с очередью `default`. Ключевой вопрос сценария: «Что выбрать для фоновой обработки — Celery или RQ?» — и ответ фиксируется в `docs/queue_choice.md`.",
+      "prompt_tokens": 182,
+      "completion_tokens": 92,
+      "seconds": 1.205,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой командой запускается клиент из day17, который сам вызывает инструмент git_log?",
+      "query": "Клиент из `day17` запускается командой `python -m day17.client` (или `uv run day17/client.py`), после чего в интерактивном REPL доступен вызов инструмента `git_log` через `tools/call` с `name: \"git_log\"`. Для работы инструмента требуется, чтобы MCP-сервер `day17/server.py` был поднят на `localhost:8000` и в `client.py` был указан `MCP_SERVER_URL`.",
+      "prompt_tokens": 184,
+      "completion_tokens": 112,
+      "seconds": 1.418,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой командой запустить приложение из папки day15 и по какому адресу будет доступен интерфейс?",
+      "query": "Запуск приложения из папки `day15` выполняется командой `uvicorn app.main:app --reload --port 8000` (или `python -m app.main`). Веб-интерфейс после старта доступен по адресу `http://localhost:8000/`, документация API — на `http://localhost:8000/docs`.",
+      "prompt_tokens": 192,
+      "completion_tokens": 83,
+      "seconds": 1.007,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой метод класса Agent принимает решение по кандидату и записывает его на уровень?",
+      "query": "Метод `Agent.decide(candidate)` выбирает действие по кандидату и при `accept` записывает его на уровень через `Level.add(candidate)`. Решение фиксируется в `Agent._log_decision(candidate, action)` с указанием причины (`reason`).",
+      "prompt_tokens": 184,
+      "completion_tokens": 63,
+      "seconds": 1.205,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой метод класса Storage возвращает базу к состоянию после первого запуска с seed и без диалогов?",
+      "query": "Метод `Storage.reset()` в `storage.py` очищает таблицы `messages`, `dialogs` и `users`, после чего повторно применяет `seed.json` через `_apply_seed()`. В результате база возвращается к состоянию сразу после первого запуска: есть только сид-данные, диалогов нет.",
+      "prompt_tokens": 187,
+      "completion_tokens": 73,
+      "seconds": 1.447,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой параметр в day2 останавливает генерацию, если модель начнёт четвёртый пункт?",
+      "query": "В `day2/agent.py` функция `run_agent` принимает параметр `max_items` (по умолчанию 3), и при достижении лимита цикл прерывается через `break` перед вызовом `llm.chat`. Дополнительно в `day2/config.yaml` есть ключ `stop_on_fourth: true`, который передаётся в `stop_sequences` при запросе к модели.",
+      "prompt_tokens": 190,
+      "completion_tokens": 97,
+      "seconds": 1.436,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой системный промпт задаёт поведение ассистента в day7/agent.py и что он должен помнить?",
+      "query": "В `day7/agent.py` системный промпт задаётся константой `SYSTEM_PROMPT` и передаётся первым сообщением с `role: \"system\"` в `messages` при вызове `client.chat.completions.create`. Промпт инструктирует ассистента помнить историю диалога в `self.history` (список сообщений) и учитывать результаты вызова инструментов из `TOOLS`/`tool_calls`.",
+      "prompt_tokens": 191,
+      "completion_tokens": 109,
+      "seconds": 1.401,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой технологический стек и процесс релизов указаны в сценарии для проверки памяти ассистента?",
+      "query": "Стек: Python 3.11, FastAPI, PostgreSQL 15, Redis 7, Docker Compose; релизы выкатываются через GitHub Actions по тегу `v*.*.*` с прогоном `pytest` и миграций Alembic. Проверка памяти ассистента описана в `docs/scenarios/memory_check.md` и опирается на таблицу `assistant_memory` и эндпоинт `POST /v1/memory/recall`.",
+      "prompt_tokens": 187,
+      "completion_tokens": 108,
+      "seconds": 1.475,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой файл в проекте реализует MCP-клиент с соединением, рукопожатием и вызовом инструментов?",
+      "query": "MCP-клиент реализован в `mcp_client.py`: класс `MCPClient` устанавливает соединение через `connect()`, выполняет рукопожатие `initialize` и вызывает инструменты методом `call_tool(name, arguments)`. Транспорт — stdio или SSE, порт по умолчанию 8000.",
+      "prompt_tokens": 193,
+      "completion_tokens": 75,
+      "seconds": 1.42,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой формат запроса и ответа у эндпоинта POST /api/ask в проекте AI Advent?",
+      "query": "Эндпоинт `POST /api/ask` принимает JSON вида `{\"question\": \"<строка>\"}` и возвращает `{\"answer\": \"<строка>\", \"sources\": [...]}`. Обработчик определён в `app/api/ask.py` и вызывает функцию `ask_pipeline()` из модуля `app/core/pipeline.py`. При ошибке валидации возвращается код 422 с телом `{\"detail\": [...]}`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 98,
+      "seconds": 1.443,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой формат ответа отдаёт API при потоковой передаче и что означает пустой список experts?",
+      "query": "При потоковой передаче (`stream=true`) API отдаёт ответ в формате Server-Sent Events: последовательность чанков `data: {\"type\":\"chunk\",\"content\":\"...\"}`, завершаемую `data: [DONE]`. Пустой список `experts: []` в финальном чанке означает, что ни один эксперт не был выбран роутером (`router.py`) — например, при низкой уверенности классификатора или для запросов, не требующих доменной экспертизы.",
+      "prompt_tokens": 186,
+      "completion_tokens": 114,
+      "seconds": 1.093,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Какой формат ответа отдаёт API, если эксперты выключены?",
+      "query": "При `experts_enabled=false` эндпоинт `POST /api/v1/consult` возвращает `ConsultResponse` с полем `mode: \"single\"` и единственным блоком `answer` от основной модели. Поля `expert_opinions` и `consensus` в этом режиме приходят как `null`.",
+      "prompt_tokens": 181,
+      "completion_tokens": 74,
+      "seconds": 1.149,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "На какие адреса можно положить обычную находку в карточке профиля и что потом с ней можно сделать?",
+      "query": "Обычную находку в карточке профиля можно положить в слоты `profile.slots` (до 6 ячеек) либо в `profile.stash` — временное хранилище на 12 предметов, доступное только вне боя. Из `profile.stash` предмет затем переносится в `profile.slots` через `MoveToSlot(itemId, slotIndex)` или продаётся в `market.sell(itemId)` по цене `item.basePrice * 0.6`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 111,
+      "seconds": 1.298,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "На какие типы нужно разделить информацию в задании одиннадцатого дня про память агента?",
+      "query": "В задании одиннадцатого дня (`day_11`) информацию необходимо разделить на два типа: краткосрочную память (`short_term_memory`) и долгосрочную память (`long_term_memory`). Краткосрочная память хранится в рамках текущей сессии агента, а долгосрочная — персистентно, например в `memory.json` или векторном хранилище.",
+      "prompt_tokens": 184,
+      "completion_tokens": 92,
+      "seconds": 1.398,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "На какие типы нужно разделить информацию при реализации модели памяти агента в одиннадцатый день?",
+      "query": "В одиннадцатый день модель памяти агента разделяется на краткосрочную (история диалога в `messages`, ограниченная окном контекста) и долгосрочную (персистентные факты в `memory.json` / таблице `agent_memory`). Долгосрочная память дополнительно делится на семантическую (факты о пользователе) и эпизодическую (события и решения из прошлых сессий).",
+      "prompt_tokens": 183,
+      "completion_tokens": 108,
+      "seconds": 1.192,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "На каком порту слушает постоянный MCP-сервер хранилища в day20?",
+      "query": "В day20 постоянный MCP-сервер хранилища (`mcp_server.py`) слушает на порту 8765 по HTTP. Подключение к нему выполняется через `MCPClient` с параметром `base_url=\"http://localhost:8765\"`.",
+      "prompt_tokens": 184,
+      "completion_tokens": 59,
+      "seconds": 1.05,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Насколько увеличивается расход токенов при добавлении картотеки фактов к шести сообщениям в замерах day10?",
+      "query": "В замерах `day10` при добавлении картотеки фактов к шести сообщениям расход токенов растёт примерно на 1.8–2.2k prompt-токенов на запрос. Основной вклад даёт блок `facts_catalog`, который подмешивается в системный промпт перед историей из шести сообщений.",
+      "prompt_tokens": 192,
+      "completion_tokens": 80,
+      "seconds": 1.365,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "По каким файлам проекта ищет инструмент search и как корпус делится на разделы?",
+      "query": "Инструмент `search` ищет по корпусу, собранному из файлов `README.md`, `docs/*.md` и `CHANGELOG.md`; индекс строится в `search/index.py`. Корпус делится на разделы по заголовкам второго уровня (`##`) — каждый раздел хранится как отдельный чанк с полями `section`, `path` и `text`.",
+      "prompt_tokens": 186,
+      "completion_tokens": 92,
+      "seconds": 1.571,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "По какому признаку файл переиндексируется в функции _reindex?",
+      "query": "В `_reindex` файл переиндексируется, если его `mtime` или `size` отличаются от значений, сохранённых в таблице `files` (колонки `mtime`, `size`). При совпадении обоих полей запись пропускается, и `embedding` не пересчитывается.",
+      "prompt_tokens": 181,
+      "completion_tokens": 76,
+      "seconds": 1.116,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Под какой лицензией распространяется проект AI Advent?",
+      "query": "Проект AI Advent распространяется под лицензией MIT; файл `LICENSE` в корне репозитория содержит полный текст. Код модулей `ai_advent/` и конфигурации `pyproject.toml` доступны для использования, изменения и распространения при сохранении уведомления об авторских правах.",
+      "prompt_tokens": 176,
+      "completion_tokens": 78,
+      "seconds": 1.419,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему без детектора гейтов нельзя доказать, что план утверждён, на ходу 7?",
+      "query": "На ходе 7 (`step_07`) статус плана хранится в `plan.json` в поле `approved`, но без `gate_detector.py` это поле никто не выставляет — модуль `plan_runner` только читает его и падает с `PlanNotApprovedError`. Детектор гейтов (`detect_gates`, порт 8087) переводит `pending` в `approved` по сигналу `gate_signal`, поэтому без него доказать утверждение плана нечем: в `plan.json` остаётся `approved: false`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 128,
+      "seconds": 1.519,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему в day14 поток до модели нужно закрывать через async with, а не оставлять сборщику?",
+      "query": "В `day14/agent.py` стриминг ответа модели обёрнут в `async with client.responses.stream(...)`, потому что `AsyncStream` держит открытое HTTP-соединение к `api.openai.com:443` до вызова `aclose()`. Если не закрыть поток явно, сборщик освободит объект только при сборке мусора, а `httpx.AsyncClient` к этому моменту уже закрыт в `finally` — получаем `RuntimeError: Cannot send a request, as the client has been closed`.",
+      "prompt_tokens": 188,
+      "completion_tokens": 127,
+      "seconds": 1.461,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему в day17 в качестве инструмента MCP выбран git, а не простая функция add?",
+      "query": "В `day17` инструмент MCP реализован как `git_server.py` на базе `FastMCP`, где `add` — это лишь один из инструментов наряду с `commit`, `push` и `status`. Выбор git-сервера вместо одиночной функции `add` обусловлен тем, что MCP-сервер демонстрирует полноценный tool-calling через stdio-транспорт, а не изолированный вызов.",
+      "prompt_tokens": 186,
+      "completion_tokens": 104,
+      "seconds": 1.273,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему в двухслойном guard у детектора и аудитора разные пороги срабатывания?",
+      "query": "В двухслойном guard пороги задаются раздельно: `DETECTOR_THRESHOLD` в `guard/detector.py` и `AUDITOR_THRESHOLD` в `guard/auditor.py`, при этом аудитор работает по `AUDITOR_THRESHOLD > DETECTOR_THRESHOLD`, так как детектор вызывается на каждом чанке потока (`chunk_size=512`), а аудитор — только на окне `audit_window_ms=2000`. Разные пороги компенсируют разницу в стоимости ложных срабатываний: детектор оптимизирован под recall, аудитор — под precision, поэтому в `config/guard.yaml` для них используются независимые ключи `detector.threshold` и `auditor.threshold`.",
+      "prompt_tokens": 188,
+      "completion_tokens": 176,
+      "seconds": 1.892,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему в диалоге не удалось изменить срок хранения готовых файлов с семи дней на тридцать?",
+      "query": "Параметр `RESULT_TTL_DAYS` в `config/settings.py` читается только при старте воркера `cleanup_worker.py`, поэтому изменение значения в `.env` без перезапуска контейнера `aiadvent-worker` не применяется. В `docker-compose.yml` для сервиса не проброшена переменная `RESULT_TTL_DAYS`, и воркер продолжает использовать дефолт `7` из `DEFAULT_RESULT_TTL_DAYS`.",
+      "prompt_tokens": 190,
+      "completion_tokens": 115,
+      "seconds": 1.373,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему в индексе day21 колонки с границами чанка названы start_char и end_char, а не просто start и end?",
+      "query": "В индексе `day21` поля границ чанка называются `start_char` и `end_char`, чтобы отличать смещения в символах от смещений в токенах (`start_token`, `end_token`) и от временных меток (`start_ms`, `end_ms`). Такое именование задаётся в схеме `chunk_meta` модуля `indexer/schema.py` и используется при записи в `chunks.jsonl`.",
+      "prompt_tokens": 198,
+      "completion_tokens": 101,
+      "seconds": 1.39,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему в модели памяти агента список разделов фиксирован и какие разделы входят в долговременную память?",
+      "query": "Долговременная память агента описана в `memory/long_term.py` и хранится в таблице `agent_memory` с полем `section`, принимающим одно из фиксированных значений: `profile`, `preferences`, `facts`, `projects`, `relations`. Список разделов задан константой `MEMORY_SECTIONS` в `memory/constants.py` и не расширяется во время выполнения, поскольку схема таблицы и индексы `idx_agent_memory_section` рассчитаны на статический набор секций.",
+      "prompt_tokens": 191,
+      "completion_tokens": 124,
+      "seconds": 1.356,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему в модуле профиля пользователя нельзя описать профиль только шкалами или только пунктами?",
+      "query": "В `profile_module` профиль пользователя хранится в таблице `user_profile` как комбинация полей `scale_scores` (JSONB, шкалы) и `item_responses` (JSONB, пункты опросника), и обе структуры обязательны при записи через `save_profile()`. Валидация в `validate_profile_schema()` отклоняет профиль, если заполнена только одна из них, поскольку расчёт метрик в `compute_metrics()` опирается на совместное использование `scale_scores` и `item_responses`.",
+      "prompt_tokens": 187,
+      "completion_tokens": 125,
+      "seconds": 1.489,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему в функции complete из day13/llm.py ответ не стримится, а запрашивается целиком?",
+      "query": "В `day13/llm.py` функция `complete()` вызывает `client.chat.completions.create()` без параметра `stream=True`, поэтому SDK дожидается полного ответа и возвращает объект `ChatCompletion` целиком. Для потоковой выдачи используется отдельная функция `stream_complete()`, которая передаёт `stream=True` и итерируется по чанкам `chunk.choices[0].delta.content`.",
+      "prompt_tokens": 191,
+      "completion_tokens": 92,
+      "seconds": 1.413,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему долговременная память в проекте осталась общей для всех профилей пользователей?",
+      "query": "В текущей реализации `memory_service.py` таблица `user_memory` не содержит колонки `profile_id`, поэтому выборка в `get_relevant_memories()` фильтруется только по `user_id`. Разделение по профилям запланировано в миграции `004_add_profile_scope.sql`, но пока флаг `MEMORY_SCOPE=global` в `config.py` оставляет хранилище общим.",
+      "prompt_tokens": 185,
+      "completion_tokens": 95,
+      "seconds": 1.44,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему ответ модели без MCP считается правильным, если она не знает содержимого репозитория?",
+      "query": "В режиме без MCP агент не вызывает инструменты `mcp__*` и отвечает только на основе системного промпта и истории диалога, поэтому ответ считается корректным по формату, а не по фактам о репозитории. Проверка знаний о проекте выполняется отдельно — через `mcp__filesystem__read_file` и `mcp__git__log`, а не через оценку текста ответа.",
+      "prompt_tokens": 188,
+      "completion_tokens": 98,
+      "seconds": 1.138,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему результат работы сценария из терминала сохраняется в файл, а не выводится в stderr?",
+      "query": "Скрипт `scripts/run_pipeline.py` пишет результат в `output/result.json` через `Path.write_text()`, а не в `sys.stderr`, потому что stdout/stderr зарезервированы под логирование через `logging.basicConfig(level=logging.INFO)`. Для отладочного вывода в консоль используйте флаг `--verbose`, который переключает `logger` на `StreamHandler(sys.stderr)`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 101,
+      "seconds": 1.306,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему слайдер и поле температуры недоступны до ответа сервера в проекте AI Advent?",
+      "query": "В `static/app.js` элементы `#temperature` и `#temperature-value` инициализируются только внутри `initControls()`, которая вызывается из `loadConfig()` после успешного `fetch('/api/config')`. До получения ответа сервера атрибут `disabled` на `#temperature` остаётся выставленным в разметке `templates/index.html`, а `input`-событие слайдера не привязано.",
+      "prompt_tokens": 187,
+      "completion_tokens": 100,
+      "seconds": 1.308,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Почему у векторов, нормированных по L2, косинусная близость совпадает со скалярным произведением?",
+      "query": "В модуле `embeddings/similarity.py` функция `cosine_similarity(a, b)` реализована как скалярное произведение `np.dot(a, b)` без деления на нормы, поскольку векторы эмбеддингов предварительно нормализуются в `normalize_l2()` при записи в таблицу `embeddings` (колонка `vector`). Для L2-нормированных векторов `||a|| = ||b|| = 1`, поэтому `cos(a, b) = (a · b) / (||a|| ||b||) = a · b`.",
+      "prompt_tokens": 194,
+      "completion_tokens": 137,
+      "seconds": 1.243,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Сколько стоит короткий диалог из трёх ходов с учётом заголовка диалога?",
+      "query": "Стоимость короткого диалога рассчитывается как сумма токенов всех ходов плюс токены заголовка диалога, умноженная на тариф модели из `config/models.yaml`. Заголовок генерируется один раз при создании диалога и тарифицируется по той же цене, что и обычные сообщения. Итоговая сумма в рублях сохраняется в поле `cost_rub` таблицы `dialogs`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 100,
+      "seconds": 1.284,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Чем аудитор отличается от детектора и какие решения принимает модуль аудита?",
+      "query": "Модуль аудита (`audit`) получает от детектора (`detector`) события с оценкой риска и не пересчитывает их, а применяет политику: `allow`, `flag`, `block` или `escalate` — в зависимости от порогов `risk_threshold` и правил из `audit_rules.yaml`. В отличие от детектора, который только классифицирует контент, аудитор ведёт журнал решений в таблице `audit_log` и может инициировать `human_review` через очередь `review_queue`.",
+      "prompt_tokens": 184,
+      "completion_tokens": 128,
+      "seconds": 1.567,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Чем отличается агент из day19 от run_pipeline по тому, кто управляет номерами артефактов?",
+      "query": "В `day19` агент сам управляет номерами артефактов через `artifact_counter` в состоянии графа, увеличивая его при каждом вызове `save_artifact()`. В `run_pipeline` нумерация централизована: счётчик `next_artifact_id` инкрементируется в оркестраторе перед передачей задачи агенту, а агент получает готовый `artifact_id` как параметр.",
+      "prompt_tokens": 191,
+      "completion_tokens": 101,
+      "seconds": 1.067,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Чем полнотекстовый поиск на FTS5 отличается от поиска по эмбеддингам?",
+      "query": "Полнотекстовый поиск реализован на виртуальной таблице FTS5 (`chunks_fts`) с токенизатором `unicode61` и ранжированием через `bm25()`; он ищет по точным лексемам и не требует векторов. Поиск по эмбеддингам работает в модуле `embeddings.py` через `sqlite-vec` (`vec_chunks`), где близость считается по косинусной метрике (`distance`) между векторами модели `text-embedding-3-small` размерности 1536. Гибридный режим в `search.py` объединяет оба результата через Reciprocal Rank Fusion с параметром `rrf_k=60`.",
+      "prompt_tokens": 188,
+      "completion_tokens": 166,
+      "seconds": 1.572,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Чем сериализуются параллельные запросы в одну сессию, чтобы два хода не собирали контекст одновременно?",
+      "query": "Параллельные запросы в одну сессию сериализуются через `SessionLock` в `session/lock.py`: перед сборкой контекста ход вызывает `await lock.acquire(session_id)`, а по завершении — `lock.release(session_id)`. Блокировка хранится в таблице `session_locks` (колонки `session_id`, `holder_turn_id`, `acquired_at`) и снимается по TTL `SESSION_LOCK_TIMEOUT=30`.",
+      "prompt_tokens": 193,
+      "completion_tokens": 113,
+      "seconds": 1.353,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Через что выражается условие каждого шага в конечном автомате задачи из day13?",
+      "query": "В `day13/solution.py` условие перехода на каждом шаге конечного автомата задаётся функцией `step_condition(state, symbol)`, возвращающей `True`/`False`; сам переход выполняется в `transition_table[state][symbol]`. Таблица `transition_table` инициализируется в `build_automaton()` и хранит пары `(next_state, action)` для каждого состояния из `STATES`.",
+      "prompt_tokens": 184,
+      "completion_tokens": 98,
+      "seconds": 1.155,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что возвращает функция encode из day21/embed.py, если на вход подан пустой список текстов?",
+      "query": "Функция `encode` из `day21/embed.py` принимает список текстов и возвращает `numpy.ndarray` формы `(len(texts), dim)`, где `dim` — размерность эмбеддингов модели. При передаче пустого списка возвращается массив формы `(0, dim)` без обращения к модели.",
+      "prompt_tokens": 186,
+      "completion_tokens": 77,
+      "seconds": 1.061,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что возвращает эндпоинт GET /api/models в проекте?",
+      "query": "Эндпоинт `GET /api/models` возвращает JSON-массив объектов моделей, доступных провайдеру, с полями `id`, `name` и `context_length`. Список формируется в `src/api/routes/models.py` из реестра `MODEL_REGISTRY` и кэшируется на 60 секунд.",
+      "prompt_tokens": 179,
+      "completion_tokens": 79,
+      "seconds": 1.037,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что делает функция _bullets при разборе ответа модели в MCP-сервере?",
+      "query": "Функция `_bullets` в модуле `mcp_server/parsers.py` извлекает маркированные списки из текста ответа модели и возвращает их как `list[str]` для последующей нормализации в `parse_response`. Она срабатывает на строках, начинающихся с `-`, `*` или `•`, и обрезает ведущие пробелы через `strip()`.",
+      "prompt_tokens": 184,
+      "completion_tokens": 92,
+      "seconds": 1.406,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что должен делать сервис на втором шаге прогона с блоком состояния?",
+      "query": "На шаге 2 прогона с блоком состояния сервис `state-runner` читает `state.json` из `runs/<run_id>/` и выполняет только те шаги, у которых `status == \"pending\"`, пропуская `done` и `failed`. Результат каждого шага пишется обратно в `state.json` через `update_state(run_id, step, status)`, а при `--resume` повторный прогон начинается с последнего незавершённого шага.",
+      "prompt_tokens": 182,
+      "completion_tokens": 116,
+      "seconds": 1.346,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что должна вернуть модель, если по итогам хода двигаться некуда?",
+      "query": "Если в результате хода ни одна клетка не доступна для перемещения, функция `get_available_moves()` возвращает пустой список `[]`, а `make_move()` завершает игру со статусом `game_over: true` и причиной `reason: \"no_moves\"`. Модель в этом случае возвращает объект `{\"status\": \"blocked\", \"moves\": []}` без выброса исключения.",
+      "prompt_tokens": 182,
+      "completion_tokens": 93,
+      "seconds": 1.452,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что импортируется из модуля profile в файле seed.py для работы с профилями и долговременной памятью?",
+      "query": "В `seed.py` из модуля `profile` импортируются `ProfileManager` и `get_profile_manager` для инициализации профилей и работы с долговременной памятью через `profile_manager`. Также может импортироваться `DEFAULT_PROFILE_ID` для подстановки идентификатора профиля по умолчанию при сидировании.",
+      "prompt_tokens": 191,
+      "completion_tokens": 78,
+      "seconds": 1.164,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что означает пустой список experts в API третьего дня и где задаются задача и роли по умолчанию?",
+      "query": "В API третьего дня пустой массив `experts` в ответе означает, что запрос ушёл без явного переопределения ролей, и сервер подставил дефолтный набор из `config/experts.yaml`. Задача по умолчанию и роли по умолчанию задаются в `day3/config.py` — константы `DEFAULT_TASK` и `DEFAULT_EXPERTS`, которые читает хендлер `POST /api/day3/run` в `day3/api.py`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 119,
+      "seconds": 1.257,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что представляет собой класс Hit и как формируется цитата нарушения в инвариантах агента?",
+      "query": "Класс `Hit` описан в `ai_advent/agent/invariants.py` и содержит поля `rule_id`, `severity`, `message`, `quote` и `span` — цитата нарушения формируется функцией `_extract_quote(text, span)` как подстрока исходного ответа агента длиной до `MAX_QUOTE_LEN = 240` символов с добавлением маркеров `…` при обрезке. Значение `quote` попадает в `Hit` при вызове `check_invariants(response_text)` и далее сериализуется в отчёт `invariants_report.json` без нормализации пробелов.",
+      "prompt_tokens": 184,
+      "completion_tokens": 147,
+      "seconds": 1.551,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что представляют собой профили и долговременная память до начала общения в модуле day12/seed.py?",
+      "query": "В `day12/seed.py` профили и долговременная память инициализируются до первого обращения пользователя: создаются записи в таблицах `profiles` и `long_term_memory` с предзаполненными полями `user_id`, `facts`, `preferences` и `created_at`. Эти данные загружаются в `memory_store` при старте сессии, чтобы агент сразу имел доступ к сохранённому контексту без обращения к LLM.",
+      "prompt_tokens": 189,
+      "completion_tokens": 109,
+      "seconds": 1.282,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит в day12/main.py, если в функцию forget передан уровень памяти, отсутствующий в TIERS?",
+      "query": "В `day12/main.py` функция `forget` читает уровень памяти из `TIERS` и при отсутствии ключа возвращает `None`, не изменяя состояние хранилища. Ошибка не выбрасывается, запись в `memory.json` не выполняется.",
+      "prompt_tokens": 187,
+      "completion_tokens": 60,
+      "seconds": 0.998,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит при нажатии на крестик в списке диалогов и как удаление связано с перепиской?",
+      "query": "При нажатии на крестик в списке диалогов вызывается `deleteChat(chatId)` в `src/components/ChatList.tsx`, который удаляет запись из таблицы `chats` и связанные сообщения из `messages` по `chat_id`. Переписка хранится в `messages` и привязана к диалогу через внешний ключ, поэтому удаление диалога каскадно удаляет всю его историю.",
+      "prompt_tokens": 189,
+      "completion_tokens": 100,
+      "seconds": 1.481,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит с запуском агента, когда достигнут потолок раундов?",
+      "query": "При достижении лимита `max_rounds` цикл `run_agent()` завершается принудительно: в `agent/loop.py` срабатывает ветка `if round_idx >= max_rounds`, после чего в лог пишется `agent_loop_exhausted` и возвращается `AgentResult(status=\"max_rounds_reached\")`. Финальный ответ модели при этом не запрашивается, а накопленный `messages` сохраняется в `session.json` для последующего возобновления через `resume_session()`.",
+      "prompt_tokens": 182,
+      "completion_tokens": 123,
+      "seconds": 1.343,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит с конспектом на сороковом сообщении и почему оборванный тезис не попадает в память?",
+      "query": "При достижении `MESSAGE_THRESHOLD = 40` в `context_manager.py` вызывается `summarize_and_reset()`, который формирует конспект через `summarize_messages()` и сохраняет его в таблицу `summaries` (поле `content`), после чего буфер `message_buffer` очищается. Оборванный тезис отбрасывается в `_extract_complete_thoughts()`, так как последний элемент буфера не проходит проверку `is_complete_sentence()` (наличие терминального знака `.`/`!`/`?`), и в `summaries` попадают только завершённые фрагменты.",
+      "prompt_tokens": 191,
+      "completion_tokens": 153,
+      "seconds": 1.497,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит с ответом агента day14, когда детектор в коде доказал нарушение инварианта прямо во время генерации?",
+      "query": "В `day14/agent.py` при срабатывании `invariant_detector.check()` во время стриминга вызывается `abort_generation()`, который прерывает поток токенов и помечает ответ флагом `violated=True` в `state.json`. Частично сгенерированный ответ не отдаётся клиенту через `POST /chat`, вместо него возвращается `{\"status\": \"blocked\", \"reason\": \"invariant_violation\"}`.",
+      "prompt_tokens": 194,
+      "completion_tokens": 108,
+      "seconds": 1.342,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит с ответом агента, если его вопрос не помещается в окно памяти?",
+      "query": "При превышении лимита контекстного окна модели срабатывает стратегия усечения в модуле `context_manager.py`: самые старые сообщения из `message_history` вытесняются по принципу FIFO, а системный промпт и последние N токенов сохраняются. Если усечение затрагивает текущий вопрос пользователя, агент возвращает ошибку `ContextOverflowError` с кодом 413 вместо частичного ответа.",
+      "prompt_tokens": 182,
+      "completion_tokens": 105,
+      "seconds": 1.232,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит с парой сообщений в памяти агента, если стрим ответа прервался из-за ошибки или остановки пользователем?",
+      "query": "При разрыве стрима в `agent/memory.py` пара `user`/`assistant` не коммитится в `conversation_history`: частичный ответ из `stream_buffer` отбрасывается, а `pending_turn` сбрасывается в `None`. Если включён `MEMORY_PARTIAL_SAVE=true`, сохраняется усечённый `assistant`-месседж с флагом `interrupted=True` и `finish_reason=\"aborted\"`.",
+      "prompt_tokens": 196,
+      "completion_tokens": 112,
+      "seconds": 1.326,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит с расписанием задач после перезапуска сервера в day18?",
+      "query": "В `day18` расписание задач хранится в памяти процесса `scheduler.py` и не персистится в БД, поэтому после перезапуска сервера все зарегистрированные задачи теряются. При старте `main.py` повторно вызывает `register_default_jobs()`, который заново создаёт только задачи из конфига `config/jobs.yaml`.",
+      "prompt_tokens": 182,
+      "completion_tokens": 83,
+      "seconds": 1.227,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит с циклом планировщика и другими задачами, если одна задача завершилась исключением?",
+      "query": "В `scheduler/loop.py` функция `run_forever()` оборачивает вызов `task.run()` в `try/except Exception`, логирует трейсбек через `logger.exception()` и продолжает цикл — исключение одной задачи не останавливает остальные. Однако если исключение выброшено вне `try` (например, в `_pick_next()` или при `await asyncio.sleep(interval)`), цикл `while not self._stop_event.is_set()` прерывается, и все запланированные задачи остаются в состоянии `PENDING` до следующего `scheduler.start()`.",
+      "prompt_tokens": 186,
+      "completion_tokens": 136,
+      "seconds": 1.852,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит с элементами списка items при разборе ответа в функции parse из day12/remember.py?",
+      "query": "В `day12/remember.py` функция `parse` разбирает ответ модели и для каждого элемента списка `items` создаёт запись через `add_item`, сохраняя поля `name`, `qty` и `note`. Элементы `items`, не прошедшие валидацию по схеме `ITEM_SCHEMA`, отбрасываются с записью в `logger.warning`.",
+      "prompt_tokens": 187,
+      "completion_tokens": 87,
+      "seconds": 1.329,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "Что происходит, если ответ модели упирается в лимит MAX_TOKENS и приходит finish_reason length?",
+      "query": "Если ответ модели обрывается по лимиту `MAX_TOKENS`, в ответе приходит `finish_reason: \"length\"` — это значит, что генерация остановлена не по `stop`, а по достижению `max_tokens`. В `agent.py` такой ответ не считается финальным: `run_agent` проверяет `finish_reason` и при `length` либо повторяет вызов с увеличенным `max_tokens`, либо возвращает частичный текст с флагом `truncated=True`.",
+      "prompt_tokens": 189,
+      "completion_tokens": 118,
+      "seconds": 1.591,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "как меняется размер ленты сообщений по ходам при прогоне сборки ТЗ за 12 ходов в day11?",
+      "query": "В `day11` прогон сборки ТЗ на 12 ходов ведётся через `run_build.py`, где лента сообщений хранится в `state[\"messages\"]` и после каждого хода обрезается функцией `trim_messages()` до `MAX_CONTEXT_MESSAGES`. Начиная с хода `N=6` срабатывает порог `SUMMARY_THRESHOLD`, и старые сообщения сворачиваются в `state[\"summary\"]`, поэтому размер ленты растёт не линейно, а ступенями: `+2` сообщения на ход до сворачивания и `+1` после.",
+      "prompt_tokens": 193,
+      "completion_tokens": 144,
+      "seconds": 1.568,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "как меняются три уровня памяти по мере роста числа сообщений в диалоге на day11",
+      "query": "На day11 три уровня памяти реализованы в `memory/manager.py`: `ShortTermMemory` хранит последние N сообщений в `deque(maxlen=window)`, `WorkingMemory` агрегирует summary через `summarize_history()` при превышении `SUMMARY_THRESHOLD`, а `LongTermMemory` пишет факты в `facts.jsonl` через `extract_facts()`. По мере роста числа сообщений `ShortTermMemory` вытесняет старые реплики, `WorkingMemory` пересобирает summary каждые `SUMMARY_INTERVAL` сообщений, а `LongTermMemory` пополняется только при срабатывании `extract_facts()`.",
+      "prompt_tokens": 183,
+      "completion_tokens": 152,
+      "seconds": 1.409,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "какие таблицы хранятся в базе SQLite планировщика и что записывается в каждую из них",
+      "query": "Планировщик хранит состояние в SQLite-файле `scheduler.db`; основные таблицы — `tasks`, `runs` и `locks`. В `tasks` записываются определения задач (`task_id`, `cron`, `handler`, `payload`, `enabled`), в `runs` — история запусков (`run_id`, `task_id`, `started_at`, `finished_at`, `status`, `exit_code`), а в `locks` — активные блокировки (`lock_name`, `owner`, `acquired_at`, `expires_at`) для защиты от параллельного выполнения.",
+      "prompt_tokens": 189,
+      "completion_tokens": 136,
+      "seconds": 1.531,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "какое регулярное выражение в модуле shape.py используется для поиска блоков кода в тексте?",
+      "query": "В модуле `shape.py` для поиска блоков кода в тексте используется регулярное выражение `CODE_BLOCK_RE = re.compile(r\"```(\\w+)?\\n(.*?)```\", re.DOTALL)`. Оно захватывает опциональный язык разметки в группе 1 и тело блока в группе 2, включая переводы строк благодаря флагу `re.DOTALL`.",
+      "prompt_tokens": 186,
+      "completion_tokens": 93,
+      "seconds": 1.07,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "какой файл в day11 содержит реплики сценарного диалога, одинаковые для кнопки и для замера",
+      "query": "В `day11` реплики сценарного диалога, общие для кнопки и для замера, вынесены в `day11/scenario_dialog.py` — словарь `SCENARIO_REPLIES` с ключами по шагам сценария. Оба обработчика (`on_button` и `on_measure`) импортируют его и берут текст через `get_reply(step)`, поэтому строки не дублируются.",
+      "prompt_tokens": 192,
+      "completion_tokens": 103,
+      "seconds": 1.154,
+      "note": ""
+    },
+    {
+      "mode": "hyde",
+      "question": "почему в таблице знаний source_id не является внешним ключом на диалог",
+      "query": "В таблице `knowledge` поле `source_id` хранит идентификатор исходного сообщения из `dialog_messages`, но внешний ключ намеренно не объявлен: сообщения могут удаляться при очистке истории диалога, а запись знания должна сохраняться. Связь реализована на уровне приложения через `KnowledgeService.link_source()`, а не через `FOREIGN KEY` в схеме `migrations/003_knowledge.sql`.",
+      "prompt_tokens": 182,
+      "completion_tokens": 103,
+      "seconds": 1.591,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "В каком облаке развёрнут этот проект и сколько стоит его хостинг в месяц?",
+      "query": "облако cloud хостинг hosting развёрнут deployment deploy стоимость цена cost pricing месяц monthly",
+      "prompt_tokens": 247,
+      "completion_tokens": 19,
+      "seconds": 1.152,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Зачем проекту ключ OpenRouter, если всё остальное работает на DeepSeek?",
+      "query": "OpenRouter ключ API key DeepSeek провайдер provider модель model fallback маршрутизация routing",
+      "prompt_tokens": 245,
+      "completion_tokens": 24,
+      "seconds": 1.74,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как агент считает токены промпта и всей истории диалога до отправки запроса в модель?",
+      "query": "токены prompt tokens история диалога подсчёт count_tokens token counting context window messages history перед отправкой запроса модель",
+      "prompt_tokens": 250,
+      "completion_tokens": 25,
+      "seconds": 0.964,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в MCP-клиенте преобразовать список инструментов в формат OpenAI, чтобы inputSchema попала в parameters?",
+      "query": "MCP client tools list OpenAI format inputSchema parameters function calling convert tools schema",
+      "prompt_tokens": 252,
+      "completion_tokens": 15,
+      "seconds": 0.9,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в MCP-сервере формируется список дней репозитория с их названиями?",
+      "query": "MCP сервер MCP server список дней days list repository repo названия titles names day20 servers vault.py sse_frame AgentRegistry",
+      "prompt_tokens": 248,
+      "completion_tokens": 27,
+      "seconds": 1.028,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в MCP-сервере хранилища AI Advent формируются временные метки и как они преобразуются в локальное время?",
+      "query": "MCP сервер хранилища AI Advent vault timestamps временные метки timestamp datetime UTC local time локальное время timezone timezone conversion преобразование astimezone fromtimestamp isoformat strftime day20 servers vault.py",
+      "prompt_tokens": 256,
+      "completion_tokens": 45,
+      "seconds": 1.226,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в SQLite-индексе проекта AI Advent хранятся векторы и метаданные чанков?",
+      "query": "SQLite индекс AI Advent векторы embeddings метаданные чанки chunks таблица schema sqlite-vec vec0 virtual table metadata",
+      "prompt_tokens": 251,
+      "completion_tokens": 28,
+      "seconds": 0.95,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day14 превратить пункт ТЗ в зафиксированный инвариант с помощью кнопки при наведении?",
+      "query": "day14 ТЗ инвариант зафиксированный кнопка при наведении hover button invariant spec requirement",
+      "prompt_tokens": 255,
+      "completion_tokens": 24,
+      "seconds": 1.106,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day15 оценивают удержание гейта по шкале от 0 до 2?",
+      "query": "day15 gate retention удержание гейта шкала 0 1 2 оценка scoring rubric",
+      "prompt_tokens": 249,
+      "completion_tokens": 23,
+      "seconds": 1.244,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day15 устроен двухслойный guard, который задерживает фразу до точки и обрывает проход при забеге?",
+      "query": "day15 guard двухслойный two-layer sentence boundary точка phrase buffer задержка обрыв проход забег run-ahead streaming chunk",
+      "prompt_tokens": 258,
+      "completion_tokens": 29,
+      "seconds": 1.229,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day16/llm.py устроена функция stream_chat и что она делает с вызовами инструментов?",
+      "query": "day16 llm.py stream_chat функция вызовы инструментов tool calls tools function calling streaming стриминг",
+      "prompt_tokens": 252,
+      "completion_tokens": 24,
+      "seconds": 1.178,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day17/llm.py функция stream_chat передаёт вызовы инструментов вместе с finish_reason?",
+      "query": "day17 llm.py stream_chat tool_calls finish_reason streaming tools function calling",
+      "prompt_tokens": 251,
+      "completion_tokens": 18,
+      "seconds": 0.96,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day17/main.py устроена отдача файла index.html через FileResponse с заголовками NO_CACHE?",
+      "query": "day17 main.py FileResponse index.html NO_CACHE headers заголовки отдача файла static",
+      "prompt_tokens": 252,
+      "completion_tokens": 20,
+      "seconds": 1.137,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day19 устроена переиндексация документов и как запрос человека преобразуется в выражение FTS5?",
+      "query": "day19 переиндексация reindex переиндексация документов indexing index rebuild FTS5 fts5 MATCH query запрос человека преобразование query expression выражение FTS5 bm25",
+      "prompt_tokens": 254,
+      "completion_tokens": 43,
+      "seconds": 1.089,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day2 настроить stop, чтобы модель не начинала четвёртый пункт ответа?",
+      "query": "day2 stop stop_sequences stop sequences стоп-последовательность стоп последовательность остановка генерации модель не начинала четвёртый пункт ответа",
+      "prompt_tokens": 248,
+      "completion_tokens": 34,
+      "seconds": 0.931,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day20 проверить, что порядок вызовов MCP-серверов совпадает с контрактом?",
+      "query": "day20 MCP сервер порядок вызовов контракт contract order calls sequence verify check test assert servers",
+      "prompt_tokens": 255,
+      "completion_tokens": 23,
+      "seconds": 0.978,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day20 проверяется порядок при добавлении day19 с цепочкой MCP-инструментов?",
+      "query": "day20 day19 порядок order sequence chain цепочка MCP инструмент tool MCP-tool tools проверка test assert",
+      "prompt_tokens": 250,
+      "completion_tokens": 26,
+      "seconds": 1.015,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day4/main.py отключить кеширование статических файлов через подкласс StaticFiles?",
+      "query": "day4 main.py StaticFiles подкласс subclass отключить кеширование caching cache static files StaticFiles subclass Cache-Control no-cache",
+      "prompt_tokens": 250,
+      "completion_tokens": 29,
+      "seconds": 1.039,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day7 устроена запись хода в базу, чтобы оборванный стрим не оставлял частичных данных?",
+      "query": "day7 запись хода база database db sqlite оборванный стрим stream partial частичные данные транзакция transaction commit rollback atomic атомарность",
+      "prompt_tokens": 256,
+      "completion_tokens": 35,
+      "seconds": 0.997,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day7/main.py отключить кэширование статических файлов через подкласс StaticFiles?",
+      "query": "day7 main.py StaticFiles подкласс subclass кэширование caching cache static files статика отключить disable",
+      "prompt_tokens": 250,
+      "completion_tokens": 24,
+      "seconds": 0.913,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day9/main.py задаются заголовки для SSE и ограничение числа сессий?",
+      "query": "day9 main.py SSE headers заголовки Content-Type text/event-stream Cache-Control no-cache Connection keep-alive max sessions сессии limit ограничение",
+      "prompt_tokens": 247,
+      "completion_tokens": 31,
+      "seconds": 0.923,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day9/scenarios.py оценивают стоимость входа без кэша префикса и как сжатие истории влияет на счёт?",
+      "query": "day9 scenarios.py стоимость входа без кэша префикса cache miss prompt tokens cost сжатие истории compression history влияет счёт tokens cost",
+      "prompt_tokens": 258,
+      "completion_tokens": 32,
+      "seconds": 0.973,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в классе Agent называется метод, который превращает ответ модели в список предложений Proposal и возвращает пустой список, если ответ не по форме?",
+      "query": "Agent метод parse_proposals Proposal список предложений пустой список ответ не по форме",
+      "prompt_tokens": 257,
+      "completion_tokens": 16,
+      "seconds": 0.945,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в классе AgentRegistry обновляется порядок сессий при обращении к агенту?",
+      "query": "AgentRegistry порядок сессий sessions order обновление update обращение к агенту get_agent touch move_to_end OrderedDict LRU",
+      "prompt_tokens": 248,
+      "completion_tokens": 30,
+      "seconds": 1.347,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в классе Document получить длину текста и его хеш SHA-256?",
+      "query": "Document длина текста len text length хеш SHA-256 sha256 hash digest",
+      "prompt_tokens": 245,
+      "completion_tokens": 17,
+      "seconds": 0.863,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в классе Storage посчитать количество сообщений в конкретной сессии?",
+      "query": "Storage count messages session количество сообщений сессия count_messages session_id get_messages len messages",
+      "prompt_tokens": 242,
+      "completion_tokens": 20,
+      "seconds": 0.891,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в классе Storage реализован асинхронный подсчёт количества записей для сессии?",
+      "query": "Storage async count records session подсчёт количества записей асинхронный async def count session_id SELECT COUNT",
+      "prompt_tokens": 249,
+      "completion_tokens": 23,
+      "seconds": 1.047,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в классе Storage реализовано удаление сессии вместе с её сообщениями?",
+      "query": "Storage удаление сессии сообщения delete_session remove_session delete messages session_id cascade foreign key ON DELETE CASCADE SQLite",
+      "prompt_tokens": 245,
+      "completion_tokens": 24,
+      "seconds": 0.73,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в модуле day12/scenarios.py устроен класс Answer и сколько токенов отведено судье JUDGE_MAX_TOKENS?",
+      "query": "day12 scenarios.py Answer класс JUDGE_MAX_TOKENS токенов судья judge tokens",
+      "prompt_tokens": 258,
+      "completion_tokens": 20,
+      "seconds": 0.671,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в модуле remember отсеиваются кандидаты, которые уже есть в памяти или профиле?",
+      "query": "remember модуль память профиль memory profile кандидаты candidates отсеивание фильтрация deduplication dedup уже есть exists existing duplicate duplicates проверка check filter",
+      "prompt_tokens": 249,
+      "completion_tokens": 36,
+      "seconds": 1.048,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в модуле remember.py устроена маршрутизация того, что из разговора стоит запомнить и куда это положить?",
+      "query": "remember.py маршрутизация routing classify classify_memory memory routing что запомнить куда положить разговор conversation memory store storage bucket category classifier",
+      "prompt_tokens": 258,
+      "completion_tokens": 31,
+      "seconds": 1.001,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в модуле профиля пользователя устроен пункт профиля и что он берёт у памяти?",
+      "query": "профиль пользователя profile пункт профиля memory память user profile module",
+      "prompt_tokens": 249,
+      "completion_tokens": 16,
+      "seconds": 0.922,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в отчёте report_transitions определяется, кто инициировал переход — агент или пользователь?",
+      "query": "report_transitions переход инициатор агент пользователь actor initiator source role agent user transition",
+      "prompt_tokens": 250,
+      "completion_tokens": 20,
+      "seconds": 0.852,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в отчёте пайплайна форматируется таблица markdown и разделяются разряды чисел?",
+      "query": "отчёт пайплайн pipeline report форматирование таблица markdown table разряды чисел thousands separator формат числа number formatting",
+      "prompt_tokens": 251,
+      "completion_tokens": 27,
+      "seconds": 0.997,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в проекте AI Advent реализована постоянная память диалогов, чтобы разговор продолжался после перезапуска?",
+      "query": "AI Advent постоянная память диалогов история conversation memory persistence сохранение после перезапуска restart resume session state storage database sqlite json file load save",
+      "prompt_tokens": 254,
+      "completion_tokens": 33,
+      "seconds": 1.537,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в проекте AI Advent устроен конечный автомат состояния задачи и кто применяет переход?",
+      "query": "AI Advent конечный автомат состояния задачи state machine task status transition кто применяет переход apply transition AgentRegistry sse_frame day20 servers vault.py",
+      "prompt_tokens": 247,
+      "completion_tokens": 29,
+      "seconds": 1.069,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в файле evaluate.py выбирается случайный отрывок документа для эталона при сравнении стратегий chunking?",
+      "query": "evaluate.py случайный отрывок документа эталон сравнение стратегий chunking chunk random sample document reference ground truth",
+      "prompt_tokens": 254,
+      "completion_tokens": 25,
+      "seconds": 0.963,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как меняется расход токенов на входе по ходам при использовании картотеки фактов в day10?",
+      "query": "расход токенов input tokens prompt tokens по ходам turns картотека фактов fact card day10",
+      "prompt_tokens": 253,
+      "completion_tokens": 23,
+      "seconds": 1.117,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как менялось число токенов и что происходило с разделами «Факты» и «Обсуждалось» при последовательных свёртках истории в day9?",
+      "query": "day9 токены tokens число количество история history свёртка свёртки compaction summarize summary Факты facts Обсуждалось discussed обсуждение разделы sections",
+      "prompt_tokens": 267,
+      "completion_tokens": 34,
+      "seconds": 1.206,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как менялся расход токенов при сжатии истории на первых восьми ходах в day9?",
+      "query": "day9 расход токенов tokens сжатие истории compression context первые восемь ходов turns",
+      "prompt_tokens": 249,
+      "completion_tokens": 18,
+      "seconds": 0.739,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как устроены имена инструментов в общем каталоге трёх MCP-серверов day20?",
+      "query": "day20 MCP servers tools names naming tool registry AgentRegistry list_tools tools/list vault.py sse_frame каталог инструментов имена инструментов",
+      "prompt_tokens": 252,
+      "completion_tokens": 31,
+      "seconds": 1.498,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как функция render группирует элементы памяти по разделам в зависимости от уровня?",
+      "query": "render группировка элементов памяти разделы уровень memory sections grouping level",
+      "prompt_tokens": 243,
+      "completion_tokens": 13,
+      "seconds": 1.017,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как функция section_of определяет, в какую секцию памяти отнести факт из разговора?",
+      "query": "section_of секция памяти memory section факт разговор classify classification routing memory_section",
+      "prompt_tokens": 248,
+      "completion_tokens": 17,
+      "seconds": 1.049,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая модель в day5 оказалась самой медленной и многословной по медиане времени и токенов ответа?",
+      "query": "day5 модель model самая медленная многословная медиана времени токенов ответа latency tokens response median slowest verbose",
+      "prompt_tokens": 253,
+      "completion_tokens": 26,
+      "seconds": 1.049,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая модель оправдана, когда важны краткость и предсказуемый объём ответа, и как она выигрывает по времени и деньгам?",
+      "query": "модель краткость предсказуемый объём ответа latency cost tokens small model mini compact deterministic output экономия времени деньги",
+      "prompt_tokens": 263,
+      "completion_tokens": 26,
+      "seconds": 0.871,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая модель считает эмбеддинги в day21 и почему взята именно она, а не базовая potion-base-8M?",
+      "query": "day21 эмбеддинги embeddings модель model potion-base-8M potion base 8M почему выбор обоснование",
+      "prompt_tokens": 259,
+      "completion_tokens": 29,
+      "seconds": 1.371,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая правка в профиле Марины повысила её оценку с 3/6 до 5/6 в day12?",
+      "query": "Марина профиль правка оценка 3/6 5/6 day12",
+      "prompt_tokens": 256,
+      "completion_tokens": 18,
+      "seconds": 0.763,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие MCP-инструменты позволяют посмотреть последние коммиты, один коммит целиком и файлы, затронутые коммитами?",
+      "query": "MCP инструменты tools list_commits get_commit get_commit_files commits git log show diff files changed",
+      "prompt_tokens": 262,
+      "completion_tokens": 23,
+      "seconds": 0.884,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие варианты бюджета токенов доступны в переключателе в шапке агента из day10?",
+      "query": "бюджет токенов token budget переключатель шапка агента day10 day10 варианты",
+      "prompt_tokens": 252,
+      "completion_tokens": 23,
+      "seconds": 1.06,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие варианты выбора предлагаются при сохранении требования в память агента во время работы в чате?",
+      "query": "сохранение требования память агента чат варианты выбора memory agent requirement save options choice",
+      "prompt_tokens": 251,
+      "completion_tokens": 21,
+      "seconds": 1.036,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие именованные параметры принимает функция stream_answer в модуле day3/llm.py?",
+      "query": "stream_answer day3/llm.py параметры аргументы именованные keyword arguments signature def stream_answer",
+      "prompt_tokens": 248,
+      "completion_tokens": 22,
+      "seconds": 0.859,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие константы и классы импортируются из модуля agent в day6/main.py?",
+      "query": "day6 main.py agent import импорт константы constants классы classes AgentRegistry sse_frame",
+      "prompt_tokens": 248,
+      "completion_tokens": 20,
+      "seconds": 0.904,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие параметры принимает функция stream_chat в day8/llm.py помимо сообщений?",
+      "query": "stream_chat day8 llm.py параметры аргументы signature function messages temperature model max_tokens stream tools",
+      "prompt_tokens": 248,
+      "completion_tokens": 23,
+      "seconds": 1.145,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие поля содержит dataclass AnswerDelta и что приходит в поле usage в конце потока?",
+      "query": "dataclass AnswerDelta поля поля AnswerDelta usage поле usage конец потока stream final usage tokens prompt_tokens completion_tokens total_tokens",
+      "prompt_tokens": 247,
+      "completion_tokens": 29,
+      "seconds": 1.077,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие поля содержит класс Shape, измеряющий ответ по шкалам профиля?",
+      "query": "Shape поля класс измеряющий ответ шкалам профиля shape fields class measurement response scales profile",
+      "prompt_tokens": 244,
+      "completion_tokens": 19,
+      "seconds": 1.071,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие события и данные приходят в потоке ответа API, включая завершение и ошибку?",
+      "query": "события events поток stream ответа API SSE server-sent events завершение done complete end error ошибка data данные message delta token finish_reason",
+      "prompt_tokens": 248,
+      "completion_tokens": 30,
+      "seconds": 1.059,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие счётчики размера и токенов диалога и контекста появились в API на восьмой день?",
+      "query": "счётчики размер токены диалог контекст API день 8 day08 tokens context size counter usage",
+      "prompt_tokens": 255,
+      "completion_tokens": 24,
+      "seconds": 1.056,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие таблицы хранятся в базе данных SQLite day19/index.db и что записывается в каждую из них?",
+      "query": "day19 index.db SQLite таблицы schema таблица запись поля columns rows данные что хранится",
+      "prompt_tokens": 254,
+      "completion_tokens": 21,
+      "seconds": 0.873,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие типы событий приходят в потоке ответа при работе первого инструмента MCP в day17?",
+      "query": "day17 MCP tool events event types stream response SSE sse_frame event_type tool_call tool_result message content_block_delta",
+      "prompt_tokens": 250,
+      "completion_tokens": 25,
+      "seconds": 1.233,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие файлы в day16 отвечают за API, SSE и страницу с тумблером и лентой вызовов?",
+      "query": "day16 API SSE server app main routes endpoints sse_frame stream events page html ui toggle switch feed calls log",
+      "prompt_tokens": 257,
+      "completion_tokens": 22,
+      "seconds": 0.879,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие функции в day10/report.py нормализуют текст и значение ячейки для markdown-отчёта?",
+      "query": "day10 report.py normalize text cell value markdown отчёт нормализация ячейки функции",
+      "prompt_tokens": 253,
+      "completion_tokens": 19,
+      "seconds": 0.879,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какое значение окна сообщений используется в сценариях замеров для README?",
+      "query": "window messages значение окна сообщений message window size README замеры benchmark scenarios",
+      "prompt_tokens": 246,
+      "completion_tokens": 17,
+      "seconds": 1.135,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой асинхронный метод класса Storage добавляет запись в рабочий раздел, принимая идентификатор сессии, раздел, текст и источник?",
+      "query": "Storage async метод add_record session_id section text source рабочий раздел запись",
+      "prompt_tokens": 261,
+      "completion_tokens": 16,
+      "seconds": 1.375,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой вопрос про выбор между Celery и RQ используется в сценарии сравнения?",
+      "query": "Celery RQ сравнение выбор вопрос сценарий comparison task queue broker worker",
+      "prompt_tokens": 245,
+      "completion_tokens": 16,
+      "seconds": 1.052,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой командой запускается клиент из day17, который сам вызывает инструмент git_log?",
+      "query": "day17 клиент client запуск команда python git_log tool вызов инструмент",
+      "prompt_tokens": 247,
+      "completion_tokens": 17,
+      "seconds": 1.065,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой командой запустить приложение из папки day15 и по какому адресу будет доступен интерфейс?",
+      "query": "day15 запуск приложение команда python main.py uvicorn streamlit адрес интерфейс localhost 127.0.0.1 порт URL http",
+      "prompt_tokens": 255,
+      "completion_tokens": 36,
+      "seconds": 1.261,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой метод класса Agent принимает решение по кандидату и записывает его на уровень?",
+      "query": "Agent метод решение кандидат записывает уровень decide candidate level write record",
+      "prompt_tokens": 247,
+      "completion_tokens": 15,
+      "seconds": 0.993,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой метод класса Storage возвращает базу к состоянию после первого запуска с seed и без диалогов?",
+      "query": "Storage метод reset seed сброс база состояние первый запуск без диалогов reset_to_seed reset_database initialize seed",
+      "prompt_tokens": 250,
+      "completion_tokens": 26,
+      "seconds": 0.86,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой параметр в day2 останавливает генерацию, если модель начнёт четвёртый пункт?",
+      "query": "day2 параметр останавливает генерацию stop stop_sequence stop_sequences max_tokens fourth пункт",
+      "prompt_tokens": 253,
+      "completion_tokens": 23,
+      "seconds": 1.103,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой системный промпт задаёт поведение ассистента в day7/agent.py и что он должен помнить?",
+      "query": "day7 agent.py системный промпт system prompt поведение ассистента assistant помнить память memory",
+      "prompt_tokens": 254,
+      "completion_tokens": 23,
+      "seconds": 1.257,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой технологический стек и процесс релизов указаны в сценарии для проверки памяти ассистента?",
+      "query": "технологический стек стек технологий tech stack процесс релизов release process релиз pipeline CI CD сценарий проверки памяти ассистента memory check assistant memory test",
+      "prompt_tokens": 250,
+      "completion_tokens": 34,
+      "seconds": 0.966,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой файл в проекте реализует MCP-клиент с соединением, рукопожатием и вызовом инструментов?",
+      "query": "MCP client клиент соединение connection рукопожатие handshake initialize вызов инструментов call_tool tools mcp.py client.py файл модуль реализация",
+      "prompt_tokens": 256,
+      "completion_tokens": 34,
+      "seconds": 0.975,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой формат запроса и ответа у эндпоинта POST /api/ask в проекте AI Advent?",
+      "query": "POST /api/ask endpoint формат запроса ответа request response JSON schema AI Advent",
+      "prompt_tokens": 252,
+      "completion_tokens": 18,
+      "seconds": 1.24,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой формат ответа отдаёт API при потоковой передаче и что означает пустой список experts?",
+      "query": "формат ответа API потоковая передача streaming SSE server-sent events sse_frame data event stream chunk delta experts пустой список experts empty experts []",
+      "prompt_tokens": 249,
+      "completion_tokens": 31,
+      "seconds": 1.204,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой формат ответа отдаёт API, если эксперты выключены?",
+      "query": "формат ответа API эксперты выключены experts disabled response format",
+      "prompt_tokens": 244,
+      "completion_tokens": 14,
+      "seconds": 0.968,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "На какие адреса можно положить обычную находку в карточке профиля и что потом с ней можно сделать?",
+      "query": "адрес address находка находки карточка профиля profile card положить сохранить что сделать действие",
+      "prompt_tokens": 252,
+      "completion_tokens": 21,
+      "seconds": 0.918,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "На какие типы нужно разделить информацию в задании одиннадцатого дня про память агента?",
+      "query": "day11 память агента memory типы информации разделение категории",
+      "prompt_tokens": 247,
+      "completion_tokens": 14,
+      "seconds": 1.18,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "На какие типы нужно разделить информацию при реализации модели памяти агента в одиннадцатый день?",
+      "query": "day11 память memory agent типы типы памяти episodic semantic procedural working краткосрочная долговременная",
+      "prompt_tokens": 246,
+      "completion_tokens": 23,
+      "seconds": 0.91,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "На каком порту слушает постоянный MCP-сервер хранилища в day20?",
+      "query": "day20 MCP сервер хранилища vault port порт listen слушает постоянный",
+      "prompt_tokens": 247,
+      "completion_tokens": 18,
+      "seconds": 1.588,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Насколько увеличивается расход токенов при добавлении картотеки фактов к шести сообщениям в замерах day10?",
+      "query": "расход токенов картотека фактов facts memory day10 замеры шесть сообщений messages tokens увеличение",
+      "prompt_tokens": 255,
+      "completion_tokens": 24,
+      "seconds": 1.042,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "По каким файлам проекта ищет инструмент search и как корпус делится на разделы?",
+      "query": "search инструмент файлы корпус разделы chunks sections index bm25 day README task code Python",
+      "prompt_tokens": 249,
+      "completion_tokens": 22,
+      "seconds": 0.719,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "По какому признаку файл переиндексируется в функции _reindex?",
+      "query": "_reindex reindex переиндексация переиндексируется файл признак условие mtime modification time st_mtime timestamp hash checksum size изменён изменен updated changed",
+      "prompt_tokens": 244,
+      "completion_tokens": 38,
+      "seconds": 0.998,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Под какой лицензией распространяется проект AI Advent?",
+      "query": "лицензия license AI Advent проект",
+      "prompt_tokens": 239,
+      "completion_tokens": 7,
+      "seconds": 0.948,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему без детектора гейтов нельзя доказать, что план утверждён, на ходу 7?",
+      "query": "детектор гейтов gate detector план утверждён approved plan ход 7 day7",
+      "prompt_tokens": 252,
+      "completion_tokens": 20,
+      "seconds": 0.835,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему в day14 поток до модели нужно закрывать через async with, а не оставлять сборщику?",
+      "query": "day14 поток stream модель async with контекстный менеджер закрытие close aclose сборщик мусора garbage collector gc утечка ресурсов",
+      "prompt_tokens": 251,
+      "completion_tokens": 34,
+      "seconds": 1.138,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему в day17 в качестве инструмента MCP выбран git, а не простая функция add?",
+      "query": "day17 MCP инструмент tool git add функция function почему выбран выбор",
+      "prompt_tokens": 249,
+      "completion_tokens": 15,
+      "seconds": 0.907,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему в двухслойном guard у детектора и аудитора разные пороги срабатывания?",
+      "query": "двухслойный guard детектор аудитор пороги срабатывания threshold detector auditor two-layer guard",
+      "prompt_tokens": 251,
+      "completion_tokens": 25,
+      "seconds": 1.059,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему в диалоге не удалось изменить срок хранения готовых файлов с семи дней на тридцать?",
+      "query": "срок хранения готовых файлов retention days TTL 7 30 изменить диалог",
+      "prompt_tokens": 253,
+      "completion_tokens": 21,
+      "seconds": 0.928,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему в индексе day21 колонки с границами чанка названы start_char и end_char, а не просто start и end?",
+      "query": "day21 индекс колонки границы чанка chunk boundaries start_char end_char start end",
+      "prompt_tokens": 261,
+      "completion_tokens": 19,
+      "seconds": 1.432,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему в модели памяти агента список разделов фиксирован и какие разделы входят в долговременную память?",
+      "query": "модель памяти агента memory sections разделы фиксирован список долговременная память long-term memory MEMORY.md структура разделы",
+      "prompt_tokens": 254,
+      "completion_tokens": 30,
+      "seconds": 1.168,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему в модуле профиля пользователя нельзя описать профиль только шкалами или только пунктами?",
+      "query": "профиль пользователя модуль шкалы пункты нельзя описать только шкалами только пунктами profile scales items",
+      "prompt_tokens": 250,
+      "completion_tokens": 25,
+      "seconds": 0.769,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему в функции complete из day13/llm.py ответ не стримится, а запрашивается целиком?",
+      "query": "complete day13 llm.py stream streaming стриминг не стримится целиком whole response non-streaming",
+      "prompt_tokens": 254,
+      "completion_tokens": 24,
+      "seconds": 1.015,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему долговременная память в проекте осталась общей для всех профилей пользователей?",
+      "query": "долговременная память long-term memory общая shared профиль пользователь user profile изоляция isolation",
+      "prompt_tokens": 248,
+      "completion_tokens": 23,
+      "seconds": 0.856,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему ответ модели без MCP считается правильным, если она не знает содержимого репозитория?",
+      "query": "модель MCP без MCP ответ правильный галлюцинация hallucination знание репозиторий содержимое контекст context grounding проверка фактов",
+      "prompt_tokens": 251,
+      "completion_tokens": 37,
+      "seconds": 1.089,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему результат работы сценария из терминала сохраняется в файл, а не выводится в stderr?",
+      "query": "сценарий терминал stdout stderr вывод результат сохраняется файл перенаправление redirect output file logging",
+      "prompt_tokens": 252,
+      "completion_tokens": 22,
+      "seconds": 0.973,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему слайдер и поле температуры недоступны до ответа сервера в проекте AI Advent?",
+      "query": "слайдер slider поле температуры temperature input disabled недоступны до ответа сервера AI Advent day20 servers vault.py sse_frame AgentRegistry",
+      "prompt_tokens": 250,
+      "completion_tokens": 31,
+      "seconds": 1.047,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему у векторов, нормированных по L2, косинусная близость совпадает со скалярным произведением?",
+      "query": "L2 нормировка нормализация косинусная близость cosine similarity скалярное произведение dot product inner product unit vector норма вектора",
+      "prompt_tokens": 257,
+      "completion_tokens": 31,
+      "seconds": 0.948,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько стоит короткий диалог из трёх ходов с учётом заголовка диалога?",
+      "query": "стоимость короткий диалог три хода заголовок диалога tokens cost pricing prompt completion context",
+      "prompt_tokens": 252,
+      "completion_tokens": 23,
+      "seconds": 0.791,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Чем аудитор отличается от детектора и какие решения принимает модуль аудита?",
+      "query": "аудитор audit auditor детектор detector модуль аудита audit module решения решения принимает decision verdict",
+      "prompt_tokens": 247,
+      "completion_tokens": 22,
+      "seconds": 0.975,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Чем отличается агент из day19 от run_pipeline по тому, кто управляет номерами артефактов?",
+      "query": "day19 агент run_pipeline управление номерами артефактов artifact id artifact_id numbering counter sequence управляет агент pipeline",
+      "prompt_tokens": 254,
+      "completion_tokens": 30,
+      "seconds": 0.995,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Чем полнотекстовый поиск на FTS5 отличается от поиска по эмбеддингам?",
+      "query": "полнотекстовый поиск FTS5 full-text search отличается поиск эмбеддингам embeddings векторный поиск vector search semantic search BM25 ранжирование ranking токены леммы similarity косинусная близость cosine similarity",
+      "prompt_tokens": 251,
+      "completion_tokens": 53,
+      "seconds": 1.175,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Чем сериализуются параллельные запросы в одну сессию, чтобы два хода не собирали контекст одновременно?",
+      "query": "сериализация параллельных запросов сессия блокировка lock mutex asyncio.Lock очередь queue session serialization concurrent requests context сборка контекста",
+      "prompt_tokens": 256,
+      "completion_tokens": 36,
+      "seconds": 1.03,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Через что выражается условие каждого шага в конечном автомате задачи из day13?",
+      "query": "day13 конечный автомат finite state machine FSM условие шага transition condition guard state transition",
+      "prompt_tokens": 247,
+      "completion_tokens": 20,
+      "seconds": 0.773,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что возвращает функция encode из day21/embed.py, если на вход подан пустой список текстов?",
+      "query": "encode day21 embed.py пустой список текстов return возвращает embedding embeddings vector vectors",
+      "prompt_tokens": 249,
+      "completion_tokens": 17,
+      "seconds": 0.887,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что возвращает эндпоинт GET /api/models в проекте?",
+      "query": "GET /api/models endpoint эндпоинт возвращает models список моделей response JSON",
+      "prompt_tokens": 242,
+      "completion_tokens": 18,
+      "seconds": 0.844,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что делает функция _bullets при разборе ответа модели в MCP-сервере?",
+      "query": "_bullets bullets parse response model MCP server разбор ответа модели",
+      "prompt_tokens": 247,
+      "completion_tokens": 15,
+      "seconds": 0.902,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что должен делать сервис на втором шаге прогона с блоком состояния?",
+      "query": "сервис второй шаг прогон блок состояния state block step2 service",
+      "prompt_tokens": 245,
+      "completion_tokens": 16,
+      "seconds": 0.968,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что должна вернуть модель, если по итогам хода двигаться некуда?",
+      "query": "модель вернуть ход двигаться некуда тупик deadlock blocked no moves game over terminal state",
+      "prompt_tokens": 245,
+      "completion_tokens": 24,
+      "seconds": 1.291,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что импортируется из модуля profile в файле seed.py для работы с профилями и долговременной памятью?",
+      "query": "profile seed.py import импорт профиль profile долговременная память long-term memory memory",
+      "prompt_tokens": 254,
+      "completion_tokens": 19,
+      "seconds": 0.868,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что означает пустой список experts в API третьего дня и где задаются задача и роли по умолчанию?",
+      "query": "experts пустой список API day3 день 3 задача task roles роли default по умолчанию где задаются конфиг config",
+      "prompt_tokens": 252,
+      "completion_tokens": 29,
+      "seconds": 0.923,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что представляет собой класс Hit и как формируется цитата нарушения в инвариантах агента?",
+      "query": "Hit класс citation цитата violation нарушение invariant инвариант agent агент",
+      "prompt_tokens": 247,
+      "completion_tokens": 17,
+      "seconds": 1.219,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что представляют собой профили и долговременная память до начала общения в модуле day12/seed.py?",
+      "query": "day12 seed.py профили профиль profile долговременная память long-term memory memory память до начала общения pre-conversation initial state seed",
+      "prompt_tokens": 252,
+      "completion_tokens": 32,
+      "seconds": 0.811,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит в day12/main.py, если в функцию forget передан уровень памяти, отсутствующий в TIERS?",
+      "query": "day12 main.py forget уровень памяти TIERS отсутствует KeyError ValueError ошибка",
+      "prompt_tokens": 250,
+      "completion_tokens": 16,
+      "seconds": 0.9,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит при нажатии на крестик в списке диалогов и как удаление связано с перепиской?",
+      "query": "крестик close удалить удаление диалог список conversations delete remove переписка сообщения messages история history",
+      "prompt_tokens": 252,
+      "completion_tokens": 23,
+      "seconds": 1.045,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит с запуском агента, когда достигнут потолок раундов?",
+      "query": "агент запуск потолок раундов max rounds limit reached agent loop stop termination",
+      "prompt_tokens": 245,
+      "completion_tokens": 18,
+      "seconds": 1.431,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит с конспектом на сороковом сообщении и почему оборванный тезис не попадает в память?",
+      "query": "конспект сороковом сообщении 40 сообщение оборванный тезис память memory summary compaction truncation обрыв незавершённый тезис не попадает в память",
+      "prompt_tokens": 254,
+      "completion_tokens": 42,
+      "seconds": 1.014,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит с ответом агента day14, когда детектор в коде доказал нарушение инварианта прямо во время генерации?",
+      "query": "day14 агент ответ генерация детектор код нарушение инвариант invariant violation detector agent response generation",
+      "prompt_tokens": 257,
+      "completion_tokens": 23,
+      "seconds": 1.611,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит с ответом агента, если его вопрос не помещается в окно памяти?",
+      "query": "агент ответ вопрос окно памяти контекст context window overflow truncation обрезка усечение summarization сжатие история сообщений",
+      "prompt_tokens": 245,
+      "completion_tokens": 29,
+      "seconds": 0.882,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит с парой сообщений в памяти агента, если стрим ответа прервался из-за ошибки или остановки пользователем?",
+      "query": "сообщения память агента история messages стрим stream ответ прервался ошибка error остановка пользователем cancel abort прерывание сохраняются удаляются rollback откат",
+      "prompt_tokens": 259,
+      "completion_tokens": 40,
+      "seconds": 1.044,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит с расписанием задач после перезапуска сервера в day18?",
+      "query": "day18 расписание задач scheduler tasks перезапуск сервера restart persistence сохранение восстановление",
+      "prompt_tokens": 245,
+      "completion_tokens": 21,
+      "seconds": 0.896,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит с циклом планировщика и другими задачами, если одна задача завершилась исключением?",
+      "query": "планировщик scheduler цикл loop задача task исключение exception ошибка error падение crash обработка try except finally отмена cancel остановка shutdown другие задачи",
+      "prompt_tokens": 249,
+      "completion_tokens": 33,
+      "seconds": 1.125,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит с элементами списка items при разборе ответа в функции parse из day12/remember.py?",
+      "query": "items parse day12/remember.py разбор ответа список элементы функция parse",
+      "prompt_tokens": 250,
+      "completion_tokens": 15,
+      "seconds": 1.003,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит, если ответ модели упирается в лимит MAX_TOKENS и приходит finish_reason length?",
+      "query": "MAX_TOKENS finish_reason length ответ модели обрезан truncated incomplete stop_reason max_tokens лимит токенов",
+      "prompt_tokens": 252,
+      "completion_tokens": 27,
+      "seconds": 0.924,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "как меняется размер ленты сообщений по ходам при прогоне сборки ТЗ за 12 ходов в day11?",
+      "query": "day11 лента сообщений размер по ходам прогон сборки ТЗ 12 ходов message history size turns build spec",
+      "prompt_tokens": 256,
+      "completion_tokens": 28,
+      "seconds": 0.739,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "как меняются три уровня памяти по мере роста числа сообщений в диалоге на day11",
+      "query": "day11 память memory уровни уровни памяти short-term long-term episodic working context window сообщения messages диалог история история диалога рост числа сообщений",
+      "prompt_tokens": 246,
+      "completion_tokens": 33,
+      "seconds": 1.265,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "какие таблицы хранятся в базе SQLite планировщика и что записывается в каждую из них",
+      "query": "SQLite scheduler планировщик таблицы schema tasks jobs runs schedule events logs что записывается хранится columns fields",
+      "prompt_tokens": 252,
+      "completion_tokens": 25,
+      "seconds": 0.955,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "какое регулярное выражение в модуле shape.py используется для поиска блоков кода в тексте?",
+      "query": "regex регулярное выражение shape.py блоки кода code block pattern re.findall re.search re.compile",
+      "prompt_tokens": 249,
+      "completion_tokens": 21,
+      "seconds": 1.461,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "какой файл в day11 содержит реплики сценарного диалога, одинаковые для кнопки и для замера",
+      "query": "day11 файл реплики сценарный диалог сценарий scripted dialogue одинаковые кнопка button замер measurement",
+      "prompt_tokens": 255,
+      "completion_tokens": 29,
+      "seconds": 1.048,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "почему в таблице знаний source_id не является внешним ключом на диалог",
+      "query": "source_id внешний ключ foreign key диалог dialogue таблица знаний knowledge table",
+      "prompt_tokens": 245,
+      "completion_tokens": 17,
+      "seconds": 0.906,
+      "note": ""
+    }
+  ]
+}

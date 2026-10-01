@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG: переписывание, реранкинг и сравнение режимов</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container wide">
+    <header class="header">
+        <h1>Второй этап RAG</h1>
+        <p class="subtitle">Вопрос уходит в пять режимов: без базы, как в day22, с переписыванием, с фильтром и с обоими — разница видна рядом, в тексте, в контексте и в токенах</p>
+    </header>
+
+    <form class="form" id="askForm">
+        <span class="panel-title">Вопрос</span>
+        <input
+            id="question"
+            class="prompt line"
+            type="text"
+            placeholder="Вопрос по базе проекта"
+            value="На каком порту слушает постоянный MCP-сервер хранилища в day20?"
+        >
+
+        <div class="examples" id="examples"></div>
+
+        <div class="actions wrap">
+            <label class="field">
+                <span>поиск</span>
+                <select id="retriever" class="number pick"></select>
+            </label>
+            <label class="field">
+                <span>переписывание</span>
+                <select id="rewriter" class="number pick"></select>
+            </label>
+            <label class="field">
+                <span>фильтр</span>
+                <select id="reranker" class="number pick"></select>
+            </label>
+            <label class="field">
+                <span>пул</span>
+                <input id="pool" class="number" type="number" min="5" max="40" value="20">
+            </label>
+            <label class="field">
+                <span>после</span>
+                <input id="topK" class="number" type="number" min="1" max="12" value="5">
+            </label>
+            <label class="field">
+                <span>порог</span>
+                <input id="threshold" class="number" type="number" min="0" max="1" step="0.05" placeholder="авто">
+            </label>
+            <span class="hint" id="askStatus">Промпт, модель и температура у всех пяти режимов одни и те же. Меняется только то, какие выдержки попали в блок.</span>
+            <button type="submit" class="button" id="run">Спросить</button>
+        </div>
+    </form>
+
+    <section class="panel" id="answersPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Пять ответов</span>
+            <span class="meta" id="answersMeta"></span>
+        </div>
+        <div class="panel-body">
+            <div class="answers five" id="answers"></div>
+        </div>
+    </section>
+
+    <section class="panel" id="contextPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Что ушло в контекст и что отсеяно</span>
+            <span class="meta" id="contextMeta"></span>
+        </div>
+        <div class="panel-body" id="contextBody"></div>
+    </section>
+
+    <section class="panel" id="chunkPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Чанк целиком</span>
+            <span class="meta" id="chunkMeta"></span>
+            <button type="button" class="copy" id="closeChunk">Закрыть</button>
+        </div>
+        <div class="panel-body" id="chunkBody"></div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Контрольный набор</span>
+            <span class="meta" id="questionsMeta"></span>
+            <button type="button" class="copy" id="runQuestions">Прогнать</button>
+        </div>
+        <div class="panel-body" id="questionsBody">
+            <span class="placeholder">Загружаем...</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Матрица: переписывание × реранкер</span>
+            <span class="meta" id="matrixMeta"></span>
+            <button type="button" class="copy" id="runMatrix">Сравнить</button>
+        </div>
+        <div class="panel-body" id="matrixBody">
+            <span class="placeholder">119 проб day21, спрашиваем вопросом. После прогрева кэшей считается на машине.</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Развертка по порогу</span>
+            <span class="meta" id="sweepMeta"></span>
+            <button type="button" class="copy" id="runSweep">Развернуть</button>
+        </div>
+        <div class="panel-body" id="sweepBody">
+            <span class="placeholder">Оценки те же, меняется только отсечка — поэтому порог выбирается по таблице, а не на глаз.</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Корпус и индекс</span>
+            <span class="meta" id="corpusMeta"></span>
+            <button type="button" class="copy" id="build">Собрать заново</button>
+        </div>
+        <div class="panel-body" id="corpusBody">
+            <span class="placeholder">Читаем корпус...</span>
+        </div>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
