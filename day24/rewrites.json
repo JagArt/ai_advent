@@ -1,0 +1,170 @@
+{
+  "model": "deepseek-v4-flash",
+  "modes": [
+    "keyword"
+  ],
+  "rewrites": [
+    {
+      "mode": "keyword",
+      "question": "В каком облаке развёрнут этот проект и сколько стоит его хостинг в месяц?",
+      "query": "облако cloud хостинг hosting развёрнут deployment deploy стоимость цена cost pricing месяц monthly",
+      "prompt_tokens": 247,
+      "completion_tokens": 19,
+      "seconds": 1.152,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Зачем проекту ключ OpenRouter, если всё остальное работает на DeepSeek?",
+      "query": "OpenRouter ключ API key DeepSeek провайдер provider модель model fallback маршрутизация routing",
+      "prompt_tokens": 245,
+      "completion_tokens": 24,
+      "seconds": 1.74,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как устроены имена инструментов в общем каталоге трёх MCP-серверов day20?",
+      "query": "day20 MCP servers tools names naming tool registry AgentRegistry list_tools tools/list vault.py sse_frame каталог инструментов имена инструментов",
+      "prompt_tokens": 252,
+      "completion_tokens": 31,
+      "seconds": 1.498,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая база данных стоит в проде и как настроено резервное копирование?",
+      "query": "база данных database prod production продакшн резервное копирование backup бэкап dump pg_dump mysqldump postgres postgresql sqlite настройка конфигурация",
+      "prompt_tokens": 246,
+      "completion_tokens": 43,
+      "seconds": 2.093,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая модель используется в проекте?",
+      "query": "модель model LLM OpenAI GPT Claude Gemini название модели",
+      "prompt_tokens": 234,
+      "completion_tokens": 12,
+      "seconds": 0.803,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая модель считает эмбеддинги в day21 и почему взята именно она, а не базовая potion-base-8M?",
+      "query": "day21 эмбеддинги embeddings модель model potion-base-8M potion base 8M почему выбор обоснование",
+      "prompt_tokens": 259,
+      "completion_tokens": 29,
+      "seconds": 1.371,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая стратегия разбиения выбрана и сколько получилось чанков?",
+      "query": "стратегия разбиения chunking splitting сколько чанков chunks количество count",
+      "prompt_tokens": 243,
+      "completion_tokens": 16,
+      "seconds": 1.094,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой CI настроен в репозитории и на каком раннере прогоняются тесты?",
+      "query": "CI continuous integration GitHub Actions workflow workflow_dispatch runner runs-on ubuntu-latest tests pytest .github/workflows ci.yml",
+      "prompt_tokens": 250,
+      "completion_tokens": 24,
+      "seconds": 2.049,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой из трёх вариантов оказался лучше по замерам?",
+      "query": "вариант лучше замеры результат сравнение benchmark evaluation metrics",
+      "prompt_tokens": 241,
+      "completion_tokens": 13,
+      "seconds": 0.843,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Когда запланирован релиз версии 1.0 и что в него войдёт?",
+      "query": "релиз версии 1.0 release v1.0 roadmap план что войдёт changelog",
+      "prompt_tokens": 247,
+      "completion_tokens": 23,
+      "seconds": 1.936,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "На каком порту слушает MCP-сервер?",
+      "query": "MCP сервер порт listen port mcp_server server.py",
+      "prompt_tokens": 239,
+      "completion_tokens": 13,
+      "seconds": 1.93,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "На каком порту слушает постоянный MCP-сервер хранилища в day20?",
+      "query": "day20 MCP сервер хранилища vault port порт listen слушает постоянный",
+      "prompt_tokens": 247,
+      "completion_tokens": 18,
+      "seconds": 1.588,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Под какой лицензией распространяется проект AI Advent?",
+      "query": "лицензия license AI Advent проект",
+      "prompt_tokens": 239,
+      "completion_tokens": 7,
+      "seconds": 0.948,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему в индексе day21 колонки с границами чанка названы start_char и end_char, а не просто start и end?",
+      "query": "day21 индекс колонки границы чанка chunk boundaries start_char end_char start end",
+      "prompt_tokens": 261,
+      "completion_tokens": 19,
+      "seconds": 1.432,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Почему у векторов, нормированных по L2, косинусная близость совпадает со скалярным произведением?",
+      "query": "L2 нормировка нормализация косинусная близость cosine similarity скалярное произведение dot product inner product unit vector норма вектора",
+      "prompt_tokens": 257,
+      "completion_tokens": 31,
+      "seconds": 0.948,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько человек работает над проектом и кто ревьюит код перед слиянием?",
+      "query": "сколько человек работает над проектом команда участники contributors maintainers кто ревьюит код ревью review code review перед слиянием merge pull request PR approval reviewer",
+      "prompt_tokens": 246,
+      "completion_tokens": 35,
+      "seconds": 2.242,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Чем полнотекстовый поиск на FTS5 отличается от поиска по эмбеддингам?",
+      "query": "полнотекстовый поиск FTS5 full-text search отличается поиск эмбеддингам embeddings векторный поиск vector search semantic search BM25 ранжирование ranking токены леммы similarity косинусная близость cosine similarity",
+      "prompt_tokens": 251,
+      "completion_tokens": 53,
+      "seconds": 1.175,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что происходит с ответом агента day14, когда детектор в коде доказал нарушение инварианта прямо во время генерации?",
+      "query": "day14 агент ответ генерация детектор код нарушение инвариант invariant violation detector agent response generation",
+      "prompt_tokens": 257,
+      "completion_tokens": 23,
+      "seconds": 1.611,
+      "note": ""
+    }
+  ]
+}
