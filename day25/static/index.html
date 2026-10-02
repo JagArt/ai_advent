@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини-чат с RAG и памятью задачи</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container wide">
+    <header class="header">
+        <h1>Чат с RAG, источниками и памятью задачи</h1>
+        <p class="subtitle">На каждой реплике ссылки разрешаются по разговору, ответ ищется в базе и раскладывается на утверждения с дословными цитатами, а условия задачи — цель, уточнения, ограничения и термины — обновляются сами и уходят в следующий запрос</p>
+    </header>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Диалог</span>
+            <span class="meta" id="sessionMeta"></span>
+            <label class="field">
+                <span>режим памяти</span>
+                <select id="mode" class="number pick"></select>
+            </label>
+            <label class="field">
+                <span>порог отказа</span>
+                <input id="gate" class="number" type="number" min="0" max="1" step="0.05" placeholder="авто">
+            </label>
+            <button type="button" class="copy" id="restart">Начать заново</button>
+        </div>
+        <div class="panel-body">
+            <div class="chat-split">
+                <div class="chat-stream" id="stream">
+                    <span class="placeholder">Диалога пока нет. Задайте первую реплику — она же задаст цель разговора.</span>
+                </div>
+
+                <aside class="chat-side">
+                    <div class="strategy-block" id="statePanel">
+                        <div class="strategy-head">
+                            память задачи
+                            <span class="inactive" id="stateMeta">пусто</span>
+                        </div>
+                        <div id="stateBody">
+                            <span class="placeholder">Цель, уточнения, ограничения и термины появятся здесь после первого хода.</span>
+                        </div>
+                    </div>
+
+                    <div class="strategy-block">
+                        <div class="strategy-head">что помнит режим</div>
+                        <div id="memoryBody"></div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </section>
+
+    <form class="form" id="sayForm">
+        <span class="panel-title">Реплика</span>
+        <input
+            id="question"
+            class="prompt line"
+            type="text"
+            placeholder="Реплика в диалог"
+            autocomplete="off"
+        >
+        <div class="examples" id="examples"></div>
+        <div class="actions wrap">
+            <span class="hint" id="sayStatus">Переключатель режима создаёт новый диалог: разговор, половина которого собрана с памятью, а половина без, замерить нельзя.</span>
+            <button type="submit" class="button" id="send">Отправить</button>
+        </div>
+    </form>
+
+    <section class="panel" id="chunkPanel" hidden>
+        <div class="panel-head">
+            <span class="panel-title">Чанк целиком</span>
+            <span class="meta" id="chunkMeta"></span>
+            <button type="button" class="copy" id="closeChunk">Закрыть</button>
+        </div>
+        <div class="panel-body" id="chunkBody"></div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Два длинных сценария</span>
+            <span class="meta" id="runMeta"></span>
+            <button type="button" class="copy" id="runAll">Прогнать</button>
+        </div>
+        <div class="panel-body" id="runBody">
+            <span class="placeholder">Загружаем...</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Развертка по порогу отказа</span>
+            <span class="meta" id="sweepMeta"></span>
+            <button type="button" class="copy" id="runSweep">Развернуть</button>
+        </div>
+        <div class="panel-body" id="sweepBody">
+            <span class="placeholder">Порог 1.0 снят в day24 на одиночных вопросах. В диалоге есть ходы, у которых прямого ответа нет ни в одном чанке, — развертка показывает, чего стоит такая строгость.</span>
+        </div>
+    </section>
+
+    <section class="panel">
+        <div class="panel-head">
+            <span class="panel-title">Корпус и индекс</span>
+            <span class="meta" id="corpusMeta"></span>
+            <button type="button" class="copy" id="build">Собрать заново</button>
+        </div>
+        <div class="panel-body" id="corpusBody">
+            <span class="placeholder">Читаем корпус...</span>
+        </div>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

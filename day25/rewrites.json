@@ -1,0 +1,936 @@
+{
+  "model": "deepseek-v4-flash",
+  "modes": [
+    "keyword",
+    "hyde"
+  ],
+  "rewrites": [
+    {
+      "mode": "keyword",
+      "question": "А в day17 какой инструмент добавляется?",
+      "query": "day17 инструмент tool добавление add инструмент tool",
+      "prompt_tokens": 236,
+      "completion_tokens": 11,
+      "seconds": 4.125,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "А данные между шагами там как передаются?",
+      "query": "данные между шагами передаются state context shared memory payload input output artifacts pipeline step",
+      "prompt_tokens": 237,
+      "completion_tokens": 18,
+      "seconds": 1.177,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "А долговременная чем от неё отличается?",
+      "query": "долговременная память long-term memory отличие от кратковременной short-term memory",
+      "prompt_tokens": 237,
+      "completion_tokens": 19,
+      "seconds": 0.861,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "А имена инструментов в нём как выглядят?",
+      "query": "имена инструментов tools tool names название инструмента как выглядят формат",
+      "prompt_tokens": 239,
+      "completion_tokens": 16,
+      "seconds": 1.222,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "А какая из них самая дешёвая по токенам?",
+      "query": "дешёвая токены tokens стоимость cost цена дешевле cheapest минимальная минимальный расход",
+      "prompt_tokens": 242,
+      "completion_tokens": 19,
+      "seconds": 3.699,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "А какой инструмент добавляется в day17?",
+      "query": "day17 инструмент tool добавление add инструмент tool",
+      "prompt_tokens": 236,
+      "completion_tokens": 11,
+      "seconds": 1.052,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "А ключ и значение в ней как называются?",
+      "query": "ключ key значение value dict словарь mapping",
+      "prompt_tokens": 237,
+      "completion_tokens": 9,
+      "seconds": 0.691,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Важное ограничение: у меня только SQLite, никаких внешних сервисов и векторных баз. Где в day10 хранятся facts?",
+      "query": "day10 facts SQLite хранение память memory storage база данных sqlite3 таблица facts",
+      "prompt_tokens": 260,
+      "completion_tokens": 21,
+      "seconds": 1.236,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Вернёмся к реестру. Какие три сервера в него входят?",
+      "query": "реестр registry AgentRegistry сервер server servers три сервера входят",
+      "prompt_tokens": 247,
+      "completion_tokens": 15,
+      "seconds": 0.816,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Договоримся: под «уровнем памяти» я имею в виду то, что в day11 называется tier. Сколько уровней в day11 всего?",
+      "query": "day11 tier уровень памяти сколько уровней memory level",
+      "prompt_tokens": 261,
+      "completion_tokens": 10,
+      "seconds": 1.053,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Договоримся: под «уровнем памяти» я имею в виду то, что в day11 называется tier. Сколько уровней памяти в day11 всего?",
+      "query": "day11 tier уровень памяти memory levels сколько всего",
+      "prompt_tokens": 262,
+      "completion_tokens": 9,
+      "seconds": 1.025,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Договоримся: под «уровнем памяти» я имею в виду то, что в day11 называется tier. Сколько уровней памяти всего в day11?",
+      "query": "day11 tier уровень памяти memory level сколько уровней всего",
+      "prompt_tokens": 262,
+      "completion_tokens": 11,
+      "seconds": 0.997,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Договоримся: под «уровнем памяти» я имею в виду то, что в day11 называется tier. Сколько уровней там всего?",
+      "query": "day11 tier уровней памяти memory levels сколько всего",
+      "prompt_tokens": 259,
+      "completion_tokens": 10,
+      "seconds": 0.904,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Если возьму второе — какие таблицы придётся завести?",
+      "query": "таблицы table схема schema база данных database миграция migration модели models",
+      "prompt_tokens": 242,
+      "completion_tokens": 17,
+      "seconds": 1.057,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Если я возьму уровни памяти из day11, как мой чат будет выбирать, в какой уровень писать находку?",
+      "query": "day11 память memory уровни level выбор выбрать запись write сохранить находка finding факт fact классификация routing router policy",
+      "prompt_tokens": 255,
+      "completion_tokens": 26,
+      "seconds": 1.452,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Зафиксируем термин: «флоу» — это последовательность вызовов инструментов, которую сверяют с контрактом, как в day20. Сколько шагов в нём?",
+      "query": "флоу flow последовательность вызовов инструментов tools сверка контракт contract day20 сколько шагов steps",
+      "prompt_tokens": 271,
+      "completion_tokens": 24,
+      "seconds": 1.418,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Зафиксируем термин: «флоу» — это последовательность вызовов инструментов, которую сверяют с контрактом, как в day20. Сколько шагов в флоу day20?",
+      "query": "флоу flow последовательность вызовов инструментов tools сверка контракт contract day20 сколько шагов steps",
+      "prompt_tokens": 274,
+      "completion_tokens": 24,
+      "seconds": 1.369,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "И последнее: как мой чат будет выбирать, в какой уровень писать находку?",
+      "query": "чат выбор уровень запись находка memory tier routing write choose level",
+      "prompt_tokens": 247,
+      "completion_tokens": 13,
+      "seconds": 0.924,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как day20 проверяет, что флоу прошёл шаги в нужном порядке?",
+      "query": "day20 проверяет флоу шаги порядок sequence order steps flow validation assert trace events sse_frame AgentRegistry servers vault.py",
+      "prompt_tokens": 246,
+      "completion_tokens": 28,
+      "seconds": 1.319,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day20 данные между шагами флоу передаются?",
+      "query": "day20 flow шаги steps передача данных state context shared data между шагами pipeline",
+      "prompt_tokens": 241,
+      "completion_tokens": 18,
+      "seconds": 1.047,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в day9 сжимается история диалога?",
+      "query": "day9 сжатие истории диалога compression summarize summary context window truncate messages",
+      "prompt_tokens": 239,
+      "completion_tokens": 17,
+      "seconds": 1.221,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в моём чат-боте будет выбираться уровень памяти, в который записывать находку, если я выберу уровни памяти из day11?",
+      "query": "чат-бот память уровень memory level выбор запись находка day11",
+      "prompt_tokens": 261,
+      "completion_tokens": 15,
+      "seconds": 1.215,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как в моём чат-боте будет выбираться, в какой уровень памяти записывать находку?",
+      "query": "чат-бот память memory уровень level выбор выборка запись записать находка finding save store routing router policy AgentRegistry memory_manager",
+      "prompt_tokens": 249,
+      "completion_tokens": 27,
+      "seconds": 1.026,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как выглядят имена инструментов в MCP-слое для проекта: в своём сервере, цепочке инструментов и реестре из нескольких серверов, начиная с day16?",
+      "query": "MCP tool names инструменты имена сервер server chain цепочка инструментов registry реестр AgentRegistry day16",
+      "prompt_tokens": 272,
+      "completion_tokens": 25,
+      "seconds": 1.229,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как выглядят имена инструментов в реестре day20?",
+      "query": "day20 реестр registry инструменты tools имена names AgentRegistry",
+      "prompt_tokens": 241,
+      "completion_tokens": 14,
+      "seconds": 1.107,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как выглядят имена инструментов в реестре из трёх серверов git, docs и vault в day20?",
+      "query": "day20 servers git docs vault tools registry AgentRegistry имена инструментов tool names",
+      "prompt_tokens": 254,
+      "completion_tokens": 16,
+      "seconds": 0.882,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как выглядят имена инструментов в реестре из трёх серверов git, docs и vault?",
+      "query": "имена инструментов реестр registry tools AgentRegistry git docs vault серверов servers",
+      "prompt_tokens": 251,
+      "completion_tokens": 18,
+      "seconds": 0.89,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как выглядят имена инструментов в реестре?",
+      "query": "имена инструментов реестр registry tools tool names AgentRegistry",
+      "prompt_tokens": 239,
+      "completion_tokens": 13,
+      "seconds": 0.864,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как выглядят имена инструментов в сервере vault из реестра MCP-серверов?",
+      "query": "vault MCP server tools names инструменты имена реестр registry AgentRegistry day20 servers vault.py",
+      "prompt_tokens": 250,
+      "completion_tokens": 22,
+      "seconds": 0.876,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как выглядят имена инструментов в сервере vault из реестра day20?",
+      "query": "vault day20 servers vault.py tools имена инструментов AgentRegistry реестр инструментов tool names",
+      "prompt_tokens": 246,
+      "completion_tokens": 21,
+      "seconds": 1.22,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как данные между шагами передаются в контракте длинного флоу из семи шагов в day20?",
+      "query": "day20 flow контракт длинный флоу семь шагов шаг step передача данных между шагами state context payload input output artifacts results pipeline workflow",
+      "prompt_tokens": 253,
+      "completion_tokens": 33,
+      "seconds": 1.49,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как данные между шагами передаются во флоу day20, где последовательность вызовов инструментов сверяют с контрактом?",
+      "query": "day20 flow флоу шаги steps данные data передача передаются state context контекст вызовы инструментов tool calls tools последовательность sequence сверка сверяют контракт contract",
+      "prompt_tokens": 258,
+      "completion_tokens": 40,
+      "seconds": 0.94,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как данные между шагами передаются во флоу day20?",
+      "query": "day20 flow флоу шаги steps данные data передача передаются state context контекст shared общий AgentRegistry sse_frame servers vault.py",
+      "prompt_tokens": 241,
+      "completion_tokens": 31,
+      "seconds": 1.224,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как данные между шагами передаются во флоу из day20?",
+      "query": "day20 flow флоу шаги steps данные data передача передаются state context контекст shared общий результат output input артефакты artifacts pipeline",
+      "prompt_tokens": 242,
+      "completion_tokens": 33,
+      "seconds": 0.982,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как данные между шагами передаются во флоу из семи шагов по трём серверам в day20?",
+      "query": "day20 flow шаги steps передача данных state context payload между шагами servers серверы три 3 AgentRegistry sse_frame vault.py",
+      "prompt_tokens": 253,
+      "completion_tokens": 30,
+      "seconds": 0.931,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как мой чат будет выбирать, в какой уровень памяти писать находку?",
+      "query": "чат выбор уровень памяти запись находка memory tier routing write policy classification memory_level",
+      "prompt_tokens": 244,
+      "completion_tokens": 16,
+      "seconds": 1.263,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как мой чат-бот будет выбирать, в какой уровень памяти (tier) записывать находку?",
+      "query": "чат-бот память memory tier уровень запись выбор routing policy memory_tier",
+      "prompt_tokens": 251,
+      "completion_tokens": 16,
+      "seconds": 0.986,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как мой чат-бот будет выбирать, в какой уровень памяти (tier) из day11 записывать находку?",
+      "query": "чат-бот выбор уровень памяти tier day11 запись находка memory tier routing selection write store",
+      "prompt_tokens": 254,
+      "completion_tokens": 19,
+      "seconds": 1.213,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как мой чат-бот будет выбирать, в какой уровень памяти из day11 записывать находку?",
+      "query": "чат-бот выбор уровень память memory level day11 запись записывать находка finding routing маршрутизация классификация memory tier",
+      "prompt_tokens": 250,
+      "completion_tokens": 29,
+      "seconds": 1.21,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как называются ключ и значение в картотеке facts в SQLite в day10?",
+      "query": "facts SQLite day10 ключ key значение value column schema таблица",
+      "prompt_tokens": 246,
+      "completion_tokens": 14,
+      "seconds": 1.116,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как называются ключ и значение в картотеке facts, которая в day10 хранится в SQLite?",
+      "query": "facts картотека SQLite day10 ключ key значение value столбец колонка поле schema таблица",
+      "prompt_tokens": 251,
+      "completion_tokens": 23,
+      "seconds": 1.278,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как называются ключ и значение в картотеке facts, которая хранится в SQLite в day10?",
+      "query": "facts картотека SQLite day10 ключ key значение value столбцы колонки schema таблица facts key value",
+      "prompt_tokens": 251,
+      "completion_tokens": 25,
+      "seconds": 1.012,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как называются ключ и значение в картотеке фактов в SQLite в day10?",
+      "query": "day10 картотека фактов SQLite ключ значение key value facts memory table schema column",
+      "prompt_tokens": 247,
+      "completion_tokens": 19,
+      "seconds": 1.192,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как называются ключ и значение в таблице facts в SQLite в day10?",
+      "query": "facts SQLite day10 ключ key значение value column schema таблица",
+      "prompt_tokens": 244,
+      "completion_tokens": 14,
+      "seconds": 0.932,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как называются ключ и значение в таблице facts в day10/storage.py?",
+      "query": "facts таблица day10 storage.py ключ key значение value колонка столбец поле schema",
+      "prompt_tokens": 244,
+      "completion_tokens": 20,
+      "seconds": 1.004,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как называются ключ и значение в таблице facts в day10?",
+      "query": "facts таблица day10 ключ key значение value столбцы колонки поля schema",
+      "prompt_tokens": 241,
+      "completion_tokens": 18,
+      "seconds": 0.889,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как устроена стратегия Sticky Facts / Key-Value Memory в day10?",
+      "query": "day10 Sticky Facts Key-Value Memory стратегия memory key-value sticky facts",
+      "prompt_tokens": 244,
+      "completion_tokens": 16,
+      "seconds": 0.845,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как устроена стратегия управления контекстом Sticky Facts / Key-Value Memory в day10?",
+      "query": "day10 Sticky Facts Key-Value Memory стратегия управления контекстом context management memory key-value sticky facts",
+      "prompt_tokens": 248,
+      "completion_tokens": 22,
+      "seconds": 1.185,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как чат будет выбирать, в какой уровень памяти записывать находку?",
+      "query": "чат выбор уровень памяти запись находка memory level routing classification write policy memory_tier",
+      "prompt_tokens": 243,
+      "completion_tokens": 17,
+      "seconds": 0.913,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как чат будет выбирать, в какой уровень памяти из day11 писать находку?",
+      "query": "чат выбор уровень память day11 memory level write запись находка finding routing classify",
+      "prompt_tokens": 245,
+      "completion_tokens": 17,
+      "seconds": 0.927,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как чат будет выбирать, в какой уровень памяти писать находку?",
+      "query": "чат выбор уровень памяти запись находка memory level routing write policy classification AgentRegistry memory_manager save_memory",
+      "prompt_tokens": 242,
+      "completion_tokens": 21,
+      "seconds": 1.084,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как чат-бот будет выбирать, в какой tier записывать находку?",
+      "query": "чат-бот выбор tier запись находка memory memory_tier tier routing classify classification save_finding store_finding memory_store",
+      "prompt_tokens": 244,
+      "completion_tokens": 25,
+      "seconds": 1.31,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Как чат-бот будет выбирать, в какой уровень памяти (tier) записывать находку?",
+      "query": "чат-бот выбор уровень памяти tier запись находка memory tier routing classify write policy",
+      "prompt_tokens": 249,
+      "completion_tokens": 17,
+      "seconds": 1.044,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая из трёх стратегий управления контекстом в day10 — Sliding Window, Sticky Facts / Key-Value Memory и Branching — самая дешёвая по токенам?",
+      "query": "day10 context management стратегии Sliding Window Sticky Facts Key-Value Memory Branching токены tokens дешевая cheapest стоимость cost",
+      "prompt_tokens": 270,
+      "completion_tokens": 27,
+      "seconds": 0.897,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая из трёх стратегий управления контекстом в чат-боте — Sliding Window, Sticky Facts / Key-Value Memory и Branching — самая дешёвая по токенам?",
+      "query": "Sliding Window Sticky Facts Key-Value Memory Branching контекст context management чат-бот chatbot токены tokens стоимость cost дешёвая cheapest",
+      "prompt_tokens": 273,
+      "completion_tokens": 32,
+      "seconds": 1.153,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая из трёх стратегий управления контекстом из day10 — Sliding Window, Sticky Facts / Key-Value Memory и Branching — самая дешёвая по токенам?",
+      "query": "day10 контекст context management стратегия strategy Sliding Window Sticky Facts Key-Value Memory Branching токены tokens стоимость cost дешевая cheapest",
+      "prompt_tokens": 270,
+      "completion_tokens": 31,
+      "seconds": 0.912,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая из трёх стратегий управления контекстом из day10 — Sliding Window, Sticky Facts / Key-Value Memory или Branching — самая дешёвая по токенам?",
+      "query": "day10 контекст context management стратегии Sliding Window Sticky Facts Key-Value Memory Branching токены tokens стоимость cost дешевая cheapest",
+      "prompt_tokens": 270,
+      "completion_tokens": 30,
+      "seconds": 1.011,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая из трёх стратегий управления контекстом чат-бота, разобранных в day10 (Sliding Window, Sticky Facts / Key-Value Memory и Branching), самая дешёвая по токенам?",
+      "query": "day10 стратегии управления контекстом чат-бота Sliding Window Sticky Facts Key-Value Memory Branching дешёвая токены tokens context management strategy cheapest",
+      "prompt_tokens": 279,
+      "completion_tokens": 35,
+      "seconds": 1.204,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какая из трёх стратегий управления контекстом — Sliding Window, Sticky Facts / Key-Value Memory и Branching — самая дешёвая по токенам?",
+      "query": "Sliding Window Sticky Facts Key-Value Memory Branching контекст context management стратегия токены tokens дешевая cheapest стоимость cost",
+      "prompt_tokens": 267,
+      "completion_tokens": 28,
+      "seconds": 1.188,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие инструменты он отдаёт?",
+      "query": "инструменты tools функции он отдаёт возвращает список tools",
+      "prompt_tokens": 235,
+      "completion_tokens": 13,
+      "seconds": 1.449,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие инструменты отдаёт MCP-сервер в day16?",
+      "query": "day16 MCP server tools инструменты tools list tools/call mcp server",
+      "prompt_tokens": 242,
+      "completion_tokens": 16,
+      "seconds": 1.259,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие инструменты отдаёт MCP-сервер из day16?",
+      "query": "day16 MCP server tools инструменты tools list tools/call mcp server.py",
+      "prompt_tokens": 242,
+      "completion_tokens": 17,
+      "seconds": 1.202,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие разделы у рабочей памяти в day11?",
+      "query": "day11 рабочая память working memory разделы секции структура",
+      "prompt_tokens": 238,
+      "completion_tokens": 14,
+      "seconds": 0.763,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какие стратегии управления контекстом разобраны в day10?",
+      "query": "day10 контекст context управление context management стратегии strategies история history summarization сжатие truncation окно window tokens",
+      "prompt_tokens": 241,
+      "completion_tokens": 26,
+      "seconds": 1.848,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой из трёх серверов реестра MCP-слоя проекта AI Advent не подойдёт с учётом моего ограничения?",
+      "query": "сервер реестр registry MCP MCP-слой AI Advent ограничение не подойдёт подходит",
+      "prompt_tokens": 262,
+      "completion_tokens": 24,
+      "seconds": 1.051,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой из трёх серверов реестра day20 — git, docs или vault — не подойдёт с учётом моего ограничения?",
+      "query": "day20 servers registry реестр git docs vault подойдёт ограничение",
+      "prompt_tokens": 262,
+      "completion_tokens": 16,
+      "seconds": 1.204,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой из трёх серверов реестра — git, docs или vault — не подойдёт с учётом моего ограничения?",
+      "query": "сервер реестр registry git docs vault не подойдёт ограничение",
+      "prompt_tokens": 260,
+      "completion_tokens": 16,
+      "seconds": 0.859,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой инструмент добавляется в MCP-сервер в day17?",
+      "query": "day17 MCP сервер server tool инструмент добавляется add tool MCP server day17",
+      "prompt_tokens": 242,
+      "completion_tokens": 19,
+      "seconds": 1.222,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Какой инструмент добавляется в day17?",
+      "query": "day17 инструмент tool добавляется tool registry AgentRegistry",
+      "prompt_tokens": 236,
+      "completion_tokens": 11,
+      "seconds": 0.679,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Кстати, совсем про другое: на каком порту слушает MCP-сервер day18?",
+      "query": "порт port listen слушает MCP сервер server day18",
+      "prompt_tokens": 249,
+      "completion_tokens": 13,
+      "seconds": 1.263,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Ладно, вернёмся к памяти. Как в day9 сжимается история диалога?",
+      "query": "day9 память memory история диалога сжатие сжать summarize summarization compression compact context window сообщения messages",
+      "prompt_tokens": 250,
+      "completion_tokens": 24,
+      "seconds": 1.437,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Мне нужно выбрать, как хранить контекст в своём чат-боте. Какие стратегии управления контекстом разобраны в day10?",
+      "query": "day10 контекст context управление context management стратегии strategies хранение хранения история history память memory чат-бот chatbot",
+      "prompt_tokens": 261,
+      "completion_tokens": 28,
+      "seconds": 2.195,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Ограничение: постоянный процесс я держать не хочу, только stdio-подпроцессы. Какой транспорт у сервера в day19?",
+      "query": "day19 транспорт transport stdio subprocess stdio-подпроцесс server сервер MCP",
+      "prompt_tokens": 260,
+      "completion_tokens": 20,
+      "seconds": 1.057,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Отвлечёмся: сколько стратегий chunking сравнивается в day21?",
+      "query": "day21 chunking стратегии стратегия сравнение сколько",
+      "prompt_tokens": 244,
+      "completion_tokens": 11,
+      "seconds": 1.122,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Подытожим: какой транспорт мне брать для своих серверов?",
+      "query": "транспорт transport stdio sse streamable http server сервер MCP",
+      "prompt_tokens": 243,
+      "completion_tokens": 17,
+      "seconds": 1.076,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Раз у меня только SQLite — где именно day11 держит рабочую память?",
+      "query": "day11 SQLite рабочая память memory storage база данных файл db sqlite3",
+      "prompt_tokens": 245,
+      "completion_tokens": 19,
+      "seconds": 0.906,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "С учётом моего ограничения — какой из них мне не подойдёт?",
+      "query": "ограничение constraint limitation не подойдёт не подходит unsuitable incompatible",
+      "prompt_tokens": 246,
+      "completion_tokens": 15,
+      "seconds": 1.059,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "С учётом моего ограничения — какой из трёх серверов реестра мне не подойдёт?",
+      "query": "сервер реестр registry server AgentRegistry ограничение constraint не подойдёт",
+      "prompt_tokens": 254,
+      "completion_tokens": 17,
+      "seconds": 1.222,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "С учётом ограничения из моего вопроса — какой из трёх серверов реестра day20 (git, docs или vault) мне не подойдёт?",
+      "query": "day20 servers git docs vault registry реестр сервер не подойдёт ограничение",
+      "prompt_tokens": 265,
+      "completion_tokens": 19,
+      "seconds": 1.307,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "С учётом ограничения на запись файлов какой из трёх серверов реестра day20 — git, docs или vault — мне не подойдёт?",
+      "query": "day20 servers git docs vault registry реестр запись файлов read-only ограничение",
+      "prompt_tokens": 264,
+      "completion_tokens": 18,
+      "seconds": 0.939,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "С учётом ограничения на использование только серверов из реестра, какой из трёх серверов реестра мне не подойдёт?",
+      "query": "сервер реестр registry AgentRegistry ограничение только серверы из реестра какой сервер не подойдёт",
+      "prompt_tokens": 261,
+      "completion_tokens": 26,
+      "seconds": 0.881,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "С учётом ограничения пользователя, какой из трёх серверов реестра — git, docs или vault — ему не подойдёт?",
+      "query": "сервер реестр registry git docs vault ограничение пользователя не подойдёт",
+      "prompt_tokens": 260,
+      "completion_tokens": 18,
+      "seconds": 1.054,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "С учётом ограничения, что MCP-слой для проекта нужно собрать начиная с day16, какой из трёх серверов реестра day20 — git, docs или vault — мне не подойдёт?",
+      "query": "MCP day16 day20 servers registry git docs vault AgentRegistry sse_frame",
+      "prompt_tokens": 278,
+      "completion_tokens": 16,
+      "seconds": 1.025,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "С учётом ограничения, что мне нельзя записывать файлы, какой из трёх серверов реестра day20 — git, docs или vault — мне не подойдёт?",
+      "query": "day20 servers registry git docs vault read-only filesystem запись файлов ограничение",
+      "prompt_tokens": 269,
+      "completion_tokens": 17,
+      "seconds": 0.968,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько всего уровней памяти (tier) в day11?",
+      "query": "day11 память memory tier уровни",
+      "prompt_tokens": 241,
+      "completion_tokens": 8,
+      "seconds": 1.189,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько последних сообщений day9 оставляет дословно при сжатии истории диалога?",
+      "query": "day9 сжатие истории диалога сколько последних сообщений оставляет дословно truncation history compression keep last messages verbatim",
+      "prompt_tokens": 250,
+      "completion_tokens": 29,
+      "seconds": 0.766,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько последних сообщений диалога day9 оставляет дословно при сжатии истории?",
+      "query": "day9 история сжатие compaction summarize последних сообщений keep recent messages verbatim сколько",
+      "prompt_tokens": 250,
+      "completion_tokens": 18,
+      "seconds": 1.184,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько последних сообщений дословно оставляет свёртка истории диалога в day9?",
+      "query": "day9 свёртка истории диалога compaction summarize history последних сообщений дословно keep last messages verbatim",
+      "prompt_tokens": 250,
+      "completion_tokens": 25,
+      "seconds": 1.034,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько последних сообщений он оставляет дословно?",
+      "query": "Сколько последних сообщений оставляет дословно last messages keep verbatim truncate history context window",
+      "prompt_tokens": 241,
+      "completion_tokens": 23,
+      "seconds": 0.924,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько последних сообщений оставляет дословно day9 при сжатии истории диалога?",
+      "query": "day9 сжатие истории диалога последних сообщений дословно сколько оставляет truncation history compression messages keep last",
+      "prompt_tokens": 250,
+      "completion_tokens": 27,
+      "seconds": 0.83,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько последних сообщений оставляет дословно чат-бот при выборе стратегии хранения контекста, опираясь на разбор в day10?",
+      "query": "сколько последних сообщений оставляет дословно чат-бот стратегия хранения контекста day10 context window history messages truncation",
+      "prompt_tokens": 265,
+      "completion_tokens": 30,
+      "seconds": 1.235,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько последних сообщений оставляет дословно чат-бот при сжатии истории диалога в day9?",
+      "query": "day9 сжатие истории диалога чат-бот последних сообщений дословно context compression history truncation keep last messages",
+      "prompt_tokens": 255,
+      "completion_tokens": 29,
+      "seconds": 1.047,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько последних сообщений оставляет дословно чат-бот при хранении контекста в day9?",
+      "query": "day9 контекст context история history сообщения messages последние last N дословно verbatim хранение хранение контекста context window truncation обрезка лимит limit",
+      "prompt_tokens": 254,
+      "completion_tokens": 41,
+      "seconds": 1.548,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько шагов в последовательности вызовов инструментов, которую сверяют с контрактом, как в day20?",
+      "query": "шаги последовательность вызовов инструментов tool calls sequence контракт contract сверка verify day20",
+      "prompt_tokens": 255,
+      "completion_tokens": 21,
+      "seconds": 1.046,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Сколько шагов во флоу — последовательности вызовов инструментов, которую сверяют с контрактом, как в day20?",
+      "query": "шагов steps флоу flow последовательность вызовов инструментов tool calls сверяют контракт contract day20",
+      "prompt_tokens": 259,
+      "completion_tokens": 25,
+      "seconds": 1.168,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Хочу выбрать стратегию управления контекстом для своего чата. Какие есть в day10?",
+      "query": "day10 контекст context управление стратегия стратегии чат chat история history память memory summarization truncation sliding window",
+      "prompt_tokens": 248,
+      "completion_tokens": 26,
+      "seconds": 2.227,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Хочу собрать MCP-слой для своего проекта: свой сервер, цепочку инструментов и реестр из нескольких серверов. С чего начинается day16?",
+      "query": "MCP MCP-сервер server сервер инструменты tools цепочка chain реестр registry AgentRegistry day16 README задание",
+      "prompt_tokens": 265,
+      "completion_tokens": 29,
+      "seconds": 2.443,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Чем долговременная память в day11 отличается от рабочей памяти?",
+      "query": "day11 долговременная память long-term memory рабочая память working memory отличие разница",
+      "prompt_tokens": 243,
+      "completion_tokens": 20,
+      "seconds": 1.244,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Чем долговременная память отличается от рабочей памяти в day11?",
+      "query": "долговременная память long-term memory рабочая память working memory day11",
+      "prompt_tokens": 243,
+      "completion_tokens": 18,
+      "seconds": 1.0,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Чем долговременная память отличается от рабочей памяти в модели памяти агента из day11?",
+      "query": "долговременная память long-term memory рабочая память working memory модель памяти агента day11",
+      "prompt_tokens": 248,
+      "completion_tokens": 22,
+      "seconds": 1.179,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что мне лучше взять в свой чат: сжатие истории из day9 или уровни памяти из day11?",
+      "query": "чат сжатие истории compression history day9 уровни памяти memory levels day11",
+      "prompt_tokens": 251,
+      "completion_tokens": 16,
+      "seconds": 0.849,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что означает термин «флоу» в контексте MCP-слоя проекта AI Advent и сколько шагов в последовательности вызовов инструментов, которую сверяют с контрактом, как в day20?",
+      "query": "флоу flow MCP слой AI Advent шаги последовательность вызовов инструментов tools contract контракт day20",
+      "prompt_tokens": 276,
+      "completion_tokens": 26,
+      "seconds": 1.222,
+      "note": ""
+    },
+    {
+      "mode": "keyword",
+      "question": "Что такое артефакт в day19?",
+      "query": "артефакт artifact day19",
+      "prompt_tokens": 237,
+      "completion_tokens": 8,
+      "seconds": 1.006,
+      "note": ""
+    }
+  ]
+}
