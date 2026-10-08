@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Локальная LLM + RAG</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Локальная LLM + RAG</h1>
+        <p class="subtitle">поиск по индексу day25 на этой машине, ответ — локальной или облачной моделью</p>
+    </header>
+
+    <section class="status" id="statusBar">
+        <div class="status-item"><span class="dot" id="indexDot"></span><span id="indexText">Индекс...</span></div>
+        <div class="status-item"><span class="dot" id="localDot"></span><span id="localText">LM Studio...</span></div>
+        <div class="status-item"><span class="dot" id="cloudDot"></span><span id="cloudText">Облако...</span></div>
+        <button type="button" class="copy" id="recheck">Проверить</button>
+    </section>
+
+    <section class="presets" id="presets"></section>
+
+    <form class="form" id="form">
+        <textarea
+            id="question"
+            class="prompt"
+            rows="2"
+            placeholder="Вопрос о проекте&#10;Ctrl + Enter — отправить"
+            autofocus
+        ></textarea>
+
+        <div class="actions">
+            <div class="choices" id="choices">
+                <label class="choice"><input type="radio" name="provider" value="local" checked> локальная</label>
+                <label class="choice"><input type="radio" name="provider" value="cloud"> облачная</label>
+                <label class="choice"><input type="radio" name="provider" value="both"> обе</label>
+            </div>
+            <label class="toggle">
+                <input type="checkbox" id="think">
+                думать (локальная, без <code>/no_think</code>)
+            </label>
+            <span class="hint" id="status"></span>
+            <button type="submit" class="button" id="submit">Спросить</button>
+        </div>
+    </form>
+
+    <section class="columns" id="columns">
+        <article class="column" data-provider="local">
+            <div class="result-head">
+                <div>
+                    <span class="result-title">локальная · <span class="model"></span></span>
+                    <span class="meta"></span>
+                </div>
+            </div>
+            <details class="reasoning" hidden>
+                <summary>Рассуждения модели</summary>
+                <pre class="result reasoning-text"></pre>
+            </details>
+            <pre class="result"><span class="placeholder">Ответ локальной модели</span></pre>
+        </article>
+        <article class="column" data-provider="cloud" hidden>
+            <div class="result-head">
+                <div>
+                    <span class="result-title">облачная · <span class="model"></span></span>
+                    <span class="meta"></span>
+                </div>
+            </div>
+            <details class="reasoning" hidden>
+                <summary>Рассуждения модели</summary>
+                <pre class="result reasoning-text"></pre>
+            </details>
+            <pre class="result"><span class="placeholder">Ответ облачной модели</span></pre>
+        </article>
+    </section>
+
+    <p class="hint expected" id="expected"></p>
+
+    <section class="sources" id="sourcesWrap" hidden>
+        <div class="result-head">
+            <div>
+                <span class="result-title">Выдержки</span>
+                <span class="meta" id="sourcesMeta"></span>
+            </div>
+        </div>
+        <ol class="source-list" id="sources"></ol>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
