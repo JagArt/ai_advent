@@ -187,3 +187,11 @@ lms load qwen3-4b                           # если модель ещё не 
 uvicorn main:app --reload --app-dir day26   # статус сервера, три запроса, рассуждения и замеры
 python day26/scenarios.py                   # три запроса в двух режимах, вывод в markdown
 ```
+
+`day27` — то же веб-приложение, оформленное как интеграция локальной LLM: страница шлёт запросы в `qwen3-4b` через LM Studio, стримит и показывает ответы, облачные ключи не читает. Как условия задания сопоставлены с кодом — в [day27/README.md](day27/README.md):
+
+```bash
+lms server start                            # сервер LM Studio, http://localhost:1234/v1
+uvicorn main:app --reload --app-dir day27   # статус сервера, запросы, ответ и рассуждения
+python day27/scenarios.py                   # три запроса в двух режимах, вывод в markdown
+```
