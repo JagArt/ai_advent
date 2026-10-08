@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Локальная LLM — LM Studio</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Локальная LLM</h1>
+        <p class="subtitle">LM Studio на этой машине, без ключей и без сети</p>
+    </header>
+
+    <section class="server" id="server">
+        <span class="dot" id="serverDot"></span>
+        <span id="serverText">Проверка сервера...</span>
+        <button type="button" class="copy" id="recheck">Проверить</button>
+    </section>
+
+    <section class="presets" id="presets"></section>
+
+    <form class="form" id="form">
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="3"
+            placeholder="Введите запрос&#10;&#10;Ctrl + Enter — отправить"
+            autofocus
+        ></textarea>
+
+        <div class="actions">
+            <label class="toggle">
+                <input type="checkbox" id="think" checked>
+                Думать перед ответом (без галочки — <code>/no_think</code>)
+            </label>
+            <span class="hint" id="status"></span>
+            <button type="submit" class="button" id="submit">Спросить</button>
+        </div>
+    </form>
+
+    <section class="answer">
+        <details class="reasoning" id="reasoningWrap" hidden>
+            <summary>Рассуждения модели</summary>
+            <pre class="result reasoning-text" id="reasoning"></pre>
+        </details>
+
+        <div class="result-head">
+            <div>
+                <span class="result-title">Ответ</span>
+                <span class="meta" id="meta"></span>
+            </div>
+            <button type="button" class="copy" id="copy" hidden>Копировать</button>
+        </div>
+        <pre class="result" id="result"><span class="placeholder">Здесь появится ответ модели</span></pre>
+        <p class="hint" id="expected"></p>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
