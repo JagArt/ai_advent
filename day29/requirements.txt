@@ -1,0 +1,7 @@
+fastapi==0.141.1
+uvicorn[standard]==0.52.4
+openai==3.6.0
+python-dotenv==1.2.3
+model2vec==0.9.0
+numpy==2.5.3
+pypdf==6.19.0

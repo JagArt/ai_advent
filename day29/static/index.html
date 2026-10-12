@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оптимизация локальной LLM</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Оптимизация локальной LLM</h1>
+        <p class="subtitle">RAG по индексу day25 на qwen3-4b: базовая настройка day28 против профиля под ответ по выдержкам</p>
+    </header>
+
+    <section class="status" id="statusBar">
+        <div class="status-item"><span class="dot" id="indexDot"></span><span id="indexText">Индекс...</span></div>
+        <div class="status-item"><span class="dot" id="localDot"></span><span id="localText">LM Studio...</span></div>
+        <div class="status-item"><span class="dot" id="modelDot"></span><span id="modelText">Модель...</span></div>
+        <button type="button" class="copy" id="recheck">Проверить</button>
+    </section>
+
+    <section class="presets" id="presets"></section>
+
+    <form class="form" id="form">
+        <textarea
+            id="question"
+            class="prompt"
+            rows="2"
+            placeholder="Вопрос о проекте&#10;Ctrl + Enter — отправить"
+            autofocus
+        ></textarea>
+
+        <div class="actions">
+            <label class="toggle optimize">
+                <input type="checkbox" id="optimized" checked>
+                <strong>оптимизация</strong>
+            </label>
+            <div class="choices" id="choices">
+                <label class="choice"><input type="radio" name="mode" value="single" checked> одна колонка</label>
+                <label class="choice"><input type="radio" name="mode" value="compare"> сравнить с базовой</label>
+            </div>
+            <label class="toggle" id="thinkLabel">
+                <input type="checkbox" id="think">
+                думать (без <code>/no_think</code>)
+            </label>
+            <span class="hint" id="status"></span>
+            <button type="submit" class="button" id="submit">Спросить</button>
+        </div>
+        <p class="hint profile-line" id="profileLine"></p>
+    </form>
+
+    <section class="columns" id="columns">
+        <article class="column" data-profile="base" hidden>
+            <div class="result-head">
+                <div>
+                    <span class="result-title">базовая · <span class="model"></span></span>
+                    <span class="meta"></span>
+                </div>
+            </div>
+            <details class="reasoning" hidden>
+                <summary>Рассуждения модели</summary>
+                <pre class="result reasoning-text"></pre>
+            </details>
+            <pre class="result"><span class="placeholder">Ответ в настройке day28</span></pre>
+        </article>
+        <article class="column" data-profile="optimized">
+            <div class="result-head">
+                <div>
+                    <span class="result-title">оптимизированная · <span class="model"></span></span>
+                    <span class="meta"></span>
+                </div>
+            </div>
+            <details class="reasoning" hidden>
+                <summary>Рассуждения модели</summary>
+                <pre class="result reasoning-text"></pre>
+            </details>
+            <pre class="result"><span class="placeholder">Ответ в оптимизированной настройке</span></pre>
+        </article>
+    </section>
+
+    <p class="hint expected" id="expected"></p>
+
+    <section class="sources" id="sourcesWrap" hidden>
+        <div class="result-head">
+            <div>
+                <span class="result-title">Выдержки</span>
+                <span class="meta" id="sourcesMeta"></span>
+            </div>
+        </div>
+        <ol class="source-list" id="sources"></ol>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
