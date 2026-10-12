@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Приватный сервис локальной LLM</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Приватный сервис локальной LLM</h1>
+        <p class="subtitle">Страница и API на одном адресе. Модель остаётся на этой машине, очередь одна, у запроса есть потолок</p>
+    </header>
+
+    <section class="status" id="statusBar">
+        <div class="status-item"><span class="dot" id="serviceDot"></span><span id="serviceText">Сервис...</span></div>
+        <div class="status-item"><span class="dot" id="modelDot"></span><span id="modelText">Модель...</span></div>
+        <div class="status-item" id="limitsText">Лимиты...</div>
+        <button type="button" class="copy" id="recheck">Проверить</button>
+    </section>
+
+    <section class="thread" id="thread">
+        <span class="placeholder" id="empty">Диалога пока нет. Реплика уйдёт на этот же адрес, LM Studio наружу не виден.</span>
+    </section>
+
+    <form class="form" id="form">
+        <textarea
+            id="prompt"
+            class="prompt"
+            rows="2"
+            placeholder="Реплика&#10;Ctrl + Enter — отправить"
+            autofocus
+        ></textarea>
+        <div class="actions">
+            <label class="toggle">
+                <input type="checkbox" id="think">
+                думать (без <code>/no_think</code>)
+            </label>
+            <button type="button" class="copy" id="reset">Начать заново</button>
+            <span class="hint" id="status"></span>
+            <button type="submit" class="button" id="submit">Отправить</button>
+        </div>
+    </form>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>
