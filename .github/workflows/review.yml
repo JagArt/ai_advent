@@ -1,0 +1,61 @@
+# AI-ревью pull request — day32/review.py.
+#
+# Где крутится — решает переменная репозитория REVIEW_RUNNER: с `self-hosted`
+# job идёт на раннере в локальной сети и ревьюит qwen3-4b в LM Studio по LAN;
+# без неё — на ubuntu-latest, откуда до LM Studio не дотянуться, и скрипт сам
+# уходит в DeepSeek по секрету DEEPSEEK_API_KEY. Репозиторий публичный, поэтому
+# на self-hosted раннер пускаются только PR из этого же репозитория: у форков
+# нет ни секретов, ни права гонять свой код в чужой сети.
+name: AI review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    inputs:
+      base:
+        description: "База сравнения (ветка или хеш); голова — текущая ветка"
+        default: origin/main
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ${{ vars.REVIEW_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: pip install -r day32/requirements.txt
+
+      - name: Review
+        env:
+          LMSTUDIO_BASE_URL: ${{ vars.LMSTUDIO_BASE_URL || 'http://192.168.77.47:1234/v1' }}
+          LMSTUDIO_MODEL: ${{ vars.LMSTUDIO_MODEL || 'qwen3-4b' }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: ${{ github.event.pull_request.base.sha || inputs.base }}
+          HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: python day32/review.py --base "$BASE" --head "$HEAD" --out review.md --json review.json --post
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ai-review
+          path: |
+            review.md
+            review.json
+          if-no-files-found: ignore
