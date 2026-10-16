@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>notes · файловый ассистент</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>notes · файловый ассистент</h1>
+        <p class="subtitle">цель словами — файлы модель открывает и меняет сама через MCP, только в песочнице</p>
+    </header>
+
+    <section class="status" id="statusBar">
+        <div class="status-item"><span class="dot" id="mcpDot"></span><span id="mcpText">MCP...</span></div>
+        <div class="status-item"><span class="dot" id="localDot"></span><span id="localText">LM Studio...</span></div>
+        <div class="status-item"><span class="dot" id="cloudDot"></span><span id="cloudText">Облако...</span></div>
+        <button type="button" class="copy" id="recheck">Проверить</button>
+    </section>
+
+    <section class="workspace">
+        <aside class="panel files">
+            <div class="panel-head">
+                <div>
+                    <span class="result-title">Песочница</span>
+                    <span class="meta" id="filesMeta"></span>
+                </div>
+                <button type="button" class="copy" id="reset">Сбросить к эталону</button>
+            </div>
+            <ul class="file-list" id="fileList"></ul>
+        </aside>
+
+        <section class="panel preview">
+            <div class="panel-head">
+                <div>
+                    <span class="result-title" id="previewTitle">Просмотр</span>
+                    <span class="meta" id="previewMeta"></span>
+                </div>
+                <div class="tabs">
+                    <button type="button" class="tab active" data-mode="file" id="tabFile">Файл</button>
+                    <button type="button" class="tab" data-mode="diff" id="tabDiff">Diff</button>
+                </div>
+            </div>
+            <div class="placeholder-box" id="previewEmpty">Выберите файл слева или запустите цель — здесь появится текст и diff</div>
+            <pre class="code" id="previewBody" hidden></pre>
+        </section>
+
+        <section class="panel chat">
+            <div class="panel-head">
+                <div>
+                    <span class="result-title">Ассистент</span>
+                    <span class="meta" id="chatMeta"></span>
+                </div>
+                <button type="button" class="copy" id="clearChat" hidden>Очистить диалог</button>
+            </div>
+
+            <div class="presets" id="presets"></div>
+
+            <div class="messages" id="messages">
+                <div class="placeholder-box">Задайте цель словами — не путь к файлу. Ассистент сам решит, что открыть</div>
+            </div>
+
+            <form class="form" id="form">
+                <textarea id="question" class="prompt" rows="2" placeholder="Цель для ассистента&#10;Ctrl + Enter — отправить"></textarea>
+                <div class="actions">
+                    <div class="choices">
+                        <label class="choice"><input type="radio" name="provider" value="local" checked> локальная · <span id="localModel"></span></label>
+                        <label class="choice"><input type="radio" name="provider" value="cloud"> облачная · <span id="cloudModel"></span></label>
+                    </div>
+                    <span class="hint" id="status"></span>
+                    <button type="submit" class="button" id="submit">Выполнить</button>
+                </div>
+            </form>
+        </section>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
