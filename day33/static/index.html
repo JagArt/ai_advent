@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Планёрка · ассистент поддержки</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<main class="container">
+    <header class="header">
+        <h1>Планёрка · ассистент поддержки</h1>
+        <p class="subtitle">тикет и пользователь из CRM, ответы по базе знаний — всё модель берёт сама через MCP</p>
+    </header>
+
+    <section class="status" id="statusBar">
+        <div class="status-item"><span class="dot" id="mcpDot"></span><span id="mcpText">MCP...</span></div>
+        <div class="status-item"><span class="dot" id="localDot"></span><span id="localText">LM Studio...</span></div>
+        <div class="status-item"><span class="dot" id="cloudDot"></span><span id="cloudText">Облако...</span></div>
+        <button type="button" class="copy" id="recheck">Проверить</button>
+    </section>
+
+    <section class="workspace">
+        <aside class="panel tickets">
+            <div class="panel-head">
+                <span class="result-title">Тикеты</span>
+                <span class="meta" id="ticketsMeta"></span>
+            </div>
+            <ul class="ticket-list" id="ticketList"></ul>
+        </aside>
+
+        <section class="panel card" id="card">
+            <div class="placeholder-box" id="cardEmpty">Выберите тикет слева</div>
+            <div id="cardBody" hidden>
+                <div class="panel-head">
+                    <div>
+                        <span class="result-title">Тикет <span id="cardId"></span></span>
+                        <span class="meta" id="cardMeta"></span>
+                    </div>
+                    <span class="badge" id="cardStatus"></span>
+                </div>
+                <h2 class="card-subject" id="cardSubject"></h2>
+                <div class="thread" id="thread"></div>
+                <div class="resolution" id="resolution" hidden></div>
+
+                <div class="panel-head user-head">
+                    <div>
+                        <span class="result-title">Пользователь</span>
+                        <span class="meta" id="userMeta"></span>
+                    </div>
+                </div>
+                <dl class="user-grid" id="userGrid"></dl>
+
+                <div class="panel-head">
+                    <span class="result-title">История обращений</span>
+                </div>
+                <ul class="history" id="history"></ul>
+            </div>
+        </section>
+
+        <section class="panel chat">
+            <div class="panel-head">
+                <div>
+                    <span class="result-title">Ассистент</span>
+                    <span class="meta" id="chatMeta"></span>
+                </div>
+                <button type="button" class="copy" id="clearChat" hidden>Очистить диалог</button>
+            </div>
+
+            <div class="presets" id="presets"></div>
+
+            <div class="messages" id="messages">
+                <div class="placeholder-box">Выберите тикет и задайте вопрос — или нажмите на подсказку выше</div>
+            </div>
+
+            <form class="form" id="form">
+                <textarea id="question" class="prompt" rows="2" placeholder="Вопрос оператора&#10;Ctrl + Enter — отправить"></textarea>
+                <div class="actions">
+                    <div class="choices">
+                        <label class="choice"><input type="radio" name="provider" value="local" checked> локальная · <span id="localModel"></span></label>
+                        <label class="choice"><input type="radio" name="provider" value="cloud"> облачная · <span id="cloudModel"></span></label>
+                    </div>
+                    <span class="hint" id="status"></span>
+                    <button type="submit" class="button" id="submit">Спросить</button>
+                </div>
+            </form>
+        </section>
+    </section>
+</main>
+
+<script src="/static/app.js"></script>
+</body>
+</html>
